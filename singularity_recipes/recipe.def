@@ -25,7 +25,7 @@ From: fedora:35
     export LOCALPKG=/opt/$PKGNAME.jl
     cd $LOCALPKG
     julia --project=$LOCALPKG -e 'using Pkg; Pkg.update(); ENV["PYTHON"]=""; Pkg.build(); Pkg.instantiate()'
-    julia --project=$LOCALPKG -e 'using Sperwer'
+    julia --project=$LOCALPKG -e 'using SubPrecisionContactDetection'
     echo "Setting up precompile"
     julia --project=$LOCALPKG --trace-compile=dc_precompile.jl src/precompile.jl
     julia --project=$LOCALPKG src/setupimage.jl
