@@ -72,23 +72,31 @@ This should result in output similar to this screenshot:
 
 ## Detect contacts
 The command line interface does the heavy lifting for you:
+### Using the singularity image [Recommended]
+Using the singularity image not only saves you from dependency tracking, it also is precompiled, making it **x5 - x10 faster**.
+This is especially true on clusters where the speedup can be even larger.
+
+```bash
+singularity exec ./image.sif julia --project=/opt/SubPrecisionContactDetection.jl --sysimage=/opt/SubPrecisionContactDetection.jl/sys_img.so ./src/ercontacts.jl  --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon
+```
+### Using the clone repo
 ```bash
 julia --project=. ./src/ercontacts.jl --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon 2>&1 | tee -a log_test.txt
 ```
-Where
-
-* --project=. : ensures you run in the local cloned repo
+Where:
 * --{in|out}path : directories where tif files can be found
 * -r : regex to tif files, e.g. *[1,2].tif indicates channel 1 and 2 will have filenames ending in 1,2.tif respectively.
 * -w : windowsize, >1 or higher
 * --sigmas : smoothing Gaussian, set < precision
-* --alpha : max false positive rate (p-value)
-* --beta : max false negative rate (stat. power)
+* --alpha : max false positive rate (p-value), 0.05 is a common value.
+* --beta : max false negative rate (stat. power) 0.05 implies 95% stat power.
 * -c 1: postprocess channel 1
 * -v 2000: drop all contacts touching objects in channel 1 with volume < 2000
 * --mode=decon : input are non deconvolved tiff files
 * 2>&1 | tee -a log_test.txt : save any output to log.txt (in addition to showing it in stdout)
 
+The output should look like:
+![](run.gif)
 
 #### Output
 - skeleton_contacts.tif
