@@ -56,7 +56,9 @@ julia> Pkg.test("SubPrecisionContactDetection")
 ```bash
 git clone https://github.com/bencardoen/SubPrecisionContactDetection.jl.git
 cd SubPrecisionContactDetection.jl
+julia
 ```
+Then in Julia:
 ```julia
 using Pkg; Pkg.activate("."); Pkg.build(); Pkg.instantiate(); Pkg.test();
 ```
