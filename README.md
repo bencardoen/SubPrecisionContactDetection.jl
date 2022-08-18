@@ -52,6 +52,10 @@ julia> Pkg.build(".")
 julia> Pkg.test("SubPrecisionContactDetection")
 ```
 
+At the end of which, you should see that all tests pass:
+
+![](pass.png)
+
 ### Install locally (to use the processing scripts)
 ```bash
 git clone https://github.com/bencardoen/SubPrecisionContactDetection.jl.git
@@ -62,6 +66,9 @@ Then in Julia:
 ```julia
 using Pkg; Pkg.activate("."); Pkg.build(); Pkg.instantiate(); Pkg.test();
 ```
+This should result in output similar to this screenshot:
+
+![](clone.png)
 
 ## Detect contacts
 The command line interface does the heavy lifting for you:
