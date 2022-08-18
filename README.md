@@ -6,6 +6,7 @@ superresolution microscopy, for example endoplasmum reticulum and mitochondria (
 Where a pixel precise segmentation is not feasible due to the precision of the microscope, and colocalization does not describe the interface in a meaningful way, SubPrecisionContactDetection can reconstruct the plausible interace between the organelles.
 
 An example rendering of the postprocessed contact zones on mitochondria is shown here [source](https://www.biorxiv.org/content/10.1101/2022.06.23.497346v1.full.pdf):
+
 ![](example.png)
 
 ### Features
