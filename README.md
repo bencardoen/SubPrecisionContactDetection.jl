@@ -1,7 +1,7 @@
 # SubPrecisionContactDetection.jl
 
-Detects sub-precision contacts between subcellular organelles in 2 and 3D STED
-superresolution microscopy, for example endoplasmum reticulum and mitochondria.
+Detects sub-precision contacts between subcellular organelles in 2 and 3D STED (precision ~ 50-150nm)
+superresolution microscopy, for example endoplasmum reticulum and mitochondria (contacts ~ 20-100nm).
 
 Where a pixel precise segmentation is not feasible due to the precision of the microscope, and colocalization does not describe the interface in a meaningful way, SubPrecisionContactDetection can reconstruct the plausible interace between the organelles.
 
@@ -18,11 +18,9 @@ Where a pixel precise segmentation is not feasible due to the precision of the m
 [![codecov](https://codecov.io/gh/bencardoen/SubPrecisionContactDetection.jl/branch/main/graph/badge.svg?token=V7DB0LTIGI)](https://codecov.io/gh/bencardoen/SubPrecisionContactDetection.jl)
 
 ## Installation
-[Get Julia](https://julialang.org/).
-We currently develop on 1.7-1.8, backwards compatibility may vary.
+### Portable & fastest way using Singularity
 
-### Singularity
-If you cannot or do not want to install the dependencies yourself, you can use the [Singularity](https://duckduckgo.com/?t=ffab&q=singularity+ce+docs&ia=web) image, which has all dependencies pre-installed.
+You can use an optimized [Singularity](https://duckduckgo.com/?t=ffab&q=singularity+ce+docs&ia=web) image, which has all dependencies pre-installed.
 To run Singularity on Windows, set up [WSL2](https://www.blopig.com/blog/2021/09/using-singularity-on-windows-with-wsl2/).
 ```bash
 singularity pull library://bcvcsert/mcsdetect/mcsdetect_f35_j1.7:0.0.3
@@ -39,7 +37,9 @@ You can use the pre-compiled version to get a significant boost in execution spe
 singularity exec mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection.jl --sysimage=/opt/SubPrecisionContactDetection.jl/sys_img.so -e 'using SubPrecisionContactDetection; SubPrecisionContactDetection.spear(zeros(1024, 1024), zeros(1024, 1024))'
 ```
 
-### Install as a global package
+### Install as a Julia global package
+Assuming you have [Julia](https://julialang.org/):
+
 ```julia
 julia
 julia> using Pkg;
@@ -51,9 +51,6 @@ julia> Pkg.instantiate(".")
 julia> Pkg.build(".")
 julia> Pkg.test("SubPrecisionContactDetection")
 ```
-ERGO and SPECHT are not yet part of the Julia package collection, so they won't be automatically pulled in, which is why we're first adding them.
-
-** Note ** SubPrecisionContactDetection relies on 2 Python packages, which we install for you (with a separate Python installation). If you prefer to use your own venv/Conda, remove the ENV["PYTHON"] step (not recommended unless you know what you're doing).
 
 ### Install locally (to use the processing scripts)
 ```bash
@@ -65,8 +62,9 @@ using Pkg; Pkg.activate("."); Pkg.build(); Pkg.instantiate(); Pkg.test();
 ```
 
 ## Detect contacts
+The command line interface does the heavy lifting for you:
 ```bash
-julia --project=. ./src/ercontacts.jl --inpath ./in -r "*[1,2].tif" -w 2 --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=non-decon 2>&1 | tee -a log_test.txt
+julia --project=. ./src/ercontacts.jl --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon 2>&1 | tee -a log_test.txt
 ```
 Where
 
@@ -79,12 +77,9 @@ Where
 * --beta : max false negative rate (stat. power)
 * -c 1: postprocess channel 1
 * -v 2000: drop all contacts touching objects in channel 1 with volume < 2000
-* --mode=non-decon : input are non deconvolved tiff files
+* --mode=decon : input are non deconvolved tiff files
 * 2>&1 | tee -a log_test.txt : save any output to log.txt (in addition to showing it in stdout)
 
-Input is expected to be 2x 3D volumes (in tif format), of equal dimensions.
-
-!Do not use deconvolved images unless you really know what you're doing.!
 
 #### Output
 - skeleton_contacts.tif
@@ -101,32 +96,15 @@ Input is expected to be 2x 3D volumes (in tif format), of equal dimensions.
 ### Cite
 If you find this project useful, please cite
 ```bibtex
+@article {Cardoen2022.06.23.497346,
+	author = {Cardoen, Ben and Gao, Guang and Vandevoorde, Kurt R. and Alan, Parsa and Liu, William and Vogl, A. Wayne and Hamarneh, Ghassan and Nabi, Ivan R.},
+	title = {Automatic sub-precision membrane contact site detection identifies convoluted tubular riboMERCs},
+	elocation-id = {2022.06.23.497346},
+	year = {2022},
+	doi = {10.1101/2022.06.23.497346},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2022/06/26/2022.06.23.497346},
+	eprint = {https://www.biorxiv.org/content/early/2022/06/26/2022.06.23.497346.full.pdf},
+	journal = {bioRxiv}
+}
 ```
-
-### Cluster scripts
-In folder hpcscripts, you'll find 3 scripts, intended to make cluster processing easier.
-* sbatch.sh : executes with preset parameters the detection on 1 cell
-* array_sbatch.sh : executes any number of cells in parallel
-* buildfilelist.sh : builds the list of cells to process for array_sbatch.sh
-
-Usage
-```bash
-./buildfilelist.sh indir outdir
-# 2 files, inlist.txt and outlist.txt are generated
-```
-
-Get the number of cells
-```bash
-wc inlist.txt| awk '{print $1}'
-```
-In the array_sbatch script, change line
-```bash
-#SBATCH --array=1-<NROFCELLS>
-```
-NOTE: Change the account and email fields!!!
-
-Submit to SLURM Scheduler
-```
-sbatch array_sbatch.sh
-```
-That's it.
