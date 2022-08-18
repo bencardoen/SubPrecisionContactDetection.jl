@@ -96,6 +96,7 @@ Where:
 * 2>&1 | tee -a log_test.txt : save any output to log.txt (in addition to showing it in stdout)
 
 The output should look like:
+
 ![](run.gif)
 
 #### Output
