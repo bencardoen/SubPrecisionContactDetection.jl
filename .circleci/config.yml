@@ -8,5 +8,6 @@ jobs:
       - image: julia:1.7
     steps:
       - run: pwd
+      - run: ls -alsht
       - run:
-          command: julia -e 'using Pkg; Pkg.add("Coverage"); Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git"); Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git"); Pkg.add(url="."); Pkg.build("SubPrecisionContactDetection"); Pkg.test("SubPrecisionContactDetection");'
+          command: julia -e 'using Pkg; Pkg.add("Coverage"); Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git"); Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git"); Pkg.add(url="git@github.com:bencardoen/SubPrecisionContactDetection.jl.git"); Pkg.build("SubPrecisionContactDetection"); Pkg.test("SubPrecisionContactDetection");'
