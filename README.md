@@ -16,10 +16,9 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 - Rich : provides interpretable features for each detected contact
 
 ## Test status
-[![CircleCI](https://circleci.com/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=8f7bfd5e06262a0eb9003884e1b543dadbbd0e53)](https://circleci.com/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=d2c0a7c1eee273587c424008dc38e74692253787)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main)
 
-## Code coverage
-[![codecov](https://codecov.io/gh/bencardoen/SubPrecisionContactDetection.jl/branch/main/graph/badge.svg?token=V7DB0LTIGI)](https://codecov.io/gh/bencardoen/SubPrecisionContactDetection.jl)
+
 
 ## Installation
 ### Portable & fastest way using Singularity
