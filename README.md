@@ -57,6 +57,8 @@ julia> Pkg.build(".")
 julia> Pkg.test("SubPrecisionContactDetection")
 ```
 
+This should work on Mac, Windows and Linux, but we can't commit to supporting all possible variations of OS/libraries, to ensure the code runs everywhere the same, please use the singularity image.
+
 At the end of which, you should see that all tests pass:
 
 ![](pass.png)
@@ -84,7 +86,7 @@ This is especially true on clusters where the speedup can be even larger.
 ```bash
 singularity exec ./image.sif julia --project=/opt/SubPrecisionContactDetection.jl --sysimage=/opt/SubPrecisionContactDetection.jl/sys_img.so ./src/ercontacts.jl  --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon
 ```
-### Using the clone repo
+### Using the cloned repo
 ```bash
 julia --project=. ./src/ercontacts.jl --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon 2>&1 | tee -a log_test.txt
 ```
@@ -111,6 +113,14 @@ The output should look like:
 - channel_1_(non_)vesicle.tif : channel 1 objects (mitochondria) split into < 2000 and > 2000 objects
 - raw|gradient|eroded.tif : stages of progressively computed contacts, all but 'eroded' are debug output
 - *.csv : features for each contact
+
+### Running on SLURM clusters
+See [hpcscripts/arraysbatch.sh](hpcscripts/arraysbatch.sh) for an example parameter sweep on a large set of cells.
+Assuming you created inlists.txt and outlists.txt, you'd submit to SLURM.
+```bash
+sbatch hpcscripts/arraysbatch.sh
+```
+Please edit and revise before you submit, e.g. your email and cluster account need to change at a minimum.
 
 
 ### Cite
