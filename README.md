@@ -129,7 +129,7 @@ If you find this project useful, please cite
 	journal = {bioRxiv}
 }
 ```
-### Troubleshooting
+### Troubleshooting & FAQ
 
 If you have any issues, please create an [issue](https://github.com/bencardoen/SubPrecisionContactDetection.jl/issues/new/choose).
 
@@ -139,8 +139,16 @@ Make sure to include:
 - be concise yet complete
 
 
-#### FAQ
-##### System requirements
+#### Can I change the singularity image ?
+Yes, if you clone the repository, and are using Linux, you need to do 2 things
+- edit [singularity_recipes/recipe.def](singularity_recipes/recipe.def)
+- execute [buildimage](buildimage.sh) # Needs sudo
+```bash
+./buildimage.sh
+```
+This will rebuild the image, first checking out the latest version of the code.
+
+#### System requirements
 Expected RAM usage for images of sizes 500x500x20 ~ 5GB RAM, 2000x2000x70: ~ 50GB RAM, and so on.
 By default, all of JULIA_NUM_THREADS cores will be used to run in parallel. > 8 is overkill, so set to 4-8 at most:
 
@@ -149,7 +157,7 @@ export JULIA_NUM_THREADS=4
 ```
 On desktops this is unlikely to be an issue, but on a cluster node with > 64 cores you will probably get a slowdown if you exceed 8-12 cores.
 
-##### I cloned the repo but I get conflicts during the installation ?
+#### I cloned the repo but I get conflicts during the installation ?
 First, make sure you install and clone in a clean environment:
 ```bash
 mdkir mydir
