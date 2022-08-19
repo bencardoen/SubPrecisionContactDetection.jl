@@ -114,6 +114,9 @@ The output should look like:
 - raw|gradient|eroded.tif : stages of progressively computed contacts, all but 'eroded' are debug output
 - *.csv : features for each contact
 
+#### Sampling contacts
+In [src/run_cube_sampling_on_dataset.jl](src/run_cube_sampling_on_dataset.jl) you'll find a script that samples contacts with a sliding window, to avoid long tail statistics dominating the conclusion of any analysis. The paper goes into more depth why this is beneficial.
+
 ### Running on SLURM clusters
 See [hpcscripts/arraysbatch.sh](hpcscripts/arraysbatch.sh) for an example parameter sweep on a large set of cells.
 Assuming you created inlists.txt and outlists.txt, you'd submit to SLURM.
