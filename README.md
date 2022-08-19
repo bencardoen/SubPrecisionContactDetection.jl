@@ -5,7 +5,7 @@ superresolution microscopy, for example endoplasmum reticulum and mitochondria (
 
 Where a pixel precise segmentation is not feasible due to the precision of the microscope, and colocalization does not describe the interface in a meaningful way, SubPrecisionContactDetection can reconstruct the plausible interace between the organelles.
 
-An example rendering of the postprocessed contact zones on mitochondria is shown here [source](https://www.biorxiv.org/content/10.1101/2022.06.23.497346v1.full.pdf):
+An example rendering of the postprocessed contact zones (white) between endoplasmum reticulum (green) and mitochondria (red) is shown here [(source)](https://www.biorxiv.org/content/10.1101/2022.06.23.497346v1.full.pdf):
 
 ![](example.png)
 
@@ -26,11 +26,13 @@ An example rendering of the postprocessed contact zones on mitochondria is shown
 
 You can use an optimized [Singularity](https://duckduckgo.com/?t=ffab&q=singularity+ce+docs&ia=web) image, which has all dependencies pre-installed.
 To run Singularity on Windows, set up [WSL2](https://www.blopig.com/blog/2021/09/using-singularity-on-windows-with-wsl2/).
+
+Download the [image](http://vault.sfu.ca/index.php/s/QJ4Evcet4oVWXPL/download):
 ```bash
-singularity pull library://bcvcsert/mcsdetect/mcsdetect_f35_j1.7:0.0.3
-# OR
-singularity pull library://bcvcsert/mcsdetect/mcsdetect_f35_j1.6:0.0.3
-# then
+wget http://vault.sfu.ca/index.php/s/QJ4Evcet4oVWXPL/download
+```
+Save the download image as 'mcsdetect.sif'
+```bash
 singularity exec mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection.jl -e 'your code'
 # or
 singularity shell mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection.jl # Interactive
