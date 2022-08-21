@@ -58,7 +58,7 @@ See [instructions](https://docs.sylabs.io/guides/2.6/user-guide/installation.htm
 #### Download the image
 
 Download the [image](http://vault.sfu.ca/index.php/s/QJ4Evcet4oVWXPL/download) as *mcsdetect.sif*.
-For example, using wget (Linux, Mac), you could do:
+For example, using wget (Linux), you could do:
 ```bash
 wget -O mcsdetect.sif http://vault.sfu.ca/index.php/s/QJ4Evcet4oVWXPL/download
 ```
@@ -104,6 +104,9 @@ Expected output:
 
 <a name="julia"></a>
 ### Install as a Julia package
+
+**Note due to a [bug with conda](https://github.com/conda/conda/issues/10111) MacOS installations will have some tests failing, the module itself is functional**
+
 You can either add to the global Julia installation:
 
 ```bash
