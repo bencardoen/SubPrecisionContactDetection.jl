@@ -9,6 +9,8 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 
 ![](example.png)
 
+
+
 ### Features
 - Fast: using multiple threads, and Julia's fast LLVM JIT code
 - Reproducible: tests ensure backwards compatibility
@@ -18,14 +20,24 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 ## Test status
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=d2c0a7c1eee273587c424008dc38e74692253787)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main)
 
+## Table of contents
+1. [Installation](#install)
+   1. [Singularity](#singularity)
+   2. [Julia package](#julia)
+3. [Usage](#usage)
+4. [Deploying on clusters](#hpc)
+4. [Cite](#cite)
+5. [FAQ](#faq)
 
 
+<a name="installation"></a>
 ## Installation
-This project is developed using Julia.
+This project is developed using [Julia](https://julialang.org/).
 For ease of use and to maximize reproducibility we also provide container images using Singularity.
 
+<a name="singularity"></a>
 ### Portable & fastest way using Singularity
-You can use an optimized [Singularity](https://duckduckgo.com/?t=ffab&q=singularity+ce+docs&ia=web) image, which has all dependencies pre-installed.
+You can use an optimized [Singularity](https://docs.sylabs.io/guides/2.6/user-guide/installation.html#) image, which has all dependencies pre-installed.
 
 If you do not have Singularity, please see the documentation for detailed [installation instructions](https://docs.sylabs.io/guides/2.6/user-guide/installation.html#).
 
@@ -33,7 +45,7 @@ The below steps are examples, but may not be complete for each platform, for the
 
 #### Singularity on Linux
 Fedora/RPM
-```
+```bash
 sudo dnf install singularity
 ```
 
@@ -44,6 +56,7 @@ To run Singularity on Windows, set up [WSL2](https://www.blopig.com/blog/2021/09
 See [instructions](https://docs.sylabs.io/guides/2.6/user-guide/installation.html#install-on-mac).
 
 #### Download the image
+
 Download the [image](http://vault.sfu.ca/index.php/s/QJ4Evcet4oVWXPL/download) as *mcsdetect.sif*.
 For example, using wget (Linux, Mac), you could do:
 ```bash
@@ -55,50 +68,61 @@ On MacOS you can install wget using:
 brew install wget
 ```
 
-#### Run the image
-
-Once downloaded, you can use:
-```bash
-singularity exec mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection.jl -e 'your code'
-# or
-singularity shell mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection.jl # Interactive
-```
-or
+### Using the image
+First, make sure execute permissions are set:
 ```bash
 chmod u+x mcsdetect.sif
-./mcsdetect.sif [args]
-```
-Where args are the arguments you'd pass
-
-#### Optimized version
-You can use the pre-compiled version to get a significant boost in execution speed:
-```
-singularity exec mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection.jl --sysimage=/opt/SubPrecisionContactDetection.jl/sys_img.so -e 'using SubPrecisionContactDetection; SubPrecisionContactDetection.spear(zeros(1024, 1024), zeros(1024, 1024))'
 ```
 
-### Install as a Julia global package
+#### Starting an interactive Julia session
+```bash
+./mcsdetect.sif
+```
+Expected output:
+![](julia.png)
 
-Assuming you have [Julia](https://julialang.org/):
+#### Running code snippets
+```bash
+chmod u+x mcsdetect.sif
+./mcsdetect.sif -e 'using SubPrecisionContactDetection;'
+```
+Expected output:
+![](snippet.png)
 
-```julia
-julia
-julia> using Pkg;
-julia> Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git")
-julia> Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git")
-julia> Pkg.add(url="https://github.com/bencardoen/SubPrecisionContactDetection.jl.git")
-julia> Pkg.activate(".")
-julia> Pkg.instantiate(".")
-julia> Pkg.build(".")
-julia> Pkg.test("SubPrecisionContactDetection")
+#### Running the analysis scripts
+```bash
+chmod u+x mcsdetect.sif
+./mcsdetect.sif /opt/SubPrecisionContactDetection.jl/src/ercontacts.jl ARGS
+```
+Where you'd replace ARGS with arguments to the script as documented in [src/ercontacts.jl](src/ercontacts.jl).
+Run it without arguments to get the help prompt.
+
+Expected output:
+![](ercontact.png)
+
+<a name="julia"></a>
+### Install as a Julia package
+You can either add to the global Julia installation:
+
+```bash
+julia -e 'using Pkg;Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git");Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git");Pkg.add(url="https://github.com/bencardoen/SubPrecisionContactDetection.jl.git")'
+julia -e 'using Pkg; Pkg.build("SubPrecisionContactDetection");Pkg.test("SubPrecisionContactDetection")'
+```
 ```
 
-This should work on Mac, Windows and Linux, but we can't commit to supporting all possible variations of OS/libraries, to ensure the code runs everywhere the same, please use the singularity image.
+Or create a new environment and install it there:
+```bash
+mkdir -p test
+cd test
+julia --project=. -e 'using Pkg;Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git");Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git");Pkg.add(url="https://github.com/bencardoen/SubPrecisionContactDetection.jl.git")'
+julia --project=. -e 'using Pkg; Pkg.build("SubPrecisionContactDetection");Pkg.test("SubPrecisionContactDetection")'
+```
 
-At the end of which, you should see that all tests pass:
+In both cases, you should see that all tests pass:
 
 ![](pass.png)
 
-### Install locally (to use the processing scripts)
+### Install the cloned repository (gives access to the processing CLI interface)
 ```bash
 git clone https://github.com/bencardoen/SubPrecisionContactDetection.jl.git
 cd SubPrecisionContactDetection.jl
@@ -109,16 +133,18 @@ This should result in output similar to this screenshot:
 
 ![](clone.png)
 
-## Detect contacts
+<a name="usage"></a>
+## Usage
 The command line interface does the heavy lifting for you:
 ### Using the singularity image [Recommended]
 Using the singularity image not only saves you from dependency tracking, it also is precompiled, making it **x5 - x10 faster**.
 This is especially true on clusters where the speedup can be even larger.
 
 ```bash
-singularity exec ./image.sif julia --project=/opt/SubPrecisionContactDetection.jl --sysimage=/opt/SubPrecisionContactDetection.jl/sys_img.so ./src/ercontacts.jl  --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon
+./mcsdetect.sif opt/SubPrecisionContactDetection/src/ercontacts.jl  --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon
 ```
-### Using the cloned repo
+
+### Using the cloned repository
 ```bash
 julia --project=. ./src/ercontacts.jl --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon 2>&1 | tee -a log_test.txt
 ```
@@ -149,6 +175,7 @@ The output should look like:
 #### Sampling contacts
 In [src/run_cube_sampling_on_dataset.jl](src/run_cube_sampling_on_dataset.jl) you'll find a script that samples contacts with a sliding window, to avoid long tail statistics dominating the conclusion of any analysis. The paper goes into more depth why this is beneficial.
 
+<a name="hpc"></a>
 ### Running on SLURM clusters
 See [hpcscripts/arraysbatch.sh](hpcscripts/arraysbatch.sh) for an example parameter sweep on a large set of cells.
 Assuming you created inlists.txt and outlists.txt, you'd submit to SLURM.
@@ -158,6 +185,7 @@ sbatch hpcscripts/arraysbatch.sh
 Please edit and revise before you submit, e.g. your email and cluster account need to change at a minimum.
 
 
+<a name="cite"></a>
 ### Cite
 If you find this project useful, please cite
 ```bibtex
@@ -173,6 +201,8 @@ If you find this project useful, please cite
 	journal = {bioRxiv}
 }
 ```
+
+<a name="faq"></a>
 ### Troubleshooting & FAQ
 
 If you have any issues, please create an [issue](https://github.com/bencardoen/SubPrecisionContactDetection.jl/issues/new/choose).
