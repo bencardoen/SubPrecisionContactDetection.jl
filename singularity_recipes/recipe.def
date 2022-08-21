@@ -48,8 +48,8 @@ From: fedora:35
     echo "Container was created $NOW"
     echo "Arguments received: $*"
     echo pwd
-    exec echo "$@"
-    julia --project=/opt/SubPrecisionContactDetection.jl --sysimage=/opt/SubPrecisionContactDetection.jl/sys_img.so /opt/SubPrecisionContactDetection.jl/src/ercontacts.jl $@
+    /opt/SubPrecisionContactDetection.jl/runjulia.sh "$@"
+
 
 %labels
     Author Ben Cardoen, bcardoen@sfu.ca

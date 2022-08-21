@@ -21,10 +21,15 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 
 
 ## Installation
+This project is developed using Julia.
+For ease of use and to maximize reproducibility we also provide container images using Singularity.
+
 ### Portable & fastest way using Singularity
 You can use an optimized [Singularity](https://duckduckgo.com/?t=ffab&q=singularity+ce+docs&ia=web) image, which has all dependencies pre-installed.
 
 If you do not have Singularity, please see the documentation for detailed [installation instructions](https://docs.sylabs.io/guides/2.6/user-guide/installation.html#).
+
+The below steps are examples, but may not be complete for each platform, for the reference instructions, please visit [installation instructions](https://docs.sylabs.io/guides/2.6/user-guide/installation.html#).
 
 #### Singularity on Linux
 Fedora/RPM
@@ -33,11 +38,12 @@ sudo dnf install singularity
 ```
 
 #### Singularity on Windows
-To run Singularity on Windows, set up [WSL2](https://www.blopig.com/blog/2021/09/using-singularity-on-windows-with-wsl2/).
+To run Singularity on Windows, set up [WSL2](https://www.blopig.com/blog/2021/09/using-singularity-on-windows-with-wsl2/) or refer to [installation instructions](https://docs.sylabs.io/guides/2.6/user-guide/installation.html#).
 
 #### Singularity on MacOS
 See [instructions](https://docs.sylabs.io/guides/2.6/user-guide/installation.html#install-on-mac).
 
+#### Download the image
 Download the [image](http://vault.sfu.ca/index.php/s/QJ4Evcet4oVWXPL/download) as *mcsdetect.sif*.
 For example, using wget (Linux, Mac), you could do:
 ```bash
@@ -49,12 +55,20 @@ On MacOS you can install wget using:
 brew install wget
 ```
 
-Then, you can use:
+#### Run the image
+
+Once downloaded, you can use:
 ```bash
 singularity exec mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection.jl -e 'your code'
 # or
 singularity shell mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection.jl # Interactive
 ```
+or
+```bash
+chmod u+x mcsdetect.sif
+./mcsdetect.sif [args]
+```
+Where args are the arguments you'd pass
 
 #### Optimized version
 You can use the pre-compiled version to get a significant boost in execution speed:
@@ -94,6 +108,8 @@ Then in Julia:
 ```julia
 using Pkg; Pkg.activate("."); Pkg.build(); Pkg.instantiate(); Pkg.test();
 ```
+**Make sure you run this in the folder ./SubPrecisionContactDetection.jl**
+
 This should result in output similar to this screenshot:
 
 ![](clone.png)
