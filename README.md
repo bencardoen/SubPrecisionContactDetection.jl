@@ -102,13 +102,8 @@ At the end of which, you should see that all tests pass:
 ```bash
 git clone https://github.com/bencardoen/SubPrecisionContactDetection.jl.git
 cd SubPrecisionContactDetection.jl
-julia
+julia --project=. installlocal.jl
 ```
-Then in Julia:
-```julia
-using Pkg; Pkg.activate("."); Pkg.build(); Pkg.instantiate(); Pkg.test();
-```
-**Make sure you run this in the folder ./SubPrecisionContactDetection.jl**
 
 This should result in output similar to this screenshot:
 
