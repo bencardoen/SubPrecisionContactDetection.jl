@@ -3,7 +3,7 @@
 Detects sub-precision contacts between subcellular organelles in 2 and 3D STED (precision ~ 50-150nm)
 superresolution microscopy, for example endoplasmum reticulum and mitochondria (contacts ~ 20-100nm).
 
-Where a pixel precise segmentation is not feasible due to the precision of the microscope, and colocalization does not describe the interface in a meaningful way, SubPrecisionContactDetection can reconstruct the plausible interace between the organelles.
+Where a pixel precise segmentation is not feasible due to the precision of the microscope, and colocalization does not describe the interface in a meaningful way, SubPrecisionContactDetection can reconstruct the plausible interface between the organelles.
 
 An example rendering of the postprocessed contact zones (white) between endoplasmum reticulum (green) and mitochondria (red) is shown here [(source)](https://www.biorxiv.org/content/10.1101/2022.06.23.497346v1.full.pdf):
 
@@ -11,9 +11,9 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 
 ### Features
 - Fast: using multiple threads, and Julia's fast LLVM JIT code
-- Reproducible : tests ensure backwards compatibility
-- Configurable : Can process deconvolved or raw images, with optional extra denoising
-- Rich : provides interpretable features for each detected contact
+- Reproducible: tests ensure backwards compatibility
+- Configurable: Can process deconvolved or raw images, with optional extra denoising
+- Rich: provides interpretable features for each detected contact
 
 ## Test status
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=d2c0a7c1eee273587c424008dc38e74692253787)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main)
@@ -22,20 +22,40 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 
 ## Installation
 ### Portable & fastest way using Singularity
-
 You can use an optimized [Singularity](https://duckduckgo.com/?t=ffab&q=singularity+ce+docs&ia=web) image, which has all dependencies pre-installed.
+
+If you do not have Singularity, please see the documentation for detailed [installation instructions](https://docs.sylabs.io/guides/2.6/user-guide/installation.html#).
+
+#### Singularity on Linux
+Fedora/RPM
+```
+sudo dnf install singularity
+```
+
+#### Singularity on Windows
 To run Singularity on Windows, set up [WSL2](https://www.blopig.com/blog/2021/09/using-singularity-on-windows-with-wsl2/).
 
-Download the [image](http://vault.sfu.ca/index.php/s/QJ4Evcet4oVWXPL/download):
+#### Singularity on MacOS
+See [instructions](https://docs.sylabs.io/guides/2.6/user-guide/installation.html#install-on-mac).
+
+Download the [image](http://vault.sfu.ca/index.php/s/QJ4Evcet4oVWXPL/download) as *mcsdetect.sif*.
+For example, using wget (Linux, Mac), you could do:
 ```bash
-wget http://vault.sfu.ca/index.php/s/QJ4Evcet4oVWXPL/download
+wget -O mcsdetect.sif http://vault.sfu.ca/index.php/s/QJ4Evcet4oVWXPL/download
 ```
-Save the download image as 'mcsdetect.sif'
+
+On MacOS you can install wget using:
+```bash
+brew install wget
+```
+
+Then, you can use:
 ```bash
 singularity exec mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection.jl -e 'your code'
 # or
 singularity shell mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection.jl # Interactive
 ```
+
 #### Optimized version
 You can use the pre-compiled version to get a significant boost in execution speed:
 ```
@@ -43,6 +63,7 @@ singularity exec mcsdetect.sif julia --project=/opt/SubPrecisionContactDetection
 ```
 
 ### Install as a Julia global package
+
 Assuming you have [Julia](https://julialang.org/):
 
 ```julia

@@ -49,6 +49,7 @@ From: fedora:35
     echo "Arguments received: $*"
     echo pwd
     exec echo "$@"
+    julia --project=/opt/SubPrecisionContactDetection.jl --sysimage=/opt/SubPrecisionContactDetection.jl/sys_img.so /opt/SubPrecisionContactDetection.jl/src/ercontacts.jl $@
 
 %labels
     Author Ben Cardoen, bcardoen@sfu.ca
