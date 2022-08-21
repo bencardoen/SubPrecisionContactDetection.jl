@@ -35,8 +35,9 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 This project is developed using [Julia](https://julialang.org/).
 For ease of use and to maximize reproducibility we also provide container images using Singularity.
 
-This project was developed on Linux, and deployed on scientific computing clusters running Linux. The Singularity workflow ensures both local and cluster computations run **exactly** the same.
-This cannot be guaranteed across different OS'es (e.g. Windows, MacOs). While the code can work on any OS, you may run into issues.
+This project was developed on Linux, and deployed on scientific computing clusters running Linux. The Singularity workflow ensures both local and cluster computations run **exactly** the same. The automated tests at [CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=d2c0a7c1eee273587c424008dc38e74692253787)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main) run the exact same environment.
+
+This cannot be guaranteed across different OS'es (e.g. Windows, MacOs). While there are no technical reasons preventing the code from working on any OS, you may run into issues as it is not something we actively use ourselves.
 
 <a name="singularity"></a>
 ### Portable & fastest way using Singularity
