@@ -35,6 +35,9 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 This project is developed using [Julia](https://julialang.org/).
 For ease of use and to maximize reproducibility we also provide container images using Singularity.
 
+This project was developed on Linux, and deployed on scientific computing clusters running Linux. The Singularity workflow ensures both local and cluster computations run **exactly** the same.
+This cannot be guaranteed across different OS'es (e.g. Windows, MacOs). While the code can work on any OS, you may run into issues.
+
 <a name="singularity"></a>
 ### Portable & fastest way using Singularity
 You can use an optimized [Singularity](https://docs.sylabs.io/guides/2.6/user-guide/installation.html#) image, which has all dependencies pre-installed.
