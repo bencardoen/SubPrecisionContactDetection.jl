@@ -79,6 +79,7 @@ chmod u+x mcsdetect.sif
 ./mcsdetect.sif
 ```
 Expected output:
+
 ![](julia.png)
 
 #### Running code snippets
@@ -87,6 +88,7 @@ chmod u+x mcsdetect.sif
 ./mcsdetect.sif -e 'using SubPrecisionContactDetection;'
 ```
 Expected output:
+
 ![](snippet.png)
 
 #### Running the analysis scripts
@@ -108,9 +110,10 @@ You can either add to the global Julia installation:
 julia -e 'using Pkg;Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git");Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git");Pkg.add(url="https://github.com/bencardoen/SubPrecisionContactDetection.jl.git")'
 julia -e 'using Pkg; Pkg.build("SubPrecisionContactDetection");Pkg.test("SubPrecisionContactDetection")'
 ```
-```
+
 
 Or create a new environment and install it there:
+
 ```bash
 mkdir -p test
 cd test
