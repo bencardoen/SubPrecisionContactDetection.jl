@@ -17,8 +17,8 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 - Configurable: Can process deconvolved or raw images, with optional extra denoising
 - Rich: provides interpretable features for each detected contact
 
-## Test status
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=d2c0a7c1eee273587c424008dc38e74692253787)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main)
+## Status
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=d2c0a7c1eee273587c424008dc38e74692253787)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 ## Table of contents
 1. [Installation](#install)
@@ -256,3 +256,7 @@ Do not use Julia < 1.7, there's no guarantee that deprecated APIs will still wor
 ##### Memory usage
 Current memory usage is higher than it strictly needs to be because we generate a lot of intermediate steps.
 In principle we could reduce usage by x2 or more, but it would come at the cost of debugging/interpretability.
+
+##### Installation gives errors on MacOs
+MacOS + Conda has a bug where a certificate error triggers a cascade of [errors](https://github.com/conda/conda/issues/10111).
+The errors can be ignored, including the failing tests, this is an optional part of the module. When the bug in conda is resolved, this issue should be resolved as well.
