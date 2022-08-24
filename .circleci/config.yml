@@ -12,4 +12,4 @@ jobs:
       - run:
           command: julia -e 'using Pkg; Pkg.add("Coverage"); Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git"); Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git"); Pkg.add(url="git@github.com:bencardoen/SubPrecisionContactDetection.jl.git"); Pkg.build("SubPrecisionContactDetection"); Pkg.test("SubPrecisionContactDetection", coverage=true);'
       - run:
-          command: julia -e 'using Pkg; cd(Pkg.dir("SubPrecisionContactDetection")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+          command: julia -e 'using Pkg; cd(Pkg.dir("SubPrecisionContactDetection")); using Coverage; Codecov.submit(Codecov.process_folder())'
