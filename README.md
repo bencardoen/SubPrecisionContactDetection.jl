@@ -18,7 +18,7 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 - Rich: provides interpretable features for each detected contact
 
 ## Status
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=d2c0a7c1eee273587c424008dc38e74692253787)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=d2c0a7c1eee273587c424008dc38e74692253787)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0) [![codecov](https://codecov.io/gh/bencardoen/SubPrecisionContactDetection.jl/branch/main/graph/badge.svg?token=HJ7KIHBZC0)](https://codecov.io/gh/bencardoen/SubPrecisionContactDetection.jl)
 
 ## Table of contents
 1. [Installation](#install)
@@ -98,9 +98,9 @@ Expected output:
 #### Running the analysis scripts
 ```bash
 chmod u+x mcsdetect.sif
-./mcsdetect.sif /opt/SubPrecisionContactDetection.jl/src/ercontacts.jl ARGS
+./mcsdetect.sif /opt/SubPrecisionContactDetection.jl/scripts/ercontacts.jl ARGS
 ```
-Where you'd replace ARGS with arguments to the script as documented in [src/ercontacts.jl](src/ercontacts.jl).
+Where you'd replace ARGS with arguments to the script as documented in [scripts/ercontacts.jl](scripts/ercontacts.jl).
 Run it without arguments to get the help prompt.
 
 Expected output:
@@ -151,12 +151,12 @@ Using the singularity image not only saves you from dependency tracking, it also
 This is especially true on clusters where the speedup can be even larger.
 
 ```bash
-./mcsdetect.sif opt/SubPrecisionContactDetection/src/ercontacts.jl  --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon
+./mcsdetect.sif opt/SubPrecisionContactDetection/scripts/ercontacts.jl  --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon
 ```
 
 ### Using the cloned repository
 ```bash
-julia --project=. ./src/ercontacts.jl --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon 2>&1 | tee -a log_test.txt
+julia --project=. ./scripts/ercontacts.jl --inpath ./in -r "*[1,2].tif" -w 2 --deconvolved --sigmas 2.5-2.5-1.5 --outpath  ./out --alpha 0.01 --beta 0.01 -c 1 -v 2000 --mode=decon 2>&1 | tee -a log_test.txt
 ```
 Where:
 * --{in|out}path : directories where tif files can be found
@@ -183,7 +183,7 @@ The output should look like:
 - *.csv : features for each contact
 
 #### Sampling contacts
-In [src/run_cube_sampling_on_dataset.jl](src/run_cube_sampling_on_dataset.jl) you'll find a script that samples contacts with a sliding window, to avoid long tail statistics dominating the conclusion of any analysis. The paper goes into more depth why this is beneficial.
+In [scripts/run_cube_sampling_on_dataset.jl](scripts/run_cube_sampling_on_dataset.jl) you'll find a script that samples contacts with a sliding window, to avoid long tail statistics dominating the conclusion of any analysis. The paper goes into more depth why this is beneficial.
 
 <a name="hpc"></a>
 ### Running on SLURM clusters
