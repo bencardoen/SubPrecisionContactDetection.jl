@@ -45,9 +45,7 @@ From: fedora:35
     export JULIA_DEPOT_PATH=/opt/juliadepot
 
 %runscript
-    echo "Container was created $NOW"
-    echo "Arguments received: $*"
-    echo pwd
+    echo "Executing runjulia.sh with args $@"
     /opt/SubPrecisionContactDetection.jl/runjulia.sh "$@"
 
 

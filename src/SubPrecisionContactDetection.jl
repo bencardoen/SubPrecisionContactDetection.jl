@@ -16,6 +16,7 @@ import Pkg
 import PyCall
 using Distributions
 using LinearAlgebra
+import HypothesisTests
 import Images
 import ERGO
 # import ImageView # Crashes headlesss mode
@@ -41,7 +42,7 @@ export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computeco
 computeintensitycorrelation,
 summarize_spots, process_stack, findchannel, sp,
 compute_edges, reportimagequality, dtd_to_field, c3,
-process_contact_stack3d,
+process_contact_stack3d, sp2d,
 makespheres, loadimages, sp3d, reportvolumes, reportvolumes2D, process_contact_stack, filter_k, offset, mcc, clampt, ratefilter, computesurfaces,
 festimparam, retainnegative, snr, planar, smoothclamp, sphericity, computefeatures, anisotropy, compute_contact_slice, normimg,
 savegld, imgpca, readgld, dtocent, quantify_adj_mito, filter_channels, getextent, masktoindices, z_to_significance, magnitudegradients, gradientmagnitude, gradientfilter!,
@@ -569,7 +570,7 @@ end
 
 
 function getci(xs, alpha)
-    return HypothesisTests.confint(HypothesisTests.OneSampleTTest(ys), alpha, tail=:both)
+    return HypothesisTests.confint(HypothesisTests.OneSampleTTest(xs), alpha, tail=:both)
 end
 
 """
@@ -821,7 +822,7 @@ end
 Return sum of pdf on coord
 """
 function vpdf(vs, coords)
-	return sum(pdf(v, coords) for v in vs)
+	return SPECHT.vpdf(vs, coords)
 end
 
 """
@@ -830,9 +831,7 @@ Return an XN by YN array where each [x, y] = sum(pdf_gaus(center, cov)[x,y])
 |centers| == |covs|, for each pair a Gaussian pdf is generated
 """
 function fastgaussian2d(centers, covs, XN, YN)
-	vs =  [MvNormal(center, cv) for (center, cv) in zip(centers, covs)]
-	Q = (vpdf(vs, [x, y]) for x in 1:XN,  y in 1:YN)
-	return Q |> collect
+	return SPECHT.fastgaussian2d(centers, covs, XN, YN)
 end
 
 """

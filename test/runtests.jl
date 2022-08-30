@@ -24,6 +24,44 @@ import Match
 using Distributions
 
 @testset "SubPrecisionContactDetection.jl" begin
+
+	@testset "gdf" begin
+		m, M = getci([100,101,100], 0.05)
+		@test m < M
+	end
+
+	@testset "s2" begin
+		A = zeros(100, 100)
+		r=sp2d(A, A, 1)[1]
+		unique(r) == [0, 1]
+	end
+
+	@testset "iq" begin
+
+		A = zeros(100, 100)
+		r=sp2d(A, A, 1)[1]
+		unique(r) == [0, 1]
+		using Images
+		t = mktempdir()
+		Images.save(joinpath(t, "x.tif"), rand(200, 200))
+		r=reportimagequality(joinpath(t, "x.tif"))
+		all(r .> 0)
+		rm(t, recursive=true)
+
+	end
+
+	@testset "api" begin
+		Random.seed!(42)
+		A = rand(100, 100, 20)
+		B = rand(100, 100, 20)
+		t=mktempdir()
+		Images.save(joinpath(t, "1.tif"), A)
+		Images.save(joinpath(t, "2.tif"), B)
+		tiffiles = [joinpath(t, "$x.tif") for x in 1:2]
+		sf, img_1f, img_2f, zs, _, ll1, ll2, qf, rawsf=process_contact_stack3d(tiffiles, 3, 2)
+		@test sum(sf) < 1
+	end
+
 	@testset "normlin" begin
 		a = [0 0; 0.5 1]
 		b = normalize_linear(a)
