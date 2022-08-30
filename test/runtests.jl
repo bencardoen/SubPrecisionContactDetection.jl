@@ -32,7 +32,7 @@ using Distributions
 
 	@testset "fc" begin
 		A = zeros(3, 100, 100, 100)
-		@test findchannel(A) == 0
+		@test findchannel(A) == -1
 		A[2,:,:,:] .= 1
 		@test findchannel(A) == 2
 	end
