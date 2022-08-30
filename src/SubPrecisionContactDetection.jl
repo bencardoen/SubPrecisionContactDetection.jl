@@ -40,7 +40,7 @@ using ImageContrastAdjustment
 
 export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin,
 computeintensitycorrelation,
-summarize_spots, process_stack, findchannel, sp,
+summarize_spots, findchannel, sp,
 compute_edges, reportimagequality, dtd_to_field, c3,
 process_contact_stack3d, sp2d,
 makespheres, loadimages, sp3d, reportvolumes, reportvolumes2D, process_contact_stack, filter_k, offset, mcc, clampt, ratefilter, computesurfaces,
@@ -1571,29 +1571,29 @@ function findchannel(cs)
         return -1
     end
 end
-
-function process_stack(st1, st2, w)
-    e1 = Images.Gray{Float64}.(st1)
-    e2 = Images.Gray{Float64}.(st1)
-    e1 .= 0
-    e2 .= 0
-    spear = Images.Gray{Float64}.(st1)
-    spear .= 0.0
-    _, _, stack = size(st1)
-    _, _, _stack = size(st2)
-    @assert(stack == _stack)
-    @assert(stack >= 1)
-    # println(size(st1))
-    @threads for s in 1:stack
-        println("Processing $s / $stack")
-        _i1, _i2 = st1[:,:,s], st2[:,:,s]
-        _e1, _e2, _ep1, _ep2 = SPECHT.compute_nl(_i1, _i2) # Neg Lapl.
-        e1[:,:,s] = _ep1
-        e2[:,:,s] = _ep1
-        spear[:,:,s] = sp(_e1, _e2, w)
-    end
-    return e1, e2, spear
-end
+#
+# function process_stack(st1, st2, w)
+#     e1 = Images.Gray{Float64}.(st1)
+#     e2 = Images.Gray{Float64}.(st1)
+#     e1 .= 0
+#     e2 .= 0
+#     spear = Images.Gray{Float64}.(st1)
+#     spear .= 0.0
+#     _, _, stack = size(st1)
+#     _, _, _stack = size(st2)
+#     @assert(stack == _stack)
+#     @assert(stack >= 1)
+#     # println(size(st1))
+#     @threads for s in 1:stack
+#         println("Processing $s / $stack")
+#         _i1, _i2 = st1[:,:,s], st2[:,:,s]
+#         _e1, _e2, _ep1, _ep2 = SPECHT.compute_nl(_i1, _i2) # Neg Lapl.
+#         e1[:,:,s] = _ep1
+#         e2[:,:,s] = _ep1
+#         spear[:,:,s] = sp(_e1, _e2, w)
+#     end
+#     return e1, e2, spear
+# end
 
 
 function sp3d(img1, img2, stride; subsampleincrement=0)

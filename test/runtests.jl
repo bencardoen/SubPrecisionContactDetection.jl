@@ -30,6 +30,13 @@ using Distributions
 		@test m < M
 	end
 
+	@testset "fc" begin
+		A = zeros(3, 100, 100, 100)
+		@test findchannel(A) == 0
+		A[2,:,:,:] .= 1
+		@test findchannel(A) == 2
+	end
+
 	@testset "s2" begin
 		A = zeros(100, 100)
 		r=sp2d(A, A, 1)[1]
@@ -48,6 +55,12 @@ using Distributions
 		all(r .> 0)
 		rm(t, recursive=true)
 
+	end
+
+    @testset "ce" begin
+		A = zeros(100, 100)
+		l1, l2 = compute_edges(A, A)
+		@test l1 == l2
 	end
 
 	@testset "api" begin
