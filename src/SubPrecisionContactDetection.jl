@@ -34,6 +34,7 @@ using Match
 using JLD2
 using StatsBase
 using ProgressMeter
+using Colocalization
 import ImageMorphology
 import SPECHT
 using ImageContrastAdjustment
@@ -93,7 +94,7 @@ function walk_cube(c1, ct, c3, stridex, stridey, stridez, border=1)
 	@debug "$X x $Y x $Z --> Total of $(dx*dy*dz) boxes"
 	@debug rx, ry, rz
 	c1border = edge_from_border(c1, border)
-	borderct = ERGO.tomask(ct .* c1border)
+	borderct = Colocalization.tomask(ct .* c1border)
 	if any([rx, ry, rz] .> 0)
 		@warn " Slicing !"
 	end
@@ -111,7 +112,7 @@ function walk_cube(c1, ct, c3, stridex, stridey, stridez, border=1)
 				surf_ct = length(ctbor[ctbor .> 0])
 				surf_mt = length(mtbor[mtbor .> 0])
 				@debug surf_ct surf_mt
-				cnt = maximum(SubPrecisionContactDetection.get_components(ERGO.tomask(ctn)))
+				cnt = maximum(SubPrecisionContactDetection.get_components(Colocalization.tomask(ctn)))
 				@debug [mv, sm, cv, sc, cnt]
 				push!(df,[mv, sm, cv, sc, cnt, surf_mt, surf_ct])
 			end
@@ -130,7 +131,7 @@ function clipr(img, seed=0, v=0.5)
 end
 
 function erode_iter(img, N=1)
-	M = ERGO.tomask(img)
+	M = Colocalization.tomask(img)
 	em = copy(M)
 	for _ in 1:N
 		em = ImageMorphology.erode(em)
@@ -147,7 +148,7 @@ end
 """
 function edge_from_border(cellimg, N=1)
 	eroded, mask = erode_iter(cellimg, N)
-	result = ERGO.aszero(mask)
+	result = Colocalization.aszero(mask)
 	result[(eroded .== 0) .& (mask .== 1)] .= 1
 	return result
 end
@@ -389,8 +390,8 @@ function compute_contacts_nondeconvolved_images_3d(img1, img2, sigmas; w=1, alph
 	end
 	@info "Preprocessing 1/2"
 	@debug sigmas
-	S1NG = SubPrecisionContactDetection.denoise(ERGO.tomask(S1N).*img1, 1,  "gaussian", sigmas);
-	S2NG = SubPrecisionContactDetection.denoise(ERGO.tomask(S2N).*img2, 1,  "gaussian", sigmas);
+	S1NG = SubPrecisionContactDetection.denoise(Colocalization.tomask(S1N).*img1, 1,  "gaussian", sigmas);
+	S2NG = SubPrecisionContactDetection.denoise(Colocalization.tomask(S2N).*img2, 1,  "gaussian", sigmas);
 	@info "Preprocessing 2/2"
 	S1NG[S1NG.<0].=0;
 	S2NG[S2NG.<0].=0;
@@ -418,13 +419,13 @@ function compute_contacts_nondeconvolved_images_3d(img1, img2, sigmas; w=1, alph
 	# rawcontacts, isf = SPECHT.rlap(rawcontacts), SPECHT.rlap(isf)
 	MS1 = iterativemedian(Images.N0f8.(S1NG), 1, 1);
 	MS2 = iterativemedian(Images.N0f8.(S2NG), 1, 1);
-	MSK = ERGO.tomask(MS1.*MS2);
+	MSK = Colocalization.tomask(MS1.*MS2);
 	filteredcontacts = copy(rawcontacts)
 	isfx, filteredcontacts = alphabeta!(isf, ips, alpha, beta, w, 3),  alphabeta!(filteredcontacts, sigmap, alpha, beta, w, 3)
-	filteredcontacts = MSK.*ERGO.tomask(isfx).*filteredcontacts;
+	filteredcontacts = MSK.*Colocalization.tomask(isfx).*filteredcontacts;
 	gradientcontacts = gradientfilter!(filteredcontacts, grl1, grl2)
 	@info "Completed --> PostProcessing"
-	return rawcontacts.*MSK, rawcontacts .* MSK .* ERGO.tomask(isf), filteredcontacts, gradientcontacts, S1NG.*ERGO.tomask(MS1), S2NG.*ERGO.tomask(MS2), sigmap
+	return rawcontacts.*MSK, rawcontacts .* MSK .* Colocalization.tomask(isf), filteredcontacts, gradientcontacts, S1NG.*Colocalization.tomask(MS1), S2NG.*Colocalization.tomask(MS2), sigmap
 end
 
 
@@ -492,9 +493,9 @@ end
 
 
 function filtermito(mito, contacts, logsizemax, meanmitoint)
-	mitomask = ERGO.tomask(mito)
-	out = ERGO.copy(mito)
-	contact_comps = SubPrecisionContactDetection.get_components(ERGO.tomask(contacts))
+	mitomask = Colocalization.tomask(mito)
+	out = copy(mito)
+	contact_comps = SubPrecisionContactDetection.get_components(Colocalization.tomask(contacts))
 	contact_indices = SubPrecisionContactDetection.get_components(contact_comps)[2:end]
 	mito_comps = SubPrecisionContactDetection.get_components(mitomask)
 	@debug "Have $(maximum(contact_comps)) contacts and $(maximum(mito_comps)) mito"
@@ -562,7 +563,7 @@ end
 function z_to_significance(zs, alpha=0.05)
     pn = Distributions.Normal()
     pd, cd = pdf.(pn, zs), cdf.(pn, zs)
-	msk = ERGO.aszero(pd)
+	msk = Colocalization.aszero(pd)
 	msk[(pd .< (alpha/2)) .& (zs .!= Inf)].=1
 	msk[zs .== Inf] .= 0
     return pd, cd, msk
@@ -664,7 +665,7 @@ function iterativemedian(img, iters, w)
     cimg = copy(img)
     md = ones(eltype(img), size(img))
     for i in 1:iters
-        md = SubPrecisionContactDetection.denoise(ERGO.tomask(md).*cimg, w, "median",nothing)
+        md = SubPrecisionContactDetection.denoise(Colocalization.tomask(md).*cimg, w, "median",nothing)
     end
     return md
 end
@@ -900,11 +901,11 @@ end
 
 function quantify_adj_mito(mitochannel, contactchannel)
 	@assert size(mitochannel) == size(contactchannel)
-	CM = ERGO.tomask(contactchannel)
+	CM = Colocalization.tomask(contactchannel)
 	skel = getskeleton(CM)
 	c_comps = get_components(CM)
 	c_inds = Images.component_indices(c_comps)[2:end]
-	m_comps = get_components(ERGO.tomask(mitochannel))
+	m_comps = get_components(Colocalization.tomask(mitochannel))
 	m_inds = Images.component_indices(m_comps)[2:end]
 	m_ls = Images.component_lengths(m_comps)[2:end]
 	N = maximum(c_comps)
@@ -975,7 +976,7 @@ function denoisegs(im, sigmas)
 end
 
 function dropleq(mk, F)
-    M = ERGO.tomask(mk)
+    M = Colocalization.tomask(mk)
     CCS = get_components(M)
     l = Images.component_lengths(CCS)[2:end]
     li = Images.component_indices(CCS)[2:end]
@@ -991,7 +992,7 @@ end
 function gerode(x)
 	if length(size(x)) == 3
 		@debug "Erosion with dim = 3"
-	    res = copy(ERGO.tomask(x))
+	    res = copy(Colocalization.tomask(x))
 	    a = falses(3,3,3)
 	    a[1,2,2] = true
 	    a[2,2,:] .= true
@@ -1001,7 +1002,7 @@ function gerode(x)
 	else
 		@assert length(size(x))==2
 		@debug "Erosion with dim == 2"
-		return ImageMorphology.erode(ERGO.tomask(x))
+		return ImageMorphology.erode(Colocalization.tomask(x))
 	end
 end
 
@@ -1042,8 +1043,8 @@ function process_contact_stack3d(tiffiles, k, w, minz=nothing, maxz=nothing; sam
 		MS1 = iterativemedian(img_1, 1, 1)
 		MS2 = iterativemedian(img_2, 1, 1)
 		# Smooth
-		img_1 = SubPrecisionContactDetection.denoise(ERGO.tomask(MS1).*img_1, 1,  "gaussian", densigmas);
-		img_2 = SubPrecisionContactDetection.denoise(ERGO.tomask(MS2).*img_2, 1,  "gaussian", densigmas);
+		img_1 = SubPrecisionContactDetection.denoise(Colocalization.tomask(MS1).*img_1, 1,  "gaussian", densigmas);
+		img_2 = SubPrecisionContactDetection.denoise(Colocalization.tomask(MS2).*img_2, 1,  "gaussian", densigmas);
 		@info "Laplacian ..."
 		ll1 = imfilter(img_1, Kernel.Laplacian((true, true, true)));
     	ll2 = imfilter(img_2, Kernel.Laplacian((true, true, true)));
@@ -1077,7 +1078,7 @@ function process_contact_stack3d(tiffiles, k, w, minz=nothing, maxz=nothing; sam
 		MS1 = iterativemedian(Images.N0f8.(img_1f), 1, 1)
 		MS2 = iterativemedian(Images.N0f8.(img_2f), 1, 1)
 		# Remove artifacts, intensity should be correlated, and neg cor
-		qf = ERGO.tomask(MS1.*MS2) .* ERGO.tomask(IC) .* sf
+		qf = Colocalization.tomask(MS1.*MS2) .* Colocalization.tomask(IC) .* sf
 	else
 		sf[(img_1f .* img_2f) .== 0] .= zero(eltype(sf))
 		qf = copy(sf)
@@ -1140,7 +1141,7 @@ function computefeatures(fname)
     sp, qf, zs, ps = SubPrecisionContactDetection.readgld(fname)
     df_unfiltered = SubPrecisionContactDetection.reportvolumes(sp, ps, mito=sp)
     df_filtered = SubPrecisionContactDetection.reportvolumes(qf, ps, mito=sp)
-    confmap = ERGO.tomask(qf) .* (1 .- ps)
+    confmap = Colocalization.tomask(qf) .* (1 .- ps)
     return df_unfiltered, df_filtered, confmap
 end
 
@@ -1781,9 +1782,9 @@ function filter_channels(channel, interact, threshold; weighted=false, intensity
 		@error "Using intensity filter --> UNSTABLE"
 		img = filterintensity(img)
 	end
-	lower = ERGO.aszero(img)
+	lower = Colocalization.aszero(img)
 	higher = copy(lower)
-	IM = ERGO.tomask(img)
+	IM = Colocalization.tomask(img)
 	channel_components = get_components(IM)
 	lengths = Images.component_lengths(channel_components)[2:end]
 	@showprogress for (ith, component_indices) ∈ enumerate(Images.component_indices(channel_components)[2:end])
@@ -1796,9 +1797,9 @@ function filter_channels(channel, interact, threshold; weighted=false, intensity
 		end
 	end
 	@assert sum(lower .* higher) == 0
-	lower_contacts = ERGO.aszero(contacts)
-	higher_contacts = ERGO.aszero(contacts)
-	CM = ERGO.tomask(contacts)
+	lower_contacts = Colocalization.aszero(contacts)
+	higher_contacts = Colocalization.aszero(contacts)
+	CM = Colocalization.tomask(contacts)
 	contacts_components = get_components(CM)
 	@showprogress for (jth, contact_indices) ∈ enumerate(Images.component_indices(contacts_components)[2:end])
 		if any(lower[contact_indices] .> 0)  # Touching vesicle --> v contact

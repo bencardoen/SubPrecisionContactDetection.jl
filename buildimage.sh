@@ -17,6 +17,8 @@
 echo "This script requires root and internet access to github."
 echo "This script assumes /dev/shm is writeable by your account (and exists)"
 set -euo pipefail
+PKG="SubPrecisionContactDetection.jl"
+REPOURL="git@github.com:bencardoen/$PKG.git"
 NOW=$(date +"%m--%d--%Y ~ %I:%M:%S")
 echo "Starting processing at $NOW"
 
@@ -24,12 +26,12 @@ CUR=`pwd`
 TMP=/dev/shm
 cd $TMP
 echo "Cloning repo in $TMP"
-git clone git@github.com:bencardoen/SubPrecisionContactDetection.jl.git
+git clone $REPOURL
 echo "Creating archive"
-zip -rq SubPrecisionContactDetection.jl.zip SubPrecisionContactDetection.jl
-rm -rf $TMP/SubPrecisionContactDetection.jl
+zip -rq "$PKG.zip" $PKG
+rm -rf $TMP/$PKG
 echo "Cleaning cloned repo from $TMP done"
-mv $TMP/SubPrecisionContactDetection.jl.zip $CUR
+mv "$TMP/$PKG.zip" $CUR
 echo "Archive complete"
 cd $CUR
 

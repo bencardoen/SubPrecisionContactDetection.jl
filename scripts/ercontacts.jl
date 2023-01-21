@@ -22,7 +22,6 @@ using ImageFiltering
 using Distributions
 using Base.Threads
 import JLD2
-import ERGO
 
 using LoggingExtras, Dates
 

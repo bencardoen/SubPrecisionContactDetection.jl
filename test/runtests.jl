@@ -15,6 +15,7 @@ import PyCall
 using SubPrecisionContactDetection
 import ERGO
 using Test
+import Colocalization
 using Images, Colors, DataFrames, CSV, Statistics, LinearAlgebra #Imageview crashes in headless
 import Glob
 import ImageMagick
@@ -152,9 +153,9 @@ using Distributions
 		@test size(df)[1] == 8
 		 # ["mitvol", "mitosum", "contactvol", "contactsum", "ncontacts", "mtsurface", "ctsurface"]
 		@test all(df[!, :mtsurface] .== df[!, :ctsurface])
-		@test all(sum(df[!, :mtsurface]) == sum(ERGO.tomask(b1)))
-		@test all(sum(df[!, :ctsurface]) == sum(ERGO.tomask(b2)))
-		df, b1, b2 = walk_cube(a, ERGO.aszero(a), a, 5, 5, 5)
+		@test all(sum(df[!, :mtsurface]) == sum(Colocalization.tomask(b1)))
+		@test all(sum(df[!, :ctsurface]) == sum(Colocalization.tomask(b2)))
+		df, b1, b2 = walk_cube(a, Colocalization.aszero(a), a, 5, 5, 5)
 		@test sum(b2) == 0
 		@test sum(b1) > sum(b2)
 		@test sum(df[!, :ctsurface]) == 0
@@ -163,17 +164,17 @@ using Distributions
 		for _ in 1:100
 			a = abs.(rand(10, 10, 10) .- 0.5)
 			df, b1, b2 = walk_cube(a, a, a, 5, 5, 5)
-			@test sum(df[!, :mitvol]) == sum(ERGO.tomask(a))
+			@test sum(df[!, :mitvol]) == sum(Colocalization.tomask(a))
 			@test isapprox(sum(df[!, :mitosum]), sum(a), atol=0.001)
 			@test size(df)[1] == 8
-			@test all(sum(df[!, :mtsurface]) == sum(ERGO.tomask(b1)))
-			@test all(sum(df[!, :ctsurface]) == sum(ERGO.tomask(b2)))
+			@test all(sum(df[!, :mtsurface]) == sum(Colocalization.tomask(b1)))
+			@test all(sum(df[!, :ctsurface]) == sum(Colocalization.tomask(b2)))
 		end
 		for _ in 1:100
 			a = abs.(rand(10, 10, 10) .- 0.5)
 			df, b1, b2 = walk_cube(a, ERGO.aszero(a), a, 5, 5, 5)
 			@test iszero(b1)
-			@test sum(df[!, :mitvol]) == sum(ERGO.tomask(a))
+			@test sum(df[!, :mitvol]) == sum(Colocalization.tomask(a))
 			@test isapprox(sum(df[!, :mitosum]), sum(a), atol=0.001)
 			@test size(df)[1] == 8
 		end
@@ -289,7 +290,7 @@ using Distributions
 			c = rand(100, 100, 100)
 			channel[channel .> 0.7] .= 0
 			L, H, CL, CH = filter_channels(channel, c, Int(round(rand()*10)), weighted=false)
-			@test sum(L) + sum(H) == sum(ERGO.tomask(channel))
+			@test sum(L) + sum(H) == sum(Colocalization.tomask(channel))
 		end
     end
 
