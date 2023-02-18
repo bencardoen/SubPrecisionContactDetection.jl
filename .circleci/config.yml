@@ -15,7 +15,7 @@ jobs:
        - run: pip3 install scikit-image
        - run: pip3 install kneed
        - run:
-          command: julia -e 'using Pkg; Pkg.add("Coverage"); Pkg.add(url="https://github.com/bencardoen/Colocalization.jl.git"); Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git"); Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git"); Pkg.add(url="git@github.com:bencardoen/SubPrecisionContactDetection.jl.git"); Pkg.build("SubPrecisionContactDetection"); Pkg.test("SubPrecisionContactDetection", coverage=true);'
+          command: julia -e 'using Pkg; Pkg.add("Coverage"); Pkg.add(url="https://github.com/bencardoen/Colocalization.jl.git"); Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git"); Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git"); Pkg.add(url="https://github.com/bencardoen/SubPrecisionContactDetection.jl.git"); Pkg.build("SubPrecisionContactDetection"); Pkg.test("SubPrecisionContactDetection", coverage=true);'
           environment:
             R_HOME : "*"
             PYTHON : "/usr/bin/python3"
