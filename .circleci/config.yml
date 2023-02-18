@@ -7,8 +7,7 @@ jobs:
     docker:
       - image: julia:1.8
     steps:
-      - run: pwd
-      - run: ls -alsht
+       - run: ls -alsht
        - run: pwd
        - run: apt update
        - run: apt install python3 -y
