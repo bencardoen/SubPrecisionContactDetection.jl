@@ -6,8 +6,13 @@ From: fedora:35
 
 %post
     ## Get the tools we'll need
-    dnf install -y wget unzip python3 g++
+    #dnf install -y wget unzip python3 R python3-pip g++ openssh-clients curl
+    dnf install -y wget unzip python3 g++ python3-pip
     dnf groupinstall -y 'Development Tools'
+    pip install kneed
+    pip install scikit-image
+    export PYTHON=`which python3`
+    echo $PYTHON
 
     ## Setup Julia
     export JLMJV=1.8
@@ -49,6 +54,7 @@ From: fedora:35
     export JLV=$JLMJV.5
     export PATH=/opt/julia/julia-$JLV/bin:$PATH
     export JULIA_DEPOT_PATH=/opt/juliadepot
+    export PYTHON="/usr/bin/python3"
 
 %runscript
     echo "Executing runjulia.sh with args $@"
