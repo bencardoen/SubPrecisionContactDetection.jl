@@ -1,15 +1,15 @@
 #!/bin/bash
-#SBATCH --account=<CHANGEME>
+#SBATCH --account=ACCOUNT
 #SBATCH --mem=120G
 #SBATCH --cpus-per-task=6
 #SBATCH --time=18:00:00
-#SBATCH --mail-user=<CHANGEME>
+#SBATCH --mail-user=EMAIL
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-type=REQUEUE
 #SBATCH --mail-type=ALL
-#SBATCH --array=1-X  # change to nr of cells
+#SBATCH --array=1-CELLS  # change to nr of cells
 
 ## Array batch script for use on clusters.
 
@@ -35,11 +35,12 @@ NOW=$(date +"%m_%d_%Y_HH%I_%M")
 echo "Starting setup at $NOW"
 
 ## Ensure the singularity image is in place
-cp "<location_of_image.sif>" "$SLURM_TMPDIR/mcsdetect.sif"
+#cp "<location_of_image.sif>" "$SLURM_TMPDIR/mcsdetect.sif"
+cp mcsdetect.sif $SLURM_TMPDIR/mcsdetect.sif
 
 echo "Starting task $SLURM_ARRAY_TASK_ID"
-IDIR=$(sed -n "${SLURM_ARRAY_TASK_ID}p" inlist.txt)
-ODIR=$(sed -n "${SLURM_ARRAY_TASK_ID}p" outlist.txt)
+IDIR=$(sed -n "${SLURM_ARRAY_TASK_ID}p" in.txt)
+ODIR=$(sed -n "${SLURM_ARRAY_TASK_ID}p" out.txt)
 
 # Test alphas
 IMAGE="$SLURM_TMPDIR/mcsdetect.sif"

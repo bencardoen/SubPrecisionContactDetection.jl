@@ -65,7 +65,7 @@ This will log you in to a compute node with 16 cores, 64GB, for 3 hours.
 ### Copy recipe
 DataCurator needs a recipe to verify, this recipe can be found [online](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/recipe.toml).
 ```bash
-wget https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/recipe.toml
+wget https://raw.githubusercontent.com/bencardoen/SubPrecisionContactDetection.jl/main/recipe.toml
 ```
 For your convenience this is what it should look like this:
 ```toml
@@ -145,3 +145,45 @@ This will do the following:
 - Build lists for batch processing of all valid files in `in.txt` and `out.txt`
 - Compute intensity statistics of all valid data in `channels.csv`
 - Compute object statistics of all valid data in `objects.csv`
+
+## Schedule the dataset
+In your current directory you should now have 2 files
+- in.txt
+- out.txt
+
+We will ask the cluster to process all cells listed in `in.txt`, with output to be stored in `out.txt`.
+
+Let's get a prepared script to do just that
+```bash
+wget https://raw.githubusercontent.com/bencardoen/SubPrecisionContactDetection.jl/main/hpcscripts/arraysbatch.sh
+```
+Make it executable
+```
+chmod u+x arraysbatch.ch
+
+```
+You need to change this script to match your account in **3** places:
+- EMAIL
+- ACCOUNT
+- Nr of cells
+```
+export MYEMAIL="you@ubc.ca"
+export MYACCOUNT="rrg-mypi"
+NCELLS=`wc -l in.txt | awk '{print $1}'`
+sed -i "s|CELLS|${NCELLS}|" arraysbatch.sh
+sed -i "s|EMAIL|${MYEMAIL}|" arraysbatch.sh
+sed -i "s|MYACCOUNT|${MYACCOUNT}|" arraysbatch.sh
+```
+Next, we need to make sure the MCS detect singularity image is in place
+```bash
+singularity pull --arch amd64 mcsdetect.sif library://bcvcsert/subprecisioncontactdetection/mcsdetect_f35_j1.7:j1.8
+```
+This should download the file **mcsdetect.sif** in your current directory.
+
+Now it's time to submit the job
+```bash
+sbatch arraysbatch.sh
+```
+You will get email updates on job progression, and in the current direcotry `.out` files will be saved that contain logs of all the jobs.
+
+Output will be saved in $OUTPUT.
