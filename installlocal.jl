@@ -13,6 +13,7 @@
 # Copyright 2021-2022, Ben Cardoen
 using Pkg
 
+Pkg.add(url="https://github.com/bencardoen/Colocalization.jl.git")
 Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git")
 Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git")
 Pkg.build("SubPrecisionContactDetection")
