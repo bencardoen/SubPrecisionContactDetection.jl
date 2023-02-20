@@ -194,6 +194,7 @@ sbatch hpcscripts/arraysbatch.sh
 ```
 Please edit and revise before you submit, e.g. your email and cluster account need to change at a minimum.
 
+A detailed walkthrough can be found [here](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/cluster.md)
 
 <a name="cite"></a>
 ### Cite

@@ -63,7 +63,11 @@ salloc --mem=64GB --account=$MYGROUP --cpus-per-task=16 --time=3:00:00
 ```
 This will log you in to a compute node with 16 cores, 64GB, for 3 hours.
 ### Copy recipe
-DataCurator needs a recipe to verify, this recipe can be found online, for your convenience this is what it should look like:
+DataCurator needs a recipe to verify, this recipe can be found [online](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/recipe.toml).
+```bash
+wget https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/recipe.toml
+```
+For your convenience this is what it should look like this:
 ```toml
 [global]
 # act_on_success=false
