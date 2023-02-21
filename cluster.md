@@ -16,20 +16,69 @@
 -->
 
 # MCSDetect on large datasets on clusters
-A helpful guide to allow you to run MCSDetect on 100s of cells at the same time.
+A helpful step-by-step guide to allow you to run MCSDetect on 100s of cells at the same time.
+
+## Table of Contents
+- [0 Requirements ](#req)
+- [1 Login to cluster ](#log)
+- [2 Validate dataset ](#val)
+- [3 Schedule dataset ](#sched)
+- [4 PostProcess results ](#post)
+- [5 Export output ](#export)
+- [6 Troubleshooting ](#issues)
+
+<a name="req"></a>
+## 0. What you will need
+- Access to the (cluster)[https://ccdb.computecanada.ca/security/login]
+- [SSH setup](https://docs.alliancecan.ca/wiki/SSH)
+- Data is stored on the cluster in the following format (do NOT use spaces in naming please)
+```
+- Topdirectory
+--- Replicate number (directory named 1, 2, ...)
+    --- Treatment (directory named e.g. "GP78+", "HT-1080", ...)
+        --- SeriesXYZ (directory that holds the image data for 1 (segmented deconvolved cell), where XYZ is an integer, e.g. "Series123")
+            --- channel01.tif (3D 16bit image file containing mitochondria channel, name ending with "1.tif")
+            --- channel02.tif (ER channel, ending with "2.tif")
+```
+
+Scheduling large (Terabytes) data is time consuming, and you do not want to waste your own time finding out some of your data isn't properly organized.
+We will [validate](#val) your dataset to ensure no errors lead to wasted time.
 
 In this guide we will refer to your username on the cluster as `$USER'. 
 
-In Linux command line, $VAR references a variable, e.g. $HOME is your home directory, typicall `/home/$USER`.
+In Linux command line, $VAR references a variable, e.g. $HOME is your home directory, typically `/home/$USER`.
 
-
-## Login
+<a name="log"></a>
+## 1. Login
 ```bash
 ssh $USER@cedar.computecanada.ca
 ```
 
-## Validate data
-### Create a new clean working directory
+**OPTIONAL** (but HIGHLY recommended)
+
+Once login is succesful, we will start a `tmux` session to ensure any network interruptions do not break your workflow
+```bash
+tmux
+```
+
+If you want to reconnect to an existing session:
+```bash
+tmux -t 0  # to reconnect to session 0
+```
+
+If you want to view which sessions are active
+```bash
+tmux list
+```
+
+Note that there are multiple login servers, if you can't find your session, ensure you login to the right now (cedar1 vs cedar5).
+```bash
+ssh $USER@cedar5.computecanada.ca 
+```
+
+<a name="val"></a>
+## 2. Validate data
+### 2.1 Create a new clean working directory
 This directory will hold intermediate files needed during processing.
 ```bash
 export EXPERIMENT="/scratch/$USER/myexperiment"
@@ -37,7 +86,7 @@ mkdir -p $EXPERIMENT
 cd $EXPERIMENT
 ```
 
-### Get DataCurator
+### 2.2 Get DataCurator
 For the next step we'll need to download DataCurator to validate your dataset layout.
 You can obtain it [here](https://github.com/bencardoen/DataCurator.jl), but it will be present on Cedar.
 ```bash
@@ -55,62 +104,21 @@ Make sure it's executable
 ```bash
 chmod u+x datacurator_latest.sif
 ```
-### Acquire computational resource
+### 2.3 Acquire computational resource
 You'll need your group id, which is of the form `rrg-yourpi` or `def-yourpi`
 ```bash
 export MYGROUP="rrg-mypi" # Replace this with something valid for you
 salloc --mem=64GB --account=$MYGROUP --cpus-per-task=16 --time=3:00:00 
 ```
 This will log you in to a compute node with 16 cores, 64GB, for 3 hours.
-### Copy recipe
+### 2.4 Copy recipe
 DataCurator needs a recipe to verify, this recipe can be found [online](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/recipe.toml).
 ```bash
 wget https://raw.githubusercontent.com/bencardoen/SubPrecisionContactDetection.jl/main/recipe.toml
 ```
-For your convenience this is what it should look like this:
-```toml
-[global]
-# act_on_success=false
-inputdirectory = "INPUT"
-hierarchical=true
-traversal="topdown"
-parallel=true
-regex=true
-common_actions = {do_on_invalid=[["all", "show_warning", ["log_to_file", "errors.txt"]]]}
-common_conditions = {is_3d_channel=[["all", "is_tif_file", "is_3d_img", "filename_ends_with_integer"]], dir_only=[["all", "isdir", ["not", "is_hidden"]]]}
-file_lists=[{name="in", aggregator=[["filepath","sort","unique","shared_list_to_file"]]},
-              {name="out", aggregator=[[["change_path", "OUTPUT"],"filepath","sort","unique","shared_list_to_file"]]},
-              {name="objects", aggregator=[["describe_objects","concat_to_table"]]},
-              {name="channels", aggregator=[["describe_image","concat_to_table"]]},]
-[any]
-conditions=["never"]
-actions=["do_on_invalid"]
 
-[level_1]
-conditions=["dir_only"]
-actions=["do_on_invalid"]
 
-[level_2]
-all=true
-conditions=["dir_only", "ends_with_integer", ["startswith", "Replicate"]]
-actions=["do_on_invalid"]
-
-[level_3]
-conditions=["dir_only"]
-actions=["do_on_invalid"]
-
-[level_4]
-all=true
-conditions=["dir_only", ["startswith", "Serie"], "ends_with_integer"]
-actions=["do_on_invalid"]
-
-[level_5]
-conditions=["is_3d_channel"]
-actions=["do_on_invalid"]
-counter_actions=[["->", ["in","out","objects","channels"]]]
-```
-
-### Update recipe
+### 2.5 Update recipe
 We need to update this template with the data locations:
 Let us assume the data you want to process is located in
 ```bash
@@ -132,8 +140,12 @@ inputdirectory = "/project/myresearchgroup/mydata"
 # will be
               {name="out", aggregator=[[["change_path", "/project/myresearchgroup/myoutput"],"filepath","sort","unique","shared_list_to_file"]]},
 ```
+**NOTE** If your channels are 0.tif an 1.tif, rather than 1.tif and 2.tif, please edit the template to reflect this.
 
-### Run DataCurator
+### 2.6 Configure Slack/Owncloud uploading [Optional]
+See (DataCurator documentation)[https://github.com/bencardoen/DataCurator.jl/blob/main/docs/src/remote.md]
+
+### 2.7 Validate your data with DataCurator
 ```bash
 module load singularity
 export SINGULARITY_BINDPATH="/scratch/bcardoen,$SLURM_TMPDIR"  
@@ -146,13 +158,15 @@ This will do the following:
 - Compute intensity statistics of all valid data in `channels.csv`
 - Compute object statistics of all valid data in `objects.csv`
 
-## Schedule the dataset
+<a name="sched"></a>
+## 3 Schedule the dataset
 In your current directory you should now have 2 files
 - in.txt
 - out.txt
 
 We will ask the cluster to process all cells listed in `in.txt`, with output to be stored in `out.txt`.
 
+### 3.1 Create a scheduling task
 Let's get a prepared script to do just that
 ```bash
 wget https://raw.githubusercontent.com/bencardoen/SubPrecisionContactDetection.jl/main/hpcscripts/arraysbatch.sh
@@ -162,24 +176,29 @@ Make it executable
 chmod u+x arraysbatch.ch
 
 ```
+### 3.2 Update with your information (email, group)
 You need to change this script to match your account in **3** places:
 - EMAIL
 - ACCOUNT
 - Nr of cells
-```
+```bash
 export MYEMAIL="you@ubc.ca"
 export MYACCOUNT="rrg-mypi"
 NCELLS=`wc -l in.txt | awk '{print $1}'`
 sed -i "s|CELLS|${NCELLS}|" arraysbatch.sh
 sed -i "s|EMAIL|${MYEMAIL}|" arraysbatch.sh
 sed -i "s|MYACCOUNT|${MYACCOUNT}|" arraysbatch.sh
+sed -i "s|[1,2].tif|[0.1].tif|" arraysbatch.sh ## Optional if you need to change channels
 ```
+
+### 3.3 Download MCSDetect
 Next, we need to make sure the MCS detect singularity image is in place
 ```bash
 singularity pull --arch amd64 mcsdetect.sif library://bcvcsert/subprecisioncontactdetection/mcsdetect_f35_j1.7:j1.8
 ```
 This should download the file **mcsdetect.sif** in your current directory.
 
+### 3.4
 Now it's time to submit the job
 ```bash
 sbatch arraysbatch.sh
@@ -187,3 +206,22 @@ sbatch arraysbatch.sh
 You will get email updates on job progression, and in the current direcotry `.out` files will be saved that contain logs of all the jobs.
 
 Output will be saved in $OUTPUT.
+
+### 3.5 View progress
+```bash
+squeue -u $USER
+```
+Will show you the status of your current running jobs.
+
+<a name="post"></a>
+## 4 Postprocessing and collecting output
+
+### 4.2 Postprocessing
+
+<a name="export"></a>
+## 5 Export your results
+
+<a name="issues"></a>
+## 6 Troubleshooting
+
+If you run into problems or something is not clear, please create a [new issue](https://github.com/bencardoen/SubPrecisionContactDetection.jl/issues/new/choose)
