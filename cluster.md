@@ -22,6 +22,9 @@ In this guide we will refer to your username on the cluster as `$USER'.
 
 In Linux command line, $VAR references a variable, e.g. $HOME is your home directory, typicall `/home/$USER`.
 
+**Note**
+- Each of the below command snippets is to be executed line by line. 
+- 
 
 ## Login
 ```bash
