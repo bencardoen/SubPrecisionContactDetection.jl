@@ -137,6 +137,11 @@ Make sure it's executable
 ```bash
 chmod u+x datacurator_latest.sif
 ```
+Alternatively, you can download the latest version
+```bash
+module load singularity
+singularity pull --arch amd64 library://bcvcsert/datacurator/datacurator:latest
+```
 ### 2.3 Acquire computational resource
 You'll need your group id, which is of the form `rrg-yourpi` or `def-yourpi`
 ```bash
