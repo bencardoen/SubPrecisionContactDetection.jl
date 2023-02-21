@@ -123,25 +123,11 @@ cd $EXPERIMENT
 
 ### 2.2 Get DataCurator
 For the next step we'll need to download DataCurator to validate your dataset layout.
-You can obtain it [here](https://github.com/bencardoen/DataCurator.jl), but it will be present on Cedar.
-```bash
-# Let's copy the executable image to our current location  "."
-cp /project/rrg-hamarneh/singularity_images/datacurator_latest.sif . 
-# Make sure it's here
-ls -lahst *.sif
-```
-Should show something like this
-```bash
-2.3G -rwxr-x--- 1 bcardoen rrg-hamarneh 2.5G Feb 19 07:27 datacurator_latest.sif
-```
-Make sure it's executable
-```bash
-chmod u+x datacurator_latest.sif
-```
-Alternatively, you can download the latest version
+You can obtain it [here](https://github.com/bencardoen/DataCurator.jl), but an optimized version is ready for download too:
 ```bash
 module load singularity
 singularity pull --arch amd64 library://bcvcsert/datacurator/datacurator:latest
+chmod u+x datacurator_latest.sif
 ```
 ### 2.3 Acquire computational resource
 You'll need your group id, which is of the form `rrg-yourpi` or `def-yourpi`
@@ -240,6 +226,25 @@ This will do the following:
 
 Wait for it to complete (depending on your data size 1-20 minutes).
 
+The result when it finished will look somewhat like this
+```bash
+[ Info: 2023-02-21 07:11:27 DataCurator.jl:2271: Writing to channels.csv
+[ Info: 2023-02-21 07:11:27 DataCurator.jl:2101: Finished processing dataset located at /home/bcardoen/scratch/MERCS/MS_01_19_2023_3D_STED_SYNJ_FLAG_568_MITO_532_ER_488
+[ Info: 2023-02-21 07:11:27 DataCurator.jl:2105: Dataset processing completed without early exit
+[ Info: 2023-02-21 07:11:27 curator.jl:168: Writing counters to counters.csv
+[ Info: 2023-02-21 07:11:27 curator.jl:180: Complete with exit status proceed
+[bcardoen@cdr568 myexperiment]$ 
+```
+Let's review what DataCurator computed for us:
+```bash
+ls -t .
+```
+Should give
+```
+[bcardoen@cdr568 myexperiment]$ ls -t .
+channels.csv  counters.csv  in.txt  objects.csv  out.txt  errors.txt  recipe.toml  datacurator_latest.sif
+```
+
 <a name="sched"></a>
 ## 3 Schedule the dataset
 In your current directory you should now have 2 files
@@ -265,12 +270,12 @@ You need to change this script to match your account in **3** places:
 - Nr of cells
 ```bash
 export MYEMAIL="you@ubc.ca"
-export MYACCOUNT="rrg-mypi"
+export MYGROUP="rrg-mypi"
 NCELLS=`wc -l in.txt | awk '{print $1}'`
 sed -i "s|CELLS|${NCELLS}|" arraysbatch.sh
 sed -i "s|EMAIL|${MYEMAIL}|" arraysbatch.sh
-sed -i "s|MYACCOUNT|${MYACCOUNT}|" arraysbatch.sh
-sed -i "s|[1,2].tif|[0.1].tif|" arraysbatch.sh ## Optional if you need to change channels
+sed -i "s|ACCOUNT|${MYGROUP}|" arraysbatch.sh
+sed -i "s|1,2|0,1|" arraysbatch.sh ## Optional if you need to change channels
 ```
 
 ### 3.3 Download MCSDetect
@@ -279,7 +284,17 @@ Next, we need to make sure the MCS detect singularity image is in place
 singularity pull --arch amd64 mcsdetect.sif library://bcvcsert/subprecisioncontactdetection/mcsdetect_f35_j1.7:j1.8
 ```
 This should download the file **mcsdetect.sif** in your current directory.
-
+```bash
+ls -t .
+```
+shows
+```bash
+mcsdetect.sif  channels.csv  counters.csv  in.txt  objects.csv  out.txt  errors.txt  recipe.toml  datacurator_latest.sif
+```
+Set it executable
+```bash
+chmod u+x mcsdetect.sif
+```
 ### 3.4
 Now it's time to submit the job
 ```bash
