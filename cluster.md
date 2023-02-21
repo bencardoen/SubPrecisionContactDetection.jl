@@ -18,6 +18,8 @@
 # MCSDetect on large datasets on clusters
 A helpful step-by-step guide to allow you to run MCSDetect on 100s of cells at the same time.
 
+**NOTE** The below steps are very detailed, but in practice they take ~ 5 minutes or less to execute (minus actual compute time).
+
 ## Table of Contents
 - [0 Requirements ](#req)
 - [1 Login to cluster ](#log)
