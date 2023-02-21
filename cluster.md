@@ -325,6 +325,28 @@ Will show you the status of your current running jobs, for example:
 ```
 This shows on the first line the interactive job we're using for validation and the current session, the second line is the 58 cells being processed.
 
+After some time you'll see in your experiment directory the output and logs of the individual jobs. You usually don't need them, but if something goes wrong they can be invaluable
+```bash
+ls -t .
+```
+shows
+```bash
+[bcardoen@cdr568 myexperiment]$ ls
+arraysbatch.sh  counters.csv            errors.txt  log_02_21_2023_HH08_13.txt  log_02_21_2023_HH08_28.txt  log_02_21_2023_HH08_30.txt  objects.csv  recipe.toml           slurm-60568508_2.out  slurm-60568508_4.out
+channels.csv    datacurator_latest.sif  in.txt      log_02_21_2023_HH08_27.txt  log_02_21_2023_HH08_29.txt  mcsdetect.sif               out.txt      slurm-60568508_1.out  slurm-60568508_3.out  slurm-60568508_5.out
+```
+Logs are saved in format `log_MM_DD_YYYY_HH_MM.txt` and `$JOBID_CELLID.out`.
+For example, the 5th cell is log file `slurm-60568508_5.out`.
+
+You can open these while they are being processed to view progress:
+```
+tail -n 10 slurm-60568508_5.out
+```
+
+If something goes wrong you can cancel jobs:
+```bash
+scancel JOBID
+```
 <a name="post"></a>
 ## 4 Post
 
