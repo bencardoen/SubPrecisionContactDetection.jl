@@ -306,6 +306,13 @@ I recommend using [Globus](https://globus.computecanada.ca/) to export results e
 - Execute
 You'll get an email if the transfer completed. 
 
+### 5.1 [Optional] Compress the results
+See [wiki](https://docs.alliancecan.ca/wiki/Archiving_and_compressing_files)
+
+### 5.2 [Optional] Selectively extract results
+You can use [DataCurator](https://github.com/bencardoen/DataCurator.jl) to write a recipe that, for example, only collects CSV files of the contacts, and sends them to OwnCloud. Or compute statistics of the contacts, mitochondria, etc, etc. 
+Examples are in DC documentation, and execution is the same as in step 3.
+
 <a name="issues"></a>
 ## 6 Troubleshooting
 
