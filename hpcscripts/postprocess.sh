@@ -44,6 +44,7 @@ IMAGE="$SLURM_TMPDIR/mcsdetect.sif"
 LSRC="/opt/SubPrecisionContactDetection.jl"
 
 module load singularity
+export SINGULARITY_BINDPATH="/scratch/$USER,$SLURM_TMPDIR"
 singularity exec $IMAGE julia --project=$LSRC --sysimage=$LSRC/sys_img.so $LSRC/scripts/run_cube_sampling_on_dataset.jl  --inpath $IDIR --outpath  $ODIR 2>&1 | tee -a log_$NOW.txt
 
 NOW=$(date +"%m_%d_%Y_HH%I_%M")
