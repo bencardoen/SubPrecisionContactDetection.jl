@@ -123,7 +123,6 @@ cd $EXPERIMENT
 For the next step we'll need to download DataCurator to validate your dataset layout.
 You can obtain it [here](https://github.com/bencardoen/DataCurator.jl), but it will be present on Cedar.
 ```bash
-module load singularity
 # Let's copy the executable image to our current location  "."
 cp /project/rrg-hamarneh/singularity_images/datacurator_latest.sif . 
 # Make sure it's here
