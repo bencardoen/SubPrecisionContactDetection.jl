@@ -53,6 +53,38 @@ In Linux command line, $VAR references a variable, e.g. $HOME is your home direc
 ```bash
 ssh $USER@cedar.computecanada.ca
 ```
+This should result in something like:
+```
+[bcardoen@cedar1 ~]$ 
+```
+(bcardoen is my user name, '~' means you're in your home directory
+
+### 1.1 Viewing variable names
+```bash
+echo $USER
+echo $HOME
+```
+This will print something like
+```
+[bcardoen@cedar1 ~]$ echo $USER
+bcardoen
+[bcardoen@cedar1 ~]$ echo $HOME
+/home/bcardoen
+[bcardoen@cedar1 ~]$ 
+```
+
+We will instruct you to set variables, this is easily done:
+```bash
+export MYVAR="somevalue"
+```
+Let's test this, it should show:
+```
+[bcardoen@cedar1 ~]$ export MYVAR="somevalue"
+[bcardoen@cedar1 ~]$ echo $MYVAR
+somevalue
+```
+
+Great, now let's move on
 
 **OPTIONAL** (but HIGHLY recommended)
 
@@ -80,6 +112,7 @@ ssh $USER@cedar5.computecanada.ca
 ## 2. Validate data
 ### 2.1 Create a new clean working directory
 This directory will hold intermediate files needed during processing.
+
 ```bash
 export EXPERIMENT="/scratch/$USER/myexperiment"
 mkdir -p $EXPERIMENT
