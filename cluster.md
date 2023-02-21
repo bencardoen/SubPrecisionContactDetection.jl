@@ -29,7 +29,7 @@ A helpful step-by-step guide to allow you to run MCSDetect on 100s of cells at t
 
 <a name="req"></a>
 ## 0. What you will need
-- Access to the (cluster)[https://ccdb.computecanada.ca/security/login]
+- Access to the [cluster](https://ccdb.computecanada.ca/security/login)
 - [SSH setup](https://docs.alliancecan.ca/wiki/SSH)
 - Data is stored on the cluster in the following format (do NOT use spaces in naming please)
 ```
@@ -178,10 +178,12 @@ inputdirectory = "/project/myresearchgroup/mydata"
 # will be
               {name="out", aggregator=[[["change_path", "/project/myresearchgroup/myoutput"],"filepath","sort","unique","shared_list_to_file"]]},
 ```
-**NOTE** If your channels are 0.tif an 1.tif, rather than 1.tif and 2.tif, please edit the template to reflect this.
-
+**NOTE** If your channels are 0.tif an 1.tif, rather than 1.tif and 2.tif, please edit the template to reflect this:
+```
+sed -i "s|[1,2].tif|[0.1].tif|" recipe.toml ## Optional if you need to change channels
+```
 ### 2.6 Configure Slack/Owncloud uploading [Optional]
-See (DataCurator documentation)[https://github.com/bencardoen/DataCurator.jl/blob/main/docs/src/remote.md]
+See [DataCurator documentation](https://github.com/bencardoen/DataCurator.jl/blob/main/docs/src/remote.md)
 
 ### 2.7 Validate your data with DataCurator
 ```bash
