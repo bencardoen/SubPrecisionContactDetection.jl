@@ -50,7 +50,6 @@ In Linux command line, $VAR references a variable, e.g. $HOME is your home direc
 
 <a name="log"></a>
 ## 1. Login
-
 ```bash
 ssh $USER@cedar.computecanada.ca
 ```
@@ -256,12 +255,56 @@ squeue -u $USER
 Will show you the status of your current running jobs.
 
 <a name="post"></a>
-## 4 Postprocessing and collecting output
+## 4 Post
 
-### 4.2 Postprocessing
+You can now run the postprocessing on the output, see [instructions](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/scripts/run_cube_sampling_on_dataset.jl).
+
+You can do this with the singularity image (mcsdetect.sif).
+Let's create a new directory where to store the postprocessing:
+```bash
+export POSTDATA="/scratch/$USER/post"
+mkdir -p $POSTDATA
+```
+We'll need the data output directory you used earlier:
+```
+export OUTPUT="/project/myresearchgroup/myoutput"
+```
+Navigate to the directory you created earlier
+```bash
+cd $MYEXPERIMENT
+```
+**make sure the mcsdetect.sif is in this directory**
+
+Download a script for you to do the postprocessing
+```bash
+wget https://raw.githubusercontent.com/bencardoen/SubPrecisionContactDetection.jl/main/hpcscripts/postprocess.sh
+chmod u+x postprocess.sh
+```
+Update the script with your variables:
+**Please make sure the variables are correctly set as done above**
+```
+sed -i "s|EMAIL|${MYEMAIL}|" postprocess.sh        # Your email
+sed -i "s|MYACCOUNT|${MYACCOUNT}|" postprocess.sh  # Your cluster account
+sed -i "s|POSTOUTPUT|${POSTDATA}|" postprocess.sh  # The location where you want the postprocessed results
+sed -i "s|INPUT|${OUTPUT}|" postprocess.sh         # The computed contacts location, previously saved in $OUTPUT
+```
+Then submit
+```bash
+sbatch postprocess.sh
+```
+**If you want to change the parameters, please edit the script (using nano, vim, ..)**
+
+You'll get an email when your results are done.
 
 <a name="export"></a>
 ## 5 Export your results
+I recommend using [Globus](https://globus.computecanada.ca/) to export results efficiently.
+
+- Log in to [Globus](https://globus.computecanada.ca/) using your cluster ID
+- Select `$POSTDATA` as the source for the transfer
+- Select a directory on your target computer as the target
+- Execute
+You'll get an email if the transfer completed. 
 
 <a name="issues"></a>
 ## 6 Troubleshooting
