@@ -195,6 +195,7 @@ export JULIA_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 This will do the following:
 - Build lists for batch processing of all valid files in `in.txt` and `out.txt`
+- Report any data that isn't matching the recipe in `errors.txt`
 - Compute intensity statistics of all valid data in `channels.csv`
 - Compute object statistics of all valid data in `objects.csv`
 
