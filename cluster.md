@@ -150,24 +150,62 @@ export MYGROUP="rrg-mypi" # Replace this with something valid for you
 salloc --mem=64GB --account=$MYGROUP --cpus-per-task=16 --time=3:00:00 
 ```
 This will log you in to a compute node with 16 cores, 64GB, for 3 hours.
+
+You should see something like this:
+```bash
+[bcardoen@cedar5 myexperiment]$ salloc --mem=62G --account=$MYGROUP --cpus-per-task=16 --time=3:00:00 
+salloc: Pending job allocation 60557708
+salloc: job 60557708 queued and waiting for resources
+salloc: job 60557708 has been allocated resources
+salloc: Granted job allocation 60557708
+salloc: Waiting for resource configuration
+salloc: Nodes cdr568 are ready for job
+[bcardoen@cdr568 myexperiment]$ 
+```
+Note how the prompt changed from `bcardoen@cedar5` to `bcardoen@cdr568`, you are now no longer in a login node, but a compute node, where you have the resources (62GB RAM and 16 cores) to use.
+
 ### 2.4 Copy recipe
-DataCurator needs a recipe to verify, this recipe can be found [online](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/recipe.toml).
+DataCurator needs a **recipe** to verify, this recipe can be found [online](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/recipe.toml).
+Let's download it to our **experiment** directory
 ```bash
 wget https://raw.githubusercontent.com/bencardoen/SubPrecisionContactDetection.jl/main/recipe.toml
 ```
+This will show something like:
+```bash
+[bcardoen@cdr568 myexperiment]$ wget https://raw.githubusercontent.com/bencardoen/SubPrecisionContactDetection.jl/main/recipe.toml
+--2023-02-21 06:32:40--  https://raw.githubusercontent.com/bencardoen/SubPrecisionContactDetection.jl/main/recipe.toml
+Resolving raw.githubusercontent.com... 185.199.109.133, 185.199.108.133, 185.199.110.133, ...
+Connecting to raw.githubusercontent.com|185.199.109.133|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1308 (1.3K) [text/plain]
+Saving to: ‘recipe.toml’
 
+recipe.toml                                                 100%[=========================================================================================================================================>]   1.28K  --.-KB/s    in 0s      
+
+2023-02-21 06:32:40 (63.9 MB/s) - ‘recipe.toml’ saved [1308/1308]
+```
+Let's check what we have in our experiment directory:
+```bash
+ls -t . # List all files in our current (.) directory
+```
+
+Should show:
+```bash
+[bcardoen@cdr568 myexperiment]$ ls -t .
+recipe.toml  datacurator_latest.sif
+```
 
 ### 2.5 Update recipe
-We need to update this template with the data locations:
+We need to **update** this template with the data locations:
 Let us assume the data you want to process is located in
 ```bash
 export DATA="/project/myresearchgroup/mydata"
 export OUTPUT="/project/myresearchgroup/myoutput"
 ```
-You can either do this with an editor, or with these commands
+You can either do this with an editor, or with these commands:
 ```bash
-sed -i "s|INPUT|${DATA}|" recipe.toml # Set the correct data directory
-sed -i "s|OUTPUT|${OUTPUT}|" recipe.toml
+sed -i "s|INPUT|${DATA}|" recipe.toml      # Replace the string 'INPUT' with the correct data directory
+sed -i "s|OUTPUT|${OUTPUT}|" recipe.toml   # Replace the string 'OUTPUT' with the output directory
 ```
 If you now check the recipe these 2 lines should be changed to your data
 ```bash
@@ -181,7 +219,7 @@ inputdirectory = "/project/myresearchgroup/mydata"
 ```
 **NOTE** If your channels are 0.tif an 1.tif, rather than 1.tif and 2.tif, please edit the template to reflect this:
 ```
-sed -i "s|[1,2].tif|[0.1].tif|" recipe.toml ## Optional if you need to change channels
+sed -i "s|1,2|0,1|" recipe.toml ## Optional if you need to change channels
 ```
 ### 2.6 Configure Slack/Owncloud uploading [Optional]
 See [DataCurator documentation](https://github.com/bencardoen/DataCurator.jl/blob/main/docs/src/remote.md)
