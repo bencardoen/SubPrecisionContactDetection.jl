@@ -300,15 +300,30 @@ Now it's time to submit the job
 ```bash
 sbatch arraysbatch.sh
 ```
+This will be the result
+```bash
+[bcardoen@cdr568 myexperiment]$ sbatch arraysbatch.sh 
+Submitted batch job 60568508
+```
 You will get email updates on job progression, and in the current direcotry `.out` files will be saved that contain logs of all the jobs.
+For example, for this job the email had the following subject:
+```
+Slurm Array Summary Job_id=60568508_* (60568508) Name=arraysbatch.sh Began
+```
 
-Output will be saved in $OUTPUT.
+Output will be saved in directory $OUTPUT.
 
 ### 3.5 View progress
 ```bash
 squeue -u $USER
 ```
-Will show you the status of your current running jobs.
+Will show you the status of your current running jobs, for example:
+```bash
+ JOBID     USER      ACCOUNT           NAME  ST  TIME_LEFT NODES CPUS TRES_PER_N MIN_MEM NODELIST (REASON) 
+60566608 bcardoen rrg-hamarneh    interactive   R    2:39:41     1   16        N/A     62G cdr568 (None) 
+60568508_[2-58] bcardoen rrg-hamarneh arraysbatch.sh  PD   18:00:00     1    6        N/A    116G  (Priority) 
+```
+This shows on the first line the interactive job we're using for validation and the current session, the second line is the 58 cells being processed.
 
 <a name="post"></a>
 ## 4 Post
