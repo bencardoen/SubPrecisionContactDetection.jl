@@ -217,7 +217,7 @@ inputdirectory = "/project/myresearchgroup/mydata"
 # will be
               {name="out", aggregator=[[["change_path", "/project/myresearchgroup/myoutput"],"filepath","sort","unique","shared_list_to_file"]]},
 ```
-**NOTE** If your channels are 0.tif an 1.tif, rather than 1.tif and 2.tif, please edit the template to reflect this:
+**NOTE** If your channels are 0.tif and 1.tif, rather than 1.tif and 2.tif, please edit the template to reflect this:
 ```
 sed -i "s|1,2|0,1|" recipe.toml ## Optional if you need to change channels
 ```
@@ -227,9 +227,9 @@ See [DataCurator documentation](https://github.com/bencardoen/DataCurator.jl/blo
 ### 2.7 Validate your data with DataCurator
 ```bash
 module load singularity
-export SINGULARITY_BINDPATH="/scratch/bcardoen,$SLURM_TMPDIR"  
-export JULIA_NUM_THREADS=$SLURM_CPUS_PER_TASK
-./datacurator_latest.sif -r recipe.toml
+export SINGULARITY_BINDPATH="/scratch/bcardoen,$SLURM_TMPDIR" # Make sure DC can access the data  
+export JULIA_NUM_THREADS=$SLURM_CPUS_PER_TASK                 # Tell DC to use all 16 cores
+./datacurator_latest.sif -r recipe.toml                       # Execute the recipe
 ```
 
 This will do the following:
@@ -237,6 +237,8 @@ This will do the following:
 - Report any data that isn't matching the recipe in `errors.txt`
 - Compute intensity statistics of all valid data in `channels.csv`
 - Compute object statistics of all valid data in `objects.csv`
+
+Wait for it to complete (depending on your data size 1-20 minutes).
 
 <a name="sched"></a>
 ## 3 Schedule the dataset
