@@ -109,11 +109,9 @@ version = "0.7.1"
 
 [[deps.Colocalization]]
 deps = ["ArgParse", "CSV", "DataFrames", "Dates", "Distributions", "ImageFiltering", "ImageMorphology", "Images", "Logging", "LoggingExtras", "ProgressMeter", "Random", "Statistics", "Test"]
-git-tree-sha1 = "54db72c4d30f366b507d97266e360d57414d53d0"
-repo-rev = "main"
-repo-url = "https://github.com/bencardoen/Colocalization.jl.git"
+git-tree-sha1 = "540a25738c45cdc2a9bf61b6528563682bf529d4"
 uuid = "5deedb61-f8ac-43ca-82f0-d70c51e04289"
-version = "0.1.0"
+version = "0.1.1"
 
 [[deps.ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]

@@ -15,8 +15,8 @@
 # Copyright 2021-2022, Ben Cardoen
 
 export LOCALPKG=/opt/DataCurator.jl
-export JLMJV=1.7
-export JLV=$JLMJV.1
+export JLMJV=1.8
+export JLV=$JLMJV.5
 export PATH=/opt/julia/julia-$JLV/bin:$PATH
 export JULIA_DEPOT_PATH=/opt/juliadepot
 
