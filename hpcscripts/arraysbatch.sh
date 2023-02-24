@@ -48,7 +48,7 @@ IMAGE="$SLURM_TMPDIR/mcsdetect.sif"
 P="/opt/SubPrecisionContactDetection.jl"
 
 
-export SINGULARITY_BINDPATH="/scratch/bcardoen,$SLURM_TMPDIR"
+export SINGULARITY_BINDPATH="/scratch/$USER,$SLURM_TMPDIR"
 export SINGULARITY_CACHEDIR="$STMP/singularity/cache"
 
 mkdir -p $ODIR
