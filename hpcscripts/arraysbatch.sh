@@ -29,6 +29,7 @@
 
 set -euo pipefail
 
+module load singularity
 export JULIA_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 NOW=$(date +"%m_%d_%Y_HH%I_%M")
@@ -45,6 +46,10 @@ ODIR=$(sed -n "${SLURM_ARRAY_TASK_ID}p" out.txt)
 # Test alphas
 IMAGE="$SLURM_TMPDIR/mcsdetect.sif"
 P="/opt/SubPrecisionContactDetection.jl"
+
+
+export SINGULARITY_BINDPATH="/scratch/bcardoen,$SLURM_TMPDIR"
+export SINGULARITY_CACHEDIR="$STMP/singularity/cache"
 
 mkdir -p $ODIR
 for ALPHA in 0.001 0.01 0.025 0.05
