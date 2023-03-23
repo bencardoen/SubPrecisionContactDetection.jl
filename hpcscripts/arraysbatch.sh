@@ -29,9 +29,6 @@
 
 set -euo pipefail
 
-module load singularity
-export JULIA_NUM_THREADS=$SLURM_CPUS_PER_TASK
-
 NOW=$(date +"%m_%d_%Y_HH%I_%M")
 echo "Starting setup at $NOW"
 
@@ -48,6 +45,8 @@ IMAGE="$SLURM_TMPDIR/mcsdetect.sif"
 P="/opt/SubPrecisionContactDetection.jl"
 
 
+module load singularity
+export JULIA_NUM_THREADS=$SLURM_CPUS_PER_TASK
 export SINGULARITY_BINDPATH="/scratch/$USER,$SLURM_TMPDIR"
 export SINGULARITY_CACHEDIR="$STMP/singularity/cache"
 
