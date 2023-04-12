@@ -97,6 +97,7 @@ function run()
 	            snr = basename(cell)
 				for alphaval in readdir(cell; join=true)
 					_alpha = basename(alphaval)
+					
 					ai = tryparse(Float64, _alpha)
 					if ai != alpha
 						@warn "Skpping $ai"
@@ -104,17 +105,13 @@ function run()
 					c1 = Glob.glob("*channel_1.tif", alphaval)[1]
 					c2 = Glob.glob("*channel_2.tif", alphaval)[1]
 					cts = Glob.glob("*pre_split_*.tif", alphaval)
-					@info alphaval
-					@info 
-					@info "Replicate $r Cell $ct Serie $snr"
+					@info "Replicate $r Cell $ct Serie $snr alpha=$ai"
 					#@assert(false)
 					tiffs[(ct, snr, r)] = Dict("mito" => c1, "er" => c2, "contacts" =>cts)
 				end
 	        end
 	    end
 	end
-	@warn "Return"
-	return
 	@info "Have a total of $(length(keys(tiffs)|>collect)) cells"
 	config = Dict("ls"=>vesiclesizeln, "rmv"=>vesicleint, "zs"=>cubesize)
 	RD = []
