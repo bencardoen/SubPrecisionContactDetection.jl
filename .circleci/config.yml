@@ -19,5 +19,4 @@ jobs:
           environment:
             R_HOME : "*"
             PYTHON : "/usr/bin/python3"
-       - run:
-          command: julia -e 'using Pkg; cd(Pkg.dir("SubPrecisionContactDetection")); using Coverage; Codecov.submit(Codecov.process_folder())'
+      
