@@ -29,7 +29,7 @@ From: fedora:38
     cd /opt && unzip $PKGNAME.jl.zip
     export LOCALPKG=/opt/$PKGNAME.jl
     cd $LOCALPKG
-    julia --project=$LOCALPKG -e 'using Pkg; Pkg.update(); ENV["PYTHON"]=""; Pkg.build(); Pkg.instantiate()'
+    julia --project=$LOCALPKG -e 'using Pkg; Pkg.update(); ENV["PYTHON"]="/usr/bin/python3"; Pkg.build(); Pkg.instantiate()'
     julia --project=$LOCALPKG -e 'using SubPrecisionContactDetection'
     echo "Setting up precompile"
     julia --project=$LOCALPKG --trace-compile=dc_precompile.jl scripts/precompile.jl
