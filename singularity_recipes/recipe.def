@@ -43,6 +43,8 @@ From: fedora:38
     rm -rf /opt/juliadepot/logs
     ln -s /dev/shm/ /opt/juliadepot/logs
     ln -s /dev/shm/ /opt/juliadepot/scratchspaces/
+    chmod +x /opt/SubPrecisionContactDetection.jl/runjulia.sh
+    chmod -R 777 /opt/SubPrecisionContactDetection.jl  
 
     ## Cleanup
     dnf remove -y wget unzip
