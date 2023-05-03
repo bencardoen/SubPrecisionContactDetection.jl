@@ -726,7 +726,7 @@ end
 	Return the magnitude of the X/Y/Z gradients
 """
 function magnitudegradients(gx, gy, gz=nothing)
-    if gz == nothing
+    if isnothing(gz)
         return .√(gx .^ 2 .+ gy .^ 2)
     else
         return .√(gx .^ 2 .+ gy .^ 2 .+ gz .^ 2)
@@ -1027,10 +1027,10 @@ function process_contact_stack3d(tiffiles, k, w, minz=nothing, maxz=nothing; sam
     @assert(size(img_1) == size(img_2))
     @assert(length(size(img_1)) == 3)
     _minz, _maxz = 1, size(img_1, 3)
-    if minz != nothing
+    if !isnothing(minz)
         _minz = minz
     end
-    if maxz != nothing
+    if !isnothing(maxz)
         _maxz = maxz
     end
     @assert(1 <= _minz < _maxz <= size(img_1)[3])
@@ -1429,7 +1429,7 @@ function computesurfaces(target, contacts)
             continue
         end
         @inbounds df = compute_contact_slice(target[:,:,s_i], contacts[:,:,s_i], s_i)
-        if dfx == nothing
+        if isnothing(dfx)
             dfx = df
         else
             dfx = vcat(dfx, df)
@@ -1444,7 +1444,7 @@ function process_contact_stack(tiffiles, k, w, minz=nothing, maxz=nothing; geome
 	## TODO 2D case, rewrite basedon 3D
     img_1 = Images.load(tiffiles[1])
     img_2 = Images.load(tiffiles[2])
-    if minz != nothing && maxz != nothing
+    if !isnothing(minz) && !isnothing(maxz)
         @assert(1 <= minz < maxz <= size(img_1, 3))
         img_1 = img_1[:,:,minz:maxz]
         img_2 = img_2[:,:,minz:maxz]
@@ -1746,7 +1746,7 @@ function makespheres(radii, centers, X, Y, Z, sigma, cylaxis=nothing)
 end
 
 function omitdim(xs, dim=nothing)
-    if dim == nothing
+    if isnothing(dim)
         return xs
     end
     @assert(1 <= dim <= length(xs))

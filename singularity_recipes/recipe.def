@@ -32,19 +32,21 @@ From: fedora:38
     julia --project=$LOCALPKG -e 'using Pkg; Pkg.update(); ENV["PYTHON"]="/usr/bin/python3"; Pkg.build(); Pkg.instantiate()'
     julia --project=$LOCALPKG -e 'using SubPrecisionContactDetection'
     echo "Setting up precompile"
-    #julia --project=$LOCALPKG --trace-compile=dc_precompile.jl scripts/precompile.jl
-    #echo "Creating test data"
-    #julia --project=$LOCALPKG scripts/setupdata.jl
-    #echo "Profiling API"
-    #julia --project=$LOCALPKG --trace-compile=dc_precompile2.jl scripts/ercontacts.jl --inpath /tmp/testdata -r "*[1,2].tif" -w 2 --sigmas 2.5-2.5-1.5 --outpath /tmp --nooutput --alpha 0.01 --beta 0.01 -c 1 -v 2000 --dimension 3 --mode=decon
-    #cat dc_precompile2.jl >> dc_precompile.jl
+    julia --project=$LOCALPKG --trace-compile=dc_precompile.jl scripts/precompile.jl
+    echo "Creating test data"
+    julia --project=$LOCALPKG scripts/setupdata.jl
+    echo "Profiling API"
+    julia --project=$LOCALPKG --trace-compile=dc_precompile2.jl scripts/ercontacts.jl --inpath /tmp/testdata -r "*[1,2].tif" -w 2 --sigmas 2.5-2.5-1.5 --outpath /tmp --nooutput --alpha 0.01 --beta 0.01 -c 1 -v 2000 --dimension 3 --mode=decon
+    cat dc_precompile2.jl >> dc_precompile.jl
     #echo "Building precompiled image"
-    #julia --project=$LOCALPKG scripts/setupimage.jl
+    julia --project=$LOCALPKG scripts/setupimage.jl
     rm -rf /opt/juliadepot/logs
     ln -s /dev/shm/ /opt/juliadepot/logs
     ln -s /dev/shm/ /opt/juliadepot/scratchspaces/
     chmod +x /opt/SubPrecisionContactDetection.jl/runjulia.sh
-    chmod -R 777 /opt/SubPrecisionContactDetection.jl  
+    chmod -R 777 /opt/SubPrecisionContactDetection.jl
+    chmod -R 777 /opt/juliadepot
+    chmod -R 777 /opt/julia  
 
     ## Cleanup
     dnf remove -y wget unzip
