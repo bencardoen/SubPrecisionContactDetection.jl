@@ -1,5 +1,5 @@
 BootStrap: docker
-From: fedora:35
+From: fedora:38
 
 %files
     SubPrecisionContactDetection.jl.zip /opt/SubPrecisionContactDetection.jl.zip
