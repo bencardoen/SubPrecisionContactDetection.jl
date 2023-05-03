@@ -7,7 +7,7 @@ From: fedora:38
 %post
     ## Get the tools we'll need
     #dnf install -y wget unzip python3 R python3-pip g++ openssh-clients curl
-    dnf install -y wget unzip python3 g++ python3-pip
+    dnf install -y wget unzip python3 g++ python3-pip which
     dnf groupinstall -y 'Development Tools'
     pip install kneed
     pip install scikit-image
