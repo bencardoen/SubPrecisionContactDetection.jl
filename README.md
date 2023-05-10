@@ -182,6 +182,17 @@ The output should look like:
 - raw|gradient|eroded.tif : stages of progressively computed contacts, all but 'eroded' are debug output
 - *.csv : features for each contact
 
+##### Features
+The features computed
+- volume : nr of non zero voxels per contact
+- weighted : weighted sum per contact (1 voxel holds the spearman value (>0))
+- anisotropy/planar/sphericity : shape features
+- distance to centroid (px) : distance of this contact's center to the centroid of all contacts --> higher is sparser
+- z-position : Z slice of contact
+- XY span : projected major axis in XY
+- height : height of contact
+- normalized : --> value / max (value/cell), so normalized distance to centroid -> 0-1
+
 #### Sampling contacts
 In [scripts/run_cube_sampling_on_dataset.jl](scripts/run_cube_sampling_on_dataset.jl) you'll find a script that samples contacts with a sliding window, to avoid long tail statistics dominating the conclusion of any analysis. The paper goes into more depth why this is beneficial.
 
