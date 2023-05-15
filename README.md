@@ -183,7 +183,7 @@ The output should look like:
 - *.csv : features for each contact
 
 ##### Features
-The features computed
+The features computed are:
 - volume : nr of non zero voxels per contact
 - weighted : weighted sum per contact (1 voxel holds the spearman value (>0))
 - anisotropy/planar/sphericity : shape features
@@ -192,6 +192,7 @@ The features computed
 - XY span : projected major axis in XY
 - height : height of contact
 - normalized : --> value / max (value/cell), so normalized distance to centroid -> 0-1
+- eig1-3: eigenvalues of 3D PCA, used in shape statistics
 
 #### Sampling contacts
 In [scripts/run_cube_sampling_on_dataset.jl](scripts/run_cube_sampling_on_dataset.jl) you'll find a script that samples contacts with a sliding window, to avoid long tail statistics dominating the conclusion of any analysis. The paper goes into more depth why this is beneficial.
