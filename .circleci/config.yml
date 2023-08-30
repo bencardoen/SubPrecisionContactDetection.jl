@@ -5,15 +5,14 @@ jobs:
   build:
     working_directory: /root/project/SubPrecisionContactDetection.jl   # Clone into a directory whose name matches your Package.
     docker:
-      - image: julia:1.8
+      - image: julia:1.9
     steps:
        - run: ls -alsht
        - run: pwd
        - run: apt update
        - run: apt install python3 -y
        - run: apt install python3-pip -y
-       - run: pip3 install scikit-image
-       - run: pip3 install kneed
+       - run: pip3 install scikit-image kneed --break-system-packages
        - run:
           command: julia -e 'using Pkg; Pkg.add("Coverage"); Pkg.add(url="https://github.com/bencardoen/ERGO.jl.git"); Pkg.add(url="https://github.com/bencardoen/SPECHT.jl.git"); Pkg.add(url="https://github.com/bencardoen/SubPrecisionContactDetection.jl.git"); Pkg.build("SubPrecisionContactDetection"); Pkg.test("SubPrecisionContactDetection", coverage=true);'
           environment:
