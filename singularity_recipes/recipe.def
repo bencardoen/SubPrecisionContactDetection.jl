@@ -11,6 +11,9 @@ From: fedora:38
     dnf groupinstall -y 'Development Tools'
     pip install kneed
     pip install scikit-image
+    pip install scipy
+    pip install pandas
+    pip install argparse
     export PYTHON=`which python3`
     echo $PYTHON
 
