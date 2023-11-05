@@ -15,6 +15,7 @@ From: fedora:38
     pip install pandas
     pip install argparse
     pip install scikit-learn
+    pip install kdepy
     export PYTHON=`which python3`
     echo $PYTHON
 

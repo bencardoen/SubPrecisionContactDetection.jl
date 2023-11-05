@@ -173,6 +173,21 @@ def postprocess_sampled(_df):
     CUBEDF['mean_spear'].fillna(0, inplace=True)
     return CUBEDF.copy()
 
+def sampled(csv, outpath):
+    ALLDF = postprocess_sampled(pd.read_csv(csv))
+    FDF = ALLDF.copy()
+    _ADF = FDF[FDF['ctsurface'] > 0]
+    _ADF = _ADF[_ADF['mitvol'] > 5]
+    SDF=aggregate(_ADF.copy())
+    SDF['coverage'] = SDF['contactvol sum']/SDF['mitvol sum'] * 100
+    cols = ['serienr', 'celltype', 'replicate', 'experiment', 'mitvol mean',
+       'mitvol std', 'mitvol sum','ncontacts mean', 'ncontacts sum','mean coverage % per sliding window','Coverage % mito by contacts, mean per cell','mitvol sum','contactvol sum']
+    df=SDF.copy()
+    df = df.rename(columns={'ratio_cf_to_mf mean': 'mean coverage % per sliding window'})
+    df = df.rename(columns={'coverage': 'Coverage % mito by contacts, mean per cell'})
+    new_df = df.loc[:, cols]
+    new_df.to_csv(os.path.join(outpath, 'jerry_coverage.csv'), index=False)
+
 
 def aggregate_full(df):
     ### Data is organized by >Replicate>Celltype>Serienr
@@ -277,6 +292,7 @@ if __name__ == "__main__":
     parser.add_argument('--lnsize', type=float, default=9, help='Minimum size of adjacent mitochondria (natural log, default 9)')
     parser.add_argument('--mitoint', type=float, default=0.2, help='Minimum intensity (mean) of adjacent mitochondria (default 0.2)')
     parser.add_argument('--alpha', type=float, default=0.05, help='Alpha value to load (0.05 is default)')
+    parser.add_argument('--sampled', type=str, default="", help='Path to postprocess all.csv sampled contacts csv. Only run sampled analysis. Produces a csv with coverage and n contacts per window.')
     args = parser.parse_args()
     lgr=getlogger()
     for arg in vars(args):
@@ -285,6 +301,11 @@ if __name__ == "__main__":
     if not os.path.exists(args.inputdirectory) or not os.path.exists(args.outputdirectory):
         lgr.error("Input path or output path does not exist")
         exit(-1)
+
+    if args['sampled'] != "":
+        lgr.info("Postprocessing sampled data")
+        sampled(args['sampled'], args.outputdirectory)
+        exit(0)
 
     lnsize = args.lnsize
     mitoint = args.mitoint
