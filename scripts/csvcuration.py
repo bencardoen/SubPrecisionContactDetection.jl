@@ -277,9 +277,6 @@ def run(args):
     getlogger().info("Saving to{}".format(os.path.join(args.outputdirectory, "contacts_aggregated.csv")))
     aggregated.to_csv(os.path.join(args.outputdirectory, "contacts_aggregated.csv"))
     lgr.info("Done !!")
-    # load sampled data csvs
-    # postprocess
-    # save
 
 
 import argparse
