@@ -21,7 +21,7 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 For a hands on tutorial see the [NanoScopyAI pages](https://github.com/NanoscopyAI/tutorial_mcs_detect/tree/main)
 
 ## Status
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=d2c0a7c1eee273587c424008dc38e74692253787)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0) [![codecov](https://codecov.io/gh/bencardoen/SubPrecisionContactDetection.jl/branch/main/graph/badge.svg?token=HJ7KIHBZC0)](https://codecov.io/gh/bencardoen/SubPrecisionContactDetection.jl)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0) [![codecov](https://codecov.io/gh/bencardoen/SubPrecisionContactDetection.jl/branch/main/graph/badge.svg?token=HJ7KIHBZC0)](https://codecov.io/gh/bencardoen/SubPrecisionContactDetection.jl)
 
 ## Table of contents
 1. [Installation](#install)
