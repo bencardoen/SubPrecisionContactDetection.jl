@@ -118,7 +118,7 @@ def run(args):
 import argparse
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='This script process coverage data from MCS detect.')
+    parser = argparse.ArgumentParser(description='This script processes aggregate coverage data from MCS detect. It needs a file named all.csv, produced by the run_cube_sampling_on_dataset.jl script. It is used to report per cell coverage and contacts per sliding window')
     # Add arguments
     parser.add_argument('--inputdirectory', required=True, help='where to find all.csv, the output from the sampling code')
     parser.add_argument('--outputdirectory', required=True, help='path to outputdirectory to save postprocess csvs')
