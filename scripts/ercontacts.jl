@@ -294,6 +294,8 @@ function runc()
     end
     @info "Saving images"
     mito = Images.N0f16.(img_1f)
+    Images.save(joinpath(outpath,"$(prefix)_pre_split_eroded.tif"), Images.N0f16.(sigmap))
+    Images.save(joinpath(outpath,"$(prefix)_pre_split_eroded.tif"), GQ)
     Images.save(joinpath(outpath,"$(prefix)_channel_1.tif"), mito)
     Images.save(joinpath(outpath,"$(prefix)_channel_2.tif"), Images.N0f16.(img_2f))
     Images.save(joinpath(outpath,"$(prefix)_pre_split_raw.tif"), Images.N0f16.(rawcontacts))
