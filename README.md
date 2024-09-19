@@ -336,6 +336,33 @@ First, the 2D case (so 3x3, 5x5, ...)
 
 ![minr2d.png](minr2d.png)
 
-Next, 3D
+Next, 3D:
 
 ![minr3d.png](minr3d.png)
+
+
+Trouble reading these plots?
+Let's say you use a 3x3x3 window (w=1, in 3D). 
+If you set alpha=beta=0.05 (95% confidence and power), then the smallest possible observable correlation is **0.665**. (In the 2nd plot, X=27, Y=0.665).
+
+Suppose you increase the window to w=2, 3D, then you have **0.341** (X=125, Y=0.341).
+
+If you want to have the same minimum correlation in 3D with a window of 27, you would need to change your alpha and beta to **0.35**
+
+We can also plot this 
+![minrkd.png](minrkd.png)
+
+The functions to compute this are available for you as well:
+```julia
+# w=2, 2D
+minr = compute_min_r_for_sample_corr(25, 0.05, 0.05)
+```
+and
+```julia
+# r=0.2, 2D
+window = compute_sample_size_for_min_corr(0.2, 0.05, 0.05)
+```
+#### Guidance
+- If you keep the window the same, and go to 2D, set alpha and beta from to have the same recall.
+- If precision is too low, reduce alpha and beta (e.g. 0.05 to 0.1, or 0.25).
+- If recall is too high (artifacts), increase alpha and beta (0.05 to 0.01 or 0.001)
