@@ -31,6 +31,7 @@ For a hands on tutorial see the [NanoScopyAI pages](https://github.com/Nanoscopy
 4. [Deploying on clusters](#hpc)
 4. [Cite](#cite)
 5. [FAQ](#faq)
+6. [Parameter selection](#params)
 
 
 <a name="installation"></a>
@@ -38,7 +39,7 @@ For a hands on tutorial see the [NanoScopyAI pages](https://github.com/Nanoscopy
 This project is developed using [Julia](https://julialang.org/).
 For ease of use and to maximize reproducibility we also provide container images using Singularity.
 
-This project was developed on Linux, and deployed on scientific computing clusters running Linux. The Singularity workflow ensures both local and cluster computations run **exactly** the same. The automated tests at [CircleCI](https://dl.circleci.com/status-badge/img/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main.svg?style=svg&circle-token=d2c0a7c1eee273587c424008dc38e74692253787)](https://dl.circleci.com/status-badge/redirect/gh/bencardoen/SubPrecisionContactDetection.jl/tree/main) run the exact same environment.
+This project was developed on Linux, and deployed on scientific computing clusters running Linux. The Singularity workflow ensures both local and cluster computations run **exactly** the same. The automated tests run the exact same environment.
 
 This cannot be guaranteed across different OS'es (e.g. Windows, MacOs). While there are no technical reasons preventing the code from working on any OS, you may run into issues as it is not something we actively use ourselves.
 
@@ -276,3 +277,25 @@ In principle we could reduce usage by x2 or more, but it would come at the cost 
 ##### Installation gives errors on MacOs
 MacOS + Conda has a bug where a certificate error triggers a cascade of [errors](https://github.com/conda/conda/issues/10111).
 The errors can be ignored, including the failing tests, this is an optional part of the module. When the bug in conda is resolved, this issue should be resolved as well.
+
+
+<a name="params"></a>
+### Parameter selection
+MCS-Detect has multiple parameters that will determine the precision and recall of the predicted contacts. 
+While a full discussion is available in the paper, here we will give a brief explanation and guidance as to how to set them.
+
+#### Z-filter (background removal)
+##### Concept
+Because 3D STED has anisotropic resolution in Z (worse in Z than in X/Y), it is possible to see intensity `bleedthrough` or `shadowing` across Z. 
+For example, say you have a mitochondrial vesicle at Z-slice 5. 
+Bleedthrough can lead to intensity mimicking a faint object at Z-slice 8.
+The Z-filter removes this by filtering the intensity distribution, per channel.
+If you set Z=1, all intensity **below** $\mu + 1 * \simga$ is set to zero.
+##### Guidance
+A z-value is that is too high will cause false negatives because you're removing intensity from the organelles, not the background.
+A too low value will included possible contacts between organelles and phantom intensity, e.g. false positives.
+A value of z=3 is used for the paper, derived from the size of the cell and the anisotropy. 
+Recommended usage is to test Z-values on a single representative cell, and plot the organelle volume, in combination with visual inspection. 
+Instructions on how to do this and accompanying scripts can be found [here](https://github.com/NanoscopyAI/tutorial_mcs_detect?tab=readme-ov-file#mcs-detect-background-filtering-only--segmentation).
+
+#### Window size (w)
