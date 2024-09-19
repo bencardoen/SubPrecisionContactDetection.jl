@@ -43,6 +43,7 @@ For a hands on tutorial see the [NanoScopyAI pages](https://github.com/Nanoscopy
    2. Filtered channels
    3. Confidence map
    4. CSV files
+8. [2D](#2d)
 
 	
 
@@ -335,7 +336,8 @@ W=2 would mean 250nm lateral and 375nm axial, which is likely too large, it woul
 **Important** The window size determines the statistical power of the correlation. A 3x3 window in 2D has limited statistical power. See below.
 
 <a name="alpha"></a>
-#### Alpha and Beta
+
+#### Alpha and Beta, or confidence, significance, and power.
 
 ##### Concept
 A correlation is a statistical estimator, and comes with a confidence value ('p-value'). 
@@ -406,3 +408,22 @@ To offset this, the coverage computation and local density (nr of contacts/windo
 The smaller you set this, the more you split objects apart. 
 Ideally you set this window to be no smaller than the largest expected object.
 Sampling windows do not overlap, and mitochondria that are only partially visible in a window (few voxels), are discarded.
+
+#### Command line parameters
+Some related command line parameters are switches in that they enable/disable behavior.
+
+- `--dimension=3` : Set to 3 for 3D (default), or 2 for 2D. Please see [confidence](#alpha) for an appreciation as to how this can change the precision/recall.
+- `--deconvolved` : Default off. Add if the images have been deconvolved. 2D without deconvolution will not work. Deconvolution can introduce artifacts, but overall is preferred for higher accuracy and lower SNR
+- `-i` : Input path, the folder or directory where to find the images
+- `--inregex` or `-r` : The regular expression that matches **2** tif files. Defaults to "*[1,2].tif", where channel 1 is mitochondria, and channel 2 ER. 
+- `-o` : Output directory. 
+- `-z` : Z value, see [z](#z) Default 3
+- `--alpha` and `--beta` : see above. Default 0.05
+- `-w` : window size
+
+The full documentation of the options can be found [here](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/scripts/ercontacts.jl)
+
+
+### Output
+
+### 2D Mode
