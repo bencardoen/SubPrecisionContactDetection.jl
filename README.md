@@ -32,7 +32,13 @@ For a hands on tutorial see the [NanoScopyAI pages](https://github.com/Nanoscopy
 4. [Cite](#cite)
 5. [FAQ](#faq)
 6. [Parameter selection](#params)
+    6.1 [Z-filter](#z)
+    6.2 [Window](#w)
+    6.3 [Precision and Recall](#alpha)
+    6.4 [Vesicle filter](#ves)
+    6.5 [Sampling](#sm)
 
+	
 
 <a name="installation"></a>
 ## Installation
@@ -324,6 +330,8 @@ W=2 would mean 250nm lateral and 375nm axial, which is likely too large, it woul
 
 <a name="alpha"></a>
 #### Alpha and Beta
+
+##### Concept
 A correlation is a statistical estimator, and comes with a confidence value ('p-value'). 
 Alpha control what acceptable levels of confidence are allowed, whereas beta controls statistical power. 
 A recap from statistics:
@@ -362,7 +370,31 @@ and
 # r=0.2, 2D
 window = compute_sample_size_for_min_corr(0.2, 0.05, 0.05)
 ```
-#### Guidance
+
+##### Guidance
 - If you keep the window the same, and go to 2D, set alpha and beta from to have the same recall.
 - If precision is too low, reduce alpha and beta (e.g. 0.05 to 0.1, or 0.25).
 - If recall is too high (artifacts), increase alpha and beta (0.05 to 0.01 or 0.001)
+
+<a name="ves"></a>
+#### Vesicle filtering
+##### Concept
+The postprocessing scripts use size (logarithm) and mean intensity of vesicles to filter them out. 
+This can only be empirically estimated. 
+
+##### Guidance
+Plot the intensity and object sizes of the mitochondria channel, and look for a separation between large and bright objects, versus small and faint.
+Off the shelf clustering methods can be of help.
+Alternatively, segment the image before processing. 
+**NOTE** Contact detection does not differentiate between mitochondria and vesicles, the interaction may be functionally different, but the contacts are no less real.
+
+<a name="sm"></a>
+#### Sampling
+##### Concept
+Because contacts are large and infrequent, or small and frequent, the statistical analysis can be unstable. 
+More precisely, the distribution is long tailed containing extreme values, and those extreme values are often the ones of interest (e.g. ribomerc).
+To offset this, the coverage computation and local density (nr of contacts/window) uses a window, defaulting to 5x5x5 (which corresponds to w=2). 
+##### Guidance
+The smaller you set this, the more you split objects apart. 
+Ideally you set this window to be no smaller than the largest expected object.
+Sampling windows do not overlap, and mitochondria that are only partially visible in a window (few voxels), are discarded.
