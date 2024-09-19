@@ -284,13 +284,16 @@ The errors can be ignored, including the failing tests, this is an optional part
 MCS-Detect has multiple parameters that will determine the precision and recall of the predicted contacts. 
 While a full discussion is available in the paper, here we will give a brief explanation and guidance as to how to set them.
 
+<a name="z"></a>
 #### Z-filter (background removal)
+
 ##### Concept
 Because 3D STED has anisotropic resolution in Z (worse in Z than in X/Y), it is possible to see intensity `bleedthrough` or `shadowing` across Z. 
 For example, say you have a mitochondrial vesicle at Z-slice 5. 
 Bleedthrough can lead to intensity mimicking a faint object at Z-slice 8.
 The Z-filter removes this by filtering the intensity distribution, per channel.
-If you set Z=1, all intensity **below** $\mu + 1 * \simga$ is set to zero.
+If you set Z=1, all intensity **below** $\mu + 1 * \sigma$ is set to zero.
+
 ##### Guidance
 A z-value is that is too high will cause false negatives because you're removing intensity from the organelles, not the background.
 A too low value will included possible contacts between organelles and phantom intensity, e.g. false positives.
@@ -298,4 +301,41 @@ A value of z=3 is used for the paper, derived from the size of the cell and the 
 Recommended usage is to test Z-values on a single representative cell, and plot the organelle volume, in combination with visual inspection. 
 Instructions on how to do this and accompanying scripts can be found [here](https://github.com/NanoscopyAI/tutorial_mcs_detect?tab=readme-ov-file#mcs-detect-background-filtering-only--segmentation).
 
+<a name="w"></a>
 #### Window size (w)
+
+##### Concept
+Correlation requires a comparison between two vectors of data, in 2- or 3D images this means a window size. 
+If you set w=2 the window will be (2*2+1)^D for D dimensions.
+So 5x5 in 2D, 5x5x5 in 3D. w=1 would be 3x3, or 3x3x3 and so forth.
+
+##### Guidance
+A too large value will consume more memory, and will miss finer patterns. 
+A too small value will fail to capture large patterns. 
+So what, then is 'too' small or large?
+At a minimum, the window should cover the width of the contact, but no more than 2.5x. 
+The interested reader will detect similarities with how resolution and pixel-dimensions relate.
+I will give an example to give a more actionable insight:
+Let us assume pixel precision is 50nm in X, Y, and 75nm in Z.
+Say the expected contacts you wish to capture are 0-25nm. 
+In this case w=1 would be sufficient, because a window of 3x3x3 would span 150nm lateral, and 225nm axial. 
+W=2 would mean 250nm lateral and 375nm axial, which is likely too large, it would be dominated by differentials that are unrelated to the contact.
+**Important** The window size determines the statistical power of the correlation. A 3x3 window in 2D has limited statistical power. See below.
+
+<a name="alpha"></a>
+#### Alpha and Beta
+A correlation is a statistical estimator, and comes with a confidence value ('p-value'). 
+Alpha control what acceptable levels of confidence are allowed, whereas beta controls statistical power. 
+A recap from statistics:
+- Significance (alpha): The probability that an observed difference is not due to random effects
+- Power (beta): The probability that you can observe a given difference (of a given magnitude)
+
+What does this mean in practice?
+We can compute what is **minimal** observable correlation you can detect, given alpha and beta.
+First, the 2D case (so 3x3, 5x5, ...)
+
+![minr2d.png](minr2d.png)
+
+Next, 3D
+
+![minr3d.png](minr3d.png)
