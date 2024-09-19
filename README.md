@@ -32,7 +32,13 @@ For a hands on tutorial see the [NanoScopyAI pages](https://github.com/Nanoscopy
 4. [Cite](#cite)
 5. [FAQ](#faq)
 6. [Parameter selection](#params)
+    6.1 [Z-filter](#z)
+    6.2 [Window](#w)
+    6.3 [Precision and Recall](#alpha)
+    6.4 [Vesicle filter](#ves)
+    6.5 [Sampling](#sm)
 
+	
 
 <a name="installation"></a>
 ## Installation
@@ -324,6 +330,8 @@ W=2 would mean 250nm lateral and 375nm axial, which is likely too large, it woul
 
 <a name="alpha"></a>
 #### Alpha and Beta
+
+##### Concept
 A correlation is a statistical estimator, and comes with a confidence value ('p-value'). 
 Alpha control what acceptable levels of confidence are allowed, whereas beta controls statistical power. 
 A recap from statistics:
@@ -336,6 +344,59 @@ First, the 2D case (so 3x3, 5x5, ...)
 
 ![minr2d.png](minr2d.png)
 
-Next, 3D
+Next, 3D:
 
 ![minr3d.png](minr3d.png)
+
+
+Trouble reading these plots?
+Let's say you use a 3x3x3 window (w=1, in 3D). 
+If you set alpha=beta=0.05 (95% confidence and power), then the smallest possible observable correlation is **0.665**. (In the 2nd plot, X=27, Y=0.665).
+
+Suppose you increase the window to w=2, 3D, then you have **0.341** (X=125, Y=0.341).
+
+If you want to have the same minimum correlation in 3D with a window of 27, you would need to change your alpha and beta to **0.35**
+
+We can also plot this 
+
+![minrkd.png](minrkd.png)
+
+
+The functions to compute this are available for you as well:
+```julia
+# w=2, 2D
+minr = compute_min_r_for_sample_corr(25, 0.05, 0.05)
+```
+and
+```julia
+# r=0.2, 2D
+window = compute_sample_size_for_min_corr(0.2, 0.05, 0.05)
+```
+
+##### Guidance
+- If you keep the window the same, and go to 2D, set alpha and beta from to have the same recall.
+- If precision is too low, reduce alpha and beta (e.g. 0.05 to 0.1, or 0.25).
+- If recall is too high (artifacts), increase alpha and beta (0.05 to 0.01 or 0.001)
+
+<a name="ves"></a>
+#### Vesicle filtering
+##### Concept
+The postprocessing scripts use size (logarithm) and mean intensity of vesicles to filter them out. 
+This can only be empirically estimated. 
+
+##### Guidance
+Plot the intensity and object sizes of the mitochondria channel, and look for a separation between large and bright objects, versus small and faint.
+Off the shelf clustering methods can be of help.
+Alternatively, segment the image before processing. 
+**NOTE** Contact detection does not differentiate between mitochondria and vesicles, the interaction may be functionally different, but the contacts are no less real.
+
+<a name="sm"></a>
+#### Sampling
+##### Concept
+Because contacts are large and infrequent, or small and frequent, the statistical analysis can be unstable. 
+More precisely, the distribution is long tailed containing extreme values, and those extreme values are often the ones of interest (e.g. ribomerc).
+To offset this, the coverage computation and local density (nr of contacts/window) uses a window, defaulting to 5x5x5 (which corresponds to w=2). 
+##### Guidance
+The smaller you set this, the more you split objects apart. 
+Ideally you set this window to be no smaller than the largest expected object.
+Sampling windows do not overlap, and mitochondria that are only partially visible in a window (few voxels), are discarded.
