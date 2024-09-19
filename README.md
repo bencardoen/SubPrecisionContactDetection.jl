@@ -358,7 +358,9 @@ Suppose you increase the window to w=2, 3D, then you have **0.341** (X=125, Y=0.
 If you want to have the same minimum correlation in 3D with a window of 27, you would need to change your alpha and beta to **0.35**
 
 We can also plot this 
+
 ![minrkd.png](minrkd.png)
+
 
 The functions to compute this are available for you as well:
 ```julia
