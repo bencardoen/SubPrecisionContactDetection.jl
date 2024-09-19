@@ -16,6 +16,7 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 - Reproducible: tests ensure backwards compatibility
 - Configurable: Can process deconvolved or raw images, with optional extra denoising
 - Rich: provides interpretable features for each detected contact
+- Confidence map for each voxel (each voxel has a p-value)
 
 ### Tutorial
 For a hands on tutorial see the [NanoScopyAI pages](https://github.com/NanoscopyAI/tutorial_mcs_detect/tree/main)
@@ -37,6 +38,11 @@ For a hands on tutorial see the [NanoScopyAI pages](https://github.com/Nanoscopy
     6.3 [Precision and Recall](#alpha)
     6.4 [Vesicle filter](#ves)
     6.5 [Sampling](#sm)
+7. [Output](#output)
+   1. Contacts
+   2. Filtered channels
+   3. Confidence map
+   4. CSV files
 
 	
 
