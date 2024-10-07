@@ -1,2 +1,4 @@
+.sif
+.cov
 log*.txt
 slurm*.out
