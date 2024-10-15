@@ -48,7 +48,7 @@ makespheres, loadimages, sp3d, reportvolumes, reportvolumes2D, process_contact_s
 festimparam, retainnegative, snr, planar, smoothclamp, sphericity, computefeatures, anisotropy, compute_contact_slice, normimg,
 savegld, imgpca, readgld, dtocent, quantify_adj_mito, filter_channels, getextent, masktoindices, z_to_significance, magnitudegradients, gradientmagnitude, gradientfilter!,
 indicestomask!, scoremasks, compute_contacts_3d, compute_contacts_2d, splitchannel, cntimg, alphabeta!, compute_contacts_deconvolved_images_2d,
-vpdf, iterativemedian, spearsubsample, fastgaussian2d, fastguasian3d, sphere3d, offsetindices, estimatecurvature,
+vpdf, iterativemedian, spearsubsample, fastgaussian2d, fastguasian3d, sphere3d, offsetindices, estimatecurvature, describe_objects,
 spear, denoise, volume_to_radius, radius_to_volume, qnorm, compute_min_r_for_sample_corr, get_components_diag, get_components_ndiag, get_components,
 computesphericity, filterintensity, gerode, to3RGB, getskeleton, dropleq, randomcolorarray, getrandomcolor, minnz, normcontacts, getci,
 gradientmagnitude, indexofdispersion, expandstack, reducestack, compute_sample_size_for_min_corr, gradientmagnitude3d,
@@ -1119,12 +1119,57 @@ function savegld(fname, rawcontacts, filteredcontacts, gradientcontacts, sigmap;
 	JLD2.jldsave(fname, true; rawcontacts=tp.(rawcontacts), filteredcontacts=tp.(filteredcontacts), gradientcontacts=tp.(gradientcontacts), sigmap=tp.(sigmap))
 end
 
+
+function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
+    b = copy(img)
+    b[b .> 0] .= 1
+	## Changed 3-2 connectivity
+	get_components_diag = mask -> Images.label_components(mask, length(size(mask))==2 ? trues(3,3) : trues(3,3,3))
+    coms = get_components_diag(b)
+    # lengths = Images.component_lengths(coms)[2:end]
+    indices = Images.component_indices(coms)[2:end]
+    boxes = Images.component_boxes(coms)[2:end]
+    N = maximum(coms)
+    w=zeros(N, 15)
+	#@debug "Processing $N components"
+	if N == 0
+		@warn "NO COMPONENTS TO PROCESS"
+		return nothing, nothing
+	end
+    for ic in 1:N
+        vals = img[indices[ic]]
+		n = length(vals)
+         # m, Q1, mx, med, Q3, M, std(ys), kurt = dimg(vals)
+		w[ic, 2] = sum(vals)
+		w[ic, 1] = n
+		w[ic,3:10] .= _dimg(vals)
+		w[ic, 11:13] .= getextent(boxes[ic])
+		# w[ic, 11:13] = _xy, _z, _zp
+    end
+	columns = [:size, :weighted, :minimum, :Q1, :mean, :median, :Q3, :maximum, :std, :kurtosis, :xyspan, :zspan, :zmidpoint]
+    df = DataFrame()
+    for (i,c) in enumerate(columns)
+        df[!,c] = w[:,i]
+    end
+    distances, nd, ctr, ctrs = _dtocent(coms)
+    df[!, :distance_to_centroid] .= distances
+    df[!, :distance_to_centroid_normalized] .= nd
+    df[!, :centroid_channel_x] .= ctr[1]
+    df[!, :centroid_channel_y] .= ctr[2]
+    df[!, :centroid_channel_z] .= ctr[3]
+    df[!, :centroid_object_x] .= ctrs[:, 1]
+    df[!, :centroid_object_y] .= ctrs[:, 2]
+    df[!, :centroid_object_z] .= ctrs[:, 3] 
+    return df
+end
+
 function dtocent(ccs)
 	@debug "Update to masked version"
-    cts = Images.component_centroids(ccs)
-    ac = toarray(cts[2:end])
-    m = m = mean(ac, dims=1)
-    ds = sqrt.(sum((ac .- m).^2, dims=2))
+    # cts = Images.component_centroids(ccs)
+    # ac = toarray(cts[2:end])
+    # m = mean(ac, dims=1)
+    # ds = sqrt.(sum((ac .- m).^2, dims=2))
+	ds, distances_norm, centroid, centroids = _dtocent(ccs)
     return ds
 end
 
