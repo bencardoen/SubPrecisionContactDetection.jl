@@ -1120,11 +1120,81 @@ function savegld(fname, rawcontacts, filteredcontacts, gradientcontacts, sigmap;
 end
 
 function dtocent(ccs)
+	@debug "Update to masked version"
     cts = Images.component_centroids(ccs)
     ac = toarray(cts[2:end])
     m = m = mean(ac, dims=1)
     ds = sqrt.(sum((ac .- m).^2, dims=2))
     return ds
+end
+
+function _dtocent(ccs)
+    cts = Images.component_centroids(ccs)
+    centroids = _toarray(cts[2:end]) # Array of Nx3
+    centroid = mean(centroids, dims=1)
+    distances = sqrt.(sum((centroids .- centroid).^2, dims=2))
+    distances_norm = _normalizemaxmin(distances)
+    return distances, distances_norm, centroid, centroids
+end
+
+function _normalizemaxmin(arr)
+    M = maximum(arr)
+    m = minimum(arr)
+    @assert all(arr .>= 0)
+    @assert m <= M
+    if M == m
+        @warn "Max == min, degenerate normalization"
+        #If the min == max, then all values are either 0 or 1. 
+        if iszero(m)
+            return arr # all zeros anyway
+        else
+            # Max == min, and it's not zero, so then normalized they're all 1
+            return ones(size(arr))
+        end
+    else
+        return (arr .- m) ./ (M-m)
+    end
+end
+
+
+function _toarray(cts)
+    if length(cts) == 0
+        @error "Converting empty array"
+        throw(ArgumentError("Array argument is empty"))
+    end
+    d = length(cts[1])
+    @debug "Have $d dimensions"
+    if d < 2 || d > 3
+        @error "Dimensions of $d not supported, expecting 2 or 3 d."
+        throw(ArgumentError("D $d not supported"))
+    end
+    res = zeros(Float64, length(cts), length(cts[1]))
+    for (i,c) in enumerate(cts)
+        if d == 3
+            res[i,:] .= [c[1], c[2], c[3]]
+        end
+        if d == 2
+            res[i,:] .= [c[1], c[2]]
+        end
+    end
+    return res
+end
+
+function _dimg(x)
+    ys = Float64.(x[:])
+    if iszero(ys)
+        @warn "Return NaN for zeroed image. Describing zero is unlikely what you wanted."
+        return [NaN for _ in 1:8]
+    end
+    ys = ys[ys .> 0]
+    Q1, med, Q3 = quantile(ys, [0.25, 0.5, .75])
+    mx = mean(ys)
+    N = length(ys)
+    m2 = sum((ys .- mx).^2)/N
+    m4 = sum((ys .- mx).^4)/N
+    kurt = m2/m4
+    m, M = minimum(ys), maximum(ys)
+    return m, Q1, mx, med, Q3, M, std(ys), kurt
 end
 
 
