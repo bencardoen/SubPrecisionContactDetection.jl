@@ -42,7 +42,7 @@ using ImageContrastAdjustment
 export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin,
 computeintensitycorrelation,
 summarize_spots, findchannel, sp,
-compute_edges, reportimagequality, dtd_to_field, c3,
+compute_edges, reportimagequality, dtd_to_field, c3, shape_component,  
 process_contact_stack3d, sp2d,
 makespheres, loadimages, sp3d, reportvolumes, reportvolumes2D, process_contact_stack, filter_k, offset, mcc, clampt, ratefilter, computesurfaces,
 festimparam, retainnegative, snr, planar, smoothclamp, sphericity, computefeatures, anisotropy, compute_contact_slice, normimg,
@@ -1383,6 +1383,22 @@ function imgmoment(img)
 	return res
 end
 
+
+"""
+	shape_component
+	For labeled components of an image and the i'th component, returns the eigenvalues describing its shape
+"""
+function shape_component(coms, image, component_index)
+    boxes = Images.component_boxes(coms)[2:end]
+    from, to = boxes[component_index]
+    x,y,z = from
+    X, Y, Z = to
+    obj = copy(image[x:X, y:Y, z:Z])
+    mask = coms[x:X, y:Y, z:Z]
+    obj[mask .!= component_index] .= 0
+    eigs = imgpca(obj)
+    return eigs
+end
 
 """
 	imgpca

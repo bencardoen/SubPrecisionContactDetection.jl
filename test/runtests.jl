@@ -40,6 +40,29 @@ using Distributions
 		@test findchannel(A) == 2
 	end
 
+    @testset "3dshape" begin
+        Random.seed!(42)
+        i = zeros(10, 10, 10)
+        i[5:6, 5:6, 5:6] .= rand()
+        i[1:1, 1:1, 1:1] .= rand()
+        coms = Images.label_components(i)
+        eigs = shape_component(coms, i, 1)
+        @test length(eigs) == 3
+        @test eigs[1] >= eigs[2] >= eigs[3]
+        eigs = shape_component(coms, i, 2)
+        @test length(eigs) == 3
+        @test eigs[1] >= eigs[2] >= eigs[3]
+        @test eigs[1] > 0
+        @test isapprox(eigs[1], eigs[2], atol=1e-3)
+        @test isapprox(eigs[2], eigs[3], atol=1e-3)
+        i = zeros(10, 10, 10)
+        i[5:5, 5:8, 5:5] .= rand()
+        coms = Images.label_components(i)
+        eigs = shape_component(coms, i, 1)
+        @test isapprox(eigs[2], 0, atol=1e-1)
+        @test isapprox(eigs[1], 1, atol=0.2)
+    end
+
 	@testset "s2" begin
 		A = zeros(100, 100)
 		r=sp2d(A, A, 1)[1]
