@@ -42,7 +42,7 @@ using ImageContrastAdjustment
 export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin,
 computeintensitycorrelation,
 summarize_spots, findchannel, sp,
-compute_edges, reportimagequality, dtd_to_field, c3, shape_component,  
+compute_edges, reportimagequality, dtd_to_field, c3, shape_component, filter_mcsdetect, 
 process_contact_stack3d, sp2d,
 makespheres, loadimages, sp3d, reportvolumes, reportvolumes2D, process_contact_stack, filter_k, offset, mcc, clampt, ratefilter, computesurfaces,
 festimparam, retainnegative, snr, planar, smoothclamp, sphericity, computefeatures, anisotropy, compute_contact_slice, normimg,
@@ -1120,6 +1120,50 @@ function savegld(fname, rawcontacts, filteredcontacts, gradientcontacts, sigmap;
 end
 
 
+"""
+	filter_mcsdetect : Filter a directory of tiff files with a sweep of z values
+	channels is a regex to select which pattern of files to use.
+	expected files should be 3D tiff 
+	To use a single Z value, set start=stop.
+	Object statistics are saved in a CSV file with the same name as the tiff file.
+"""
+function filter_mcsdetect(dir, start=1, step=0.1, stop=3, channels="*[0-2].tif")
+    @debug "Dir $x sweep from $start → $stop in steps $step matching channels $channels"
+    fs = Glob.glob(channels, dir)
+    # @info fs
+    @debug "Found $fs"
+    for f in fs
+        dfs = []
+        i = Images.load(f)
+        df = describe_objects(i)
+        df[!,:z] .= NaN
+        df[!,:filename] .= f
+        push!(dfs, df)
+        pt = splitpath(f)
+        fn = pt[end]
+        fne = splitext(fn)[1]
+        for _z in start:step:stop
+            fi, th = filter_k(i, _z)
+            @debug "Threshold used for $(_z) : $(th)"
+            m = bm(fi)
+            @debug "Saving as mask_$(fne).tif) in $(joinpath(pt[1:end-1]...))"
+            Images.save(joinpath(pt[1:end-1]...,"mask_$(_z)_$(fne).tif"), m)
+            Images.save(joinpath(pt[1:end-1]...,"masked_$(_z)_$(fne).tif"), fi)
+            df = describe_objects(fi)
+            df[!,:z] .= _z
+            df[!,:filename] .= f
+            push!(dfs, df)
+        end
+        CSV.write(joinpath(pt[1:end-1]...,"stats_$(start)_$(step)_$(stop)_$(fne).csv"), vcat(dfs...))
+    end
+end
+
+function bm(xs)
+    ys = copy(xs)
+    ys[ys .> 0] .= 1
+    return ys
+end
+
 function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
     b = copy(img)
     b[b .> 0] .= 1
@@ -1130,7 +1174,7 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
     indices = Images.component_indices(coms)[2:end]
     boxes = Images.component_boxes(coms)[2:end]
     N = maximum(coms)
-    w=zeros(N, 15)
+    w=zeros(N, 16)
 	#@debug "Processing $N components"
 	if N == 0
 		@warn "NO COMPONENTS TO PROCESS"
@@ -1144,10 +1188,16 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
 		w[ic, 1] = n
 		w[ic,3:10] .= _dimg(vals)
 		w[ic, 11:13] .= getextent(boxes[ic])
-		# w[ic, 11:13] = _xy, _z, _zp
-    end
-	columns = [:size, :weighted, :minimum, :Q1, :mean, :median, :Q3, :maximum, :std, :kurtosis, :xyspan, :zspan, :zmidpoint]
-    df = DataFrame()
+		l1, l2, l3 = shape_component(coms, img, ic)
+		if l1 != 0
+			l1 = l1/l1
+			l2 = l2/l1
+			l3 = l3/l1
+		end	
+		w[ic, 14:16] .= l1, l2, l3
+	end
+	columns = [:size, :weighted, :minimum, :Q1, :mean, :median, :Q3, :maximum, :std, :kurtosis, :xyspan, :zspan, :zmidpoint, :eig1, :eig2, :eig3]
+    df = DataFrames.DataFrame()
     for (i,c) in enumerate(columns)
         df[!,c] = w[:,i]
     end
