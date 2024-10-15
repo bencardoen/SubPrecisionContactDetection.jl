@@ -26,8 +26,9 @@ For a hands on tutorial see the [NanoScopyAI pages](https://github.com/Nanoscopy
 
 ## Table of contents
 1. [Installation](#install)
-   1. [Singularity](#singularity)
-   2. [Julia package](#julia)
+   1.1 [Singularity](#singularity)
+   1.2 [Julia package](#julia)
+   1.3 [Windows](#windows)
 3. [Usage](#usage)
 4. [Deploying on clusters](#hpc)
 5. [Cite](#cite)
@@ -160,6 +161,29 @@ julia --project=. installlocal.jl
 This should result in output similar to this screenshot:
 
 ![](clone.png)
+
+
+<a name="windows"></a>
+### 1.3 Windows
+- Install [VSCode]()
+- Install [Python]()
+- Install [Julia 1.9]()
+In VSCode, create a new folder and open VSCode inside of it.
+
+Then:
+- New Terminal
+In the terminal, type:
+```bash
+git clone https://github.com/bencardoen/SubPrecisionContactDetection.jl.git
+```
+This will download the latest version of the source code.
+**Note** Python needs to be installed and defined, make sure of this step before proceeding.
+Now we will build it:
+```
+julia --project=. -e 'using Pkg; Pkg.build() Pkg.test()'
+```
+
+
 
 <a name="usage"></a>
 ## Usage
