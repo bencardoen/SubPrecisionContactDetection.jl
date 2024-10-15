@@ -1174,8 +1174,8 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
     indices = Images.component_indices(coms)[2:end]
     boxes = Images.component_boxes(coms)[2:end]
     N = maximum(coms)
-    w=zeros(N, 16)
-	#@debug "Processing $N components"
+    w=zeros(N, 19)
+	@info "Processing $N components"
 	if N == 0
 		@warn "NO COMPONENTS TO PROCESS"
 		return nothing, nothing
@@ -1189,14 +1189,19 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
 		w[ic,3:10] .= _dimg(vals)
 		w[ic, 11:13] .= getextent(boxes[ic])
 		l1, l2, l3 = shape_component(coms, img, ic)
-		if l1 != 0
-			l1 = l1/l1
-			l2 = l2/l1
-			l3 = l3/l1
-		end	
+		@info l1, l2, l3
+		# if l1 != 0
+			# l1 = l1/l1
+			# l2 = l2/l1
+			# l3 = l3/l1
+		# end	
 		w[ic, 14:16] .= l1, l2, l3
+		if l1 > 0
+			w[ic, 17:19] .= l1/l1, l2/l1, l3/l1
+			@debug w[ic, 17:19]
+		end
 	end
-	columns = [:size, :weighted, :minimum, :Q1, :mean, :median, :Q3, :maximum, :std, :kurtosis, :xyspan, :zspan, :zmidpoint, :eig1, :eig2, :eig3]
+	columns = [:size, :weighted, :minimum, :Q1, :mean, :median, :Q3, :maximum, :std, :kurtosis, :xyspan, :zspan, :zmidpoint, :eig1, :eig2, :eig3, :eig1norm, :eig2norm, :eig3norm]
     df = DataFrames.DataFrame()
     for (i,c) in enumerate(columns)
         df[!,c] = w[:,i]
@@ -1238,7 +1243,7 @@ function _normalizemaxmin(arr)
     @assert all(arr .>= 0)
     @assert m <= M
     if M == m
-        @warn "Max == min, degenerate normalization"
+        @debug "Max == min, degenerate normalization"
         #If the min == max, then all values are either 0 or 1. 
         if iszero(m)
             return arr # all zeros anyway
