@@ -30,20 +30,21 @@ For a hands on tutorial see the [NanoScopyAI pages](https://github.com/Nanoscopy
    2. [Julia package](#julia)
 3. [Usage](#usage)
 4. [Deploying on clusters](#hpc)
-4. [Cite](#cite)
-5. [FAQ](#faq)
-6. [Parameter selection](#params)
-    6.1 [Z-filter](#z)
-    6.2 [Window](#w)
-    6.3 [Precision and Recall](#alpha)
-    6.4 [Vesicle filter](#ves)
-    6.5 [Sampling](#sm)
-7. [Output](#output)
-   1. Contacts
-   2. Filtered channels
-   3. Confidence map
-   4. CSV files
-8. [2D](#2d)
+5. [Cite](#cite)
+6. [FAQ](#faq)
+7. [Parameter selection](#params)
+    7.1 [Z-filter](#z)
+    7.2 [Window](#w)
+    7.3 [Precision and Recall](#alpha)
+    7.4 [Vesicle filter](#ves)
+    7.5 [Sampling](#sm)
+8. [Output](#output)
+   8.1. Contacts
+   8.2 Filtered channels
+   8.3 Confidence map
+   8.4 CSV files
+9. [2D](#2d)
+10. [Segmentation](#seg)
 
 	
 
@@ -437,10 +438,40 @@ A brief overview of the generated output follows here:
 See also the postprocessing for further output.
 The remainder are debugging outputs that can be traced to their source code in the script.
 
-
+<a name="ves"></a>
 ### 2D Mode
 2D mode requires deconvolution to have been applied, so for example
 
 ```julia
 julia --project=. scripts/ercontacts.jl -r "*[1,2].tif" -i myfolder --dimension=2 -z=3 -w=2 --deconvolved
 ```
+
+<a name="seg"></a>
+### Segmentation and object features
+You can run the background filtering and segmentation separately.
+In the SubPrecisionContactDetection.jl folder, open a Julia shell, for example in VS Code (New Terminal).
+Suppose we want to filter all tif files ending with "1.tif" or "2.tif" , for z=1 to 1.1 in 0.25 steps, and then compute the object properties.
+```julia
+julia --project=.  scripts/segment.jl --inpath mydir -z 1.0 -Z 1.1 -s 0.25 -r "*[1,2].tif"
+```
+
+For each file, for each filtered value, it will generate:
+- mask.tif
+- masked.tif
+
+For all the files, it will generate a CSV with columns, where each row is an object:
+- size (nr of non zero voxels)
+- weighted (intensity sum of objects)
+- minimum, Q1, mean, mediam, Q3, maximum, std, kurtosis : describes the intensity distribution of the object
+- xyspan : major axis of 2D projection, pixels
+- zrange : extent in Z
+- zmidpoint : midpoint in Z slice
+- distance_to_centroid: distance of this object's centroid to centroid of all objects, describes clustering
+- distance_to_centroid_normalized: rescale the above to 0-1, where 0 is centroid of all objects, 1 is maximum dispersion
+- centroid_channel_{x,y,z} : in pixel coordinates, records the centroid of _all_ objects, this is the reference for the distance computation
+- centroid_object_{x,y,z} : in pixel coordinates, records the object centroid
+- filename : the source tif file name
+- z : the z value used
+- eig1-3: PCA eigenvalues, the can be used for shape descriptors
+- eig1-3normalized: eigenvalues rescaled to 1
+    

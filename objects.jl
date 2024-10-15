@@ -17,4 +17,4 @@ if isdir("qrx")
     rm("qrx"; recursive=true)
 end
 mkdir("qrx")
-Images.save(joinpath("qrx", "1.tif", Images.N0f16.(img))
+Images.save(joinpath("qrx", "1.tif"), Images.N0f16.(img)
