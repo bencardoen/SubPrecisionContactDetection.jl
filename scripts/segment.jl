@@ -39,20 +39,20 @@ function parse_commandline()
             arg_type = String
             required = true
         "--inregex", "-r"
-            help = "regex tiff files in inpath"
+            help = "regex tiff files in inpath. Defaults to *[1,2].tif , so will pick up tif files endings with 1 or 2.tif"
             arg_type = String
             default = "*[1,2].tif"
         "--startz", "-z"
             help = "Start Z value, default = 1.0"
-            arg_type = String
+            arg_type = Float64
             default = 1.0
         "--endz", "-Z"
             help = "End Z value, default = 3.5"
-            arg_type = String
+            arg_type = Float64
             default = 3.5
         "--step", "-s"
             help = "Step, default = 0.1"
-            arg_type = String
+            arg_type = Float64
             default = 0.1
     end
 
@@ -72,10 +72,10 @@ function runc()
     end
     
     inpath = parsed_args["inpath"]
-    z = parsed_args["z"]
-    Z = parsed_args["Z"]
-    s = parsed_args["s"]
-    pattern = parsed_args["r"]
+    z = parsed_args["startz"]
+    Z = parsed_args["endz"]
+    s = parsed_args["step"]
+    pattern = parsed_args["inregex"]
     if z <= 0
         @error "z should be > 0"
         return

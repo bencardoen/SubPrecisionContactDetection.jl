@@ -1128,7 +1128,7 @@ end
 	Object statistics are saved in a CSV file with the same name as the tiff file.
 """
 function filter_mcsdetect(dir, start=1, step=0.1, stop=3, channels="*[0-2].tif")
-    @debug "Dir $x sweep from $start → $stop in steps $step matching channels $channels"
+    @debug "Dir $dir sweep from $start → $stop in steps $step matching channels $channels"
     fs = Glob.glob(channels, dir)
     # @info fs
     @debug "Found $fs"
