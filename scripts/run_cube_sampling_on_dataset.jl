@@ -79,6 +79,7 @@ end
 
 
 function run()
+	@debug "Todo process both channels, not just mito."
 	parsed_args = parse_commandline()
 	inpath = parsed_args["inpath"]
 	outpath = parsed_args["outpath"]

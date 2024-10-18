@@ -40,7 +40,7 @@ import SPECHT
 using ImageContrastAdjustment
 
 export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin,
-computeintensitycorrelation,
+computeintensitycorrelation, recursive_glob,
 summarize_spots, findchannel, sp,
 compute_edges, reportimagequality, dtd_to_field, c3, shape_component, filter_mcsdetect, 
 process_contact_stack3d, sp2d,
@@ -1216,6 +1216,23 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
     df[!, :centroid_object_y] .= ctrs[:, 2]
     df[!, :centroid_object_z] .= ctrs[:, 3] 
     return df
+end
+
+"""
+    recursive_glob(pattern, directory)
+    Returns all matches files defined by `pattern` in directory, recursively
+    Aimed at finding files, not directories. If your pattern matches directories, unexpected results can follow.
+"""
+function recursive_glob(pattern, dir)
+	# Does not recurse
+    files = Glob.glob(pattern, dir)
+    content = readdir(dir, join=true)
+    for con in content
+        if isdir(con)
+            files = vcat(files, recursive_glob(pattern, con))
+        end
+    end
+    return files
 end
 
 function dtocent(ccs)

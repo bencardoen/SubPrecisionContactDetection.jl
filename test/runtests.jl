@@ -69,6 +69,31 @@ using Distributions
 		unique(r) == [0, 1]
 	end
 
+    @testset "recursiveglob" begin
+        testdir = "testglob"
+        testfile = "1.tif"
+        testpattern = "*1.tif"
+        if isdir(testdir)
+            rm(testdir, recursive=true)
+        end
+		mkdir(testdir)
+        mkdir(joinpath(testdir, "1"))
+        mkdir(joinpath(testdir, "1", "2"))
+        touch(joinpath(testdir, testfile))
+        touch(joinpath(testdir, "1", testfile))
+        touch(joinpath(testdir, "1", "2", testfile))
+        fs = Glob.glob(testpattern, testdir)
+        fx = recursive_glob(testpattern, testdir)
+        @test length(fs) == 1
+        @test length(fx) == 3
+        for f in fs
+            @test isfile(f)
+        end
+        if isdir(testdir)
+            rm(testdir, recursive=true)
+        end
+	end
+
 	@testset "iq" begin
 
 		A = zeros(100, 100)
