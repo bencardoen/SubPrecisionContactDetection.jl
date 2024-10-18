@@ -1127,9 +1127,13 @@ end
 	To use a single Z value, set start=stop.
 	Object statistics are saved in a CSV file with the same name as the tiff file.
 """
-function filter_mcsdetect(dir, start=1, step=0.1, stop=3, channels="*[0-2].tif")
-    @debug "Dir $dir sweep from $start → $stop in steps $step matching channels $channels"
-    fs = Glob.glob(channels, dir)
+function filter_mcsdetect(dir, start=1, step=0.1, stop=3, channels="*[0-2].tif", recursive=false, outpath="")
+    @debug "Dir $dir sweep from $start → $stop in steps $step matching channels $channels in $recursive mode with $outpath"
+    if recursive
+		fs = recursive_glob(channels, dir)
+	else
+		fs = Glob.glob(channels, dir)
+	end
     # @info fs
     @debug "Found $fs"
     for f in fs
@@ -1142,19 +1146,23 @@ function filter_mcsdetect(dir, start=1, step=0.1, stop=3, channels="*[0-2].tif")
         pt = splitpath(f)
         fn = pt[end]
         fne = splitext(fn)[1]
+		savepath = pt[1:end-1]
+		if outpath != ""
+			savepath = splitpath(outpath)
+		end
         for _z in start:step:stop
             fi, th = filter_k(i, _z)
             @debug "Threshold used for $(_z) : $(th)"
             m = bm(fi)
             @debug "Saving as mask_$(fne).tif) in $(joinpath(pt[1:end-1]...))"
-            Images.save(joinpath(pt[1:end-1]...,"mask_$(_z)_$(fne).tif"), m)
-            Images.save(joinpath(pt[1:end-1]...,"masked_$(_z)_$(fne).tif"), fi)
+            Images.save(joinpath(savepath...,"mask_$(_z)_$(fne).tif"), m)
+            Images.save(joinpath(savepath...,"masked_$(_z)_$(fne).tif"), fi)
             df = describe_objects(fi)
             df[!,:z] .= _z
             df[!,:filename] .= f
             push!(dfs, df)
         end
-        CSV.write(joinpath(pt[1:end-1]...,"stats_$(start)_$(step)_$(stop)_$(fne).csv"), vcat(dfs...))
+        CSV.write(joinpath(savepath...,"stats_$(start)_$(step)_$(stop)_$(fne).csv"), vcat(dfs...))
     end
 end
 

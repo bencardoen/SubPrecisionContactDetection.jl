@@ -38,6 +38,15 @@ function parse_commandline()
             help = "input folder"
             arg_type = String
             required = true
+        "--outpath", "-o"
+            help = "output folder. If not used, output is saved in place. If used, output is collapsed into this path. DO NOT use if filenames can clash"
+            arg_type = String
+            default = ""
+            required = false
+        "--recursive"
+            help = "Search in all subdirectories of input folder. CAUTION: Can generate extreme amounts of output. Default off."
+            action = :store_true
+            default = false
         "--inregex", "-r"
             help = "regex tiff files in inpath. Defaults to *[1,2].tif , so will pick up tif files endings with 1 or 2.tif"
             arg_type = String
@@ -88,7 +97,11 @@ function runc()
         @error "Step of <= 0 is nonsense"
         return
     end
-    filter_mcsdetect(inpath, z, s, Z, pattern)
+    op = parsed_args["outpath"]
+    if op != "" && (! isdir(op))
+        mkdir(op)
+    end
+    filter_mcsdetect(inpath, z, s, Z, pattern, parsed_args["recursive"], op)
     @info "Because the glass is already broken, it is more enjoyed -- Ajahn Chah"
 end
 
