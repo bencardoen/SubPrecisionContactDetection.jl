@@ -165,9 +165,9 @@ This should result in output similar to this screenshot:
 
 <a name="windows"></a>
 ### 1.3 Windows
-- Install [VSCode]()
-- Install [Python]()
-- Install [Julia 1.9]()
+- Install [VSCode](https://code.visualstudio.com/download)
+- Install [Python](https://www.python.org/downloads/)
+- Install [Julia 1.9](https://julialang-s3.julialang.org/bin/winnt/x64/1.9/julia-1.9.4-win64.exe)
 In VSCode, create a new folder and open VSCode inside of it.
 
 Then:
