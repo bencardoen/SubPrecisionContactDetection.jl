@@ -459,6 +459,8 @@ A brief overview of the generated output follows here:
 - $PREFIX_pre_split_gradient.tif: Contacts with the gradient filter applied.
 - $PREFIX_split_eroded.tif: Erodes singular voxels that are below the precision of the system
 - $PREFIX_3_eroded_volumes_nonsplit.csv : Features computed on the contacts
+- $PREFIX_C1_objects.csv: A CSV file where each row describe the features of the segmented objects of that channel (1). So if the code ran on 01.tif and 02.tif, C1 will map to 01.tif, filtered, then processed.
+- $PREFIX_C2_objects.csv: A CSV file where each row describe the features of the segmented objects of that channel (1). So if the code ran on 01.tif and 02.tif, C1 will map to 01.tif, filtered, then processed.
 See also the postprocessing for further output.
 The remainder are debugging outputs that can be traced to their source code in the script.
 
