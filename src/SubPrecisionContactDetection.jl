@@ -1197,7 +1197,7 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
 		w[ic,3:10] .= _dimg(vals)
 		w[ic, 11:13] .= getextent(boxes[ic])
 		l1, l2, l3 = shape_component(coms, img, ic)
-		@info l1, l2, l3
+		# @info l1, l2, l3
 		# if l1 != 0
 			# l1 = l1/l1
 			# l2 = l2/l1
@@ -1208,6 +1208,7 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
 			w[ic, 17:19] .= l1/l1, l2/l1, l3/l1
 			@debug w[ic, 17:19]
 		end
+		# if l1 == 0, l2, l3 are zero, the array is zero init, so they're already zero
 	end
 	columns = [:size, :weighted, :minimum, :Q1, :mean, :median, :Q3, :maximum, :std, :kurtosis, :xyspan, :zspan, :zmidpoint, :eig1, :eig2, :eig3, :eig1norm, :eig2norm, :eig3norm]
     df = DataFrames.DataFrame()
@@ -1222,7 +1223,8 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
     df[!, :centroid_channel_z] .= ctr[3]
     df[!, :centroid_object_x] .= ctrs[:, 1]
     df[!, :centroid_object_y] .= ctrs[:, 2]
-    df[!, :centroid_object_z] .= ctrs[:, 3] 
+    df[!, :centroid_object_z] .= ctrs[:, 3]
+	# TODO compute EMST of centroids 
     return df
 end
 
