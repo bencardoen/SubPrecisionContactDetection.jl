@@ -41,7 +41,7 @@ using ImageContrastAdjustment
 
 export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin,
 computeintensitycorrelation, recursive_glob,
-summarize_spots, findchannel, sp,
+summarize_spots, findchannel, sp, get_defaults,
 compute_edges, reportimagequality, dtd_to_field, c3, shape_component, filter_mcsdetect, 
 process_contact_stack3d, sp2d,
 makespheres, loadimages, sp3d, reportvolumes, reportvolumes2D, process_contact_stack, filter_k, offset, mcc, clampt, ratefilter, computesurfaces,
@@ -53,7 +53,7 @@ spear, denoise, volume_to_radius, radius_to_volume, qnorm, compute_min_r_for_sam
 computesphericity, filterintensity, gerode, to3RGB, getskeleton, dropleq, randomcolorarray, getrandomcolor, minnz, normcontacts, getci,
 gradientmagnitude, indexofdispersion, expandstack, reducestack, compute_sample_size_for_min_corr, gradientmagnitude3d,
 reducedim, expanddim, parsesigmas, edge_from_border,
-normalize_channel, filtermito, walk_cube, clipr, normalize_linear
+normalize_channel, filtermito, walk_cube, clipr, normalize_linear, combines, endings, two_channel_contacts
 
 
 ### Define for the entire module how components are computed --> diag means touching any pixel
@@ -1166,6 +1166,220 @@ function filter_mcsdetect(dir, start=1, step=0.1, stop=3, channels="*[0-2].tif",
     end
 end
 
+
+"""
+	two_channel_contacts(args::Dict(String=>value), tiffiles=nothing)
+	The main 2-channel contact function that combines preprocessing and postprocessing.
+	See get_defaults for default arguments.
+"""
+function two_channel_contacts(parsed_args, tiffiles=nothing)
+    dimension = parsed_args["dimension"]
+    if dimension != 3
+        if dimension != 2
+            error("Invalid dimenions $dimension , should be 2, 3")
+        end
+        @warn "Using XY axis only, input expected to be 2-dimensional"
+    end
+    inpath = parsed_args["inpath"]
+    mode = parsed_args["filtermode"]
+    allowed = ["autotune", "geometric", "arithmetic", "curvature"]
+    z = parsed_args["zscore"]
+    prc = parsed_args["prc"]
+    denom = parsed_args["denominator"]
+    if !(mode in allowed)
+        @error "$(mode) not a valid choice"
+        exit(-1)
+    else
+        if mode != "autotune"
+            if mode != "curvature"
+                if z < 0.01
+                @error "Invalid z score $(z)"
+                exit(-1)
+                end
+                @info "Using $(mode) with z = $(z)"
+            else
+                if denom <= 0
+                    @error "Invalid d value <= 0 $(z)"
+                    exit(-1)
+                end
+                @info "Using $(mode) with denominator = $(denom)"
+            end
+        else
+            if prc <= 0
+                @error "Invalid prc $(prc)"
+                exit(-1)
+            end
+            @info "Using autotune with PRC $(prc)"
+        end
+    end
+    sigmas = [nothing, nothing, nothing]
+    deconvolved = parsed_args["deconvolved"]
+    if !deconvolved
+        sigmas = parsesigmas(parsed_args["sigmas"])
+    end
+    lpsigmas = parsesigmas(parsed_args["lpsigmas"])
+    outpath = parsed_args["outpath"]
+    if ! isdir(outpath)
+        @warn "$(outpath) does not exists, creating"
+        mkpath(outpath)
+    end
+    w = parsed_args["windowsize"]
+    volth = parsed_args["volumethreshold"]
+    @info "Using volume threshold of $volth"
+    if volth < 0
+        @error "Negative volume threshold? $volth"
+        return
+    end
+    if (w < 1)
+        @error "Invalid window size $w should be >=1"
+        exit(-1)
+    end
+    if (w > 3)
+        @warn "Window of $w is equivalent to $((w*2+1)^3) -- expect cubic increase in runtime !!!"
+    end
+    vtch = parsed_args["volumethresholdchannel"]
+    if  vtch > 3 || vtch < 0
+        @error "Invalid parameter $(vtch)"
+        return
+    end
+    stride = w
+    @assert(stride >= 1)
+    # Allow to be overridden by caller so multicontacts does the right thing
+    if isnothing(tiffiles)
+        tiffiles = Glob.glob(parsed_args["inregex"], inpath)
+    else
+        @info "Caller passed in exact files $tiffles"
+    end
+    @info "Found $(length(tiffiles)) in $inpath"
+    @assert(length(tiffiles) == 2)
+    @assert(tiffiles[1] < tiffiles[2])
+    path_components = splitpath(tiffiles[1])
+    cell_dir, filename, treatment_dir  = path_components[end-1], path_components[end], path_components[end-2]
+    prefix = "$(treatment_dir)_$(cell_dir)_$(splitext(filename)[1])"
+    @info "Using $(prefix) to save files..."
+    if parsed_args["dry-run"] == true
+        @info "Dry run complete, quitting"
+        return
+    end
+    @info "Loading images"
+    _im1, _im2 = Images.load(tiffiles[1]), Images.load(tiffiles[2])
+    im1 = splitchannel(_im1)
+    im2 = splitchannel(_im2)
+    raw = nothing
+    rawregex = "*[1,2]_raw.tif"
+    if parsed_args["mode"] == "both"
+        @assert false
+        @error("Revise support for combined mode")
+        @warn "Mix"
+        rtiffiles = Glob.glob(rawregex, inpath)
+        @assert(length(rtiffiles) == 2)
+        @assert(rtiffiles[1] < rtiffiles[2])
+        r1 = splitchannel(Images.load(rtiffiles[1]))
+        r2 = splitchannel(Images.load(rtiffiles[2]))
+        raw = [r1, r2]
+    end
+    normalize = parsed_args["normalize"]
+    @info "Processing 1 = $(size(im1)) $(eltype(im1)) 2 = $(size(im2)) $(eltype(im2))"
+    if dimension == 2
+        rawcontacts, rawmkcontacts, filteredcontacts, gradientcontacts, img_1f, img_2f, sigmap = compute_contacts_2d(im1, im2, k=z, w=stride, deconvolved=deconvolved,
+        sigmas=sigmas, geometric=(mode == "geometric"), autotune=(mode == "autotune"), prc=prc, curvature=(mode == "curvature"), denominator=denom,
+        alpha=parsed_args["alpha"], beta=parsed_args["beta"], raw=raw, lpsigmas=lpsigmas, normalize=normalize)
+    else
+        rawcontacts, rawmkcontacts, filteredcontacts, gradientcontacts, img_1f, img_2f, sigmap = compute_contacts_3d(im1, im2, k=z, w=stride, deconvolved=deconvolved,
+        sigmas=sigmas, geometric=(mode == "geometric"), autotune=(mode == "autotune"), prc=prc, curvature=(mode == "curvature"), denominator=denom,
+        alpha=parsed_args["alpha"], beta=parsed_args["beta"], raw=raw, lpsigmas=lpsigmas, normalize=normalize)
+    end
+    if parsed_args["nooutput"] == true
+        @info "Skipping output"
+        return
+    end
+    @info "Saving images"
+    mito = Images.N0f16.(img_1f)
+    Images.save(joinpath(outpath,"$(prefix)_confidence_map.tif"), Images.N0f16.(sigmap))
+    Images.save(joinpath(outpath,"$(prefix)_channel_1.tif"), mito)
+    Images.save(joinpath(outpath,"$(prefix)_channel_2.tif"), Images.N0f16.(img_2f))
+    Images.save(joinpath(outpath,"$(prefix)_pre_split_raw.tif"), Images.N0f16.(rawcontacts))
+    Images.save(joinpath(outpath,"$(prefix)_pre_split_gradient.tif"), Images.N0f16.(gradientcontacts))
+    @info "Saving features of objects in channels"
+    df_c1 = describe_objects(Images.N0f16.(img_1f))
+    CSV.write(joinpath(outpath, "$(prefix)_C1_objects.csv"), df_c1)
+    df_c2 = describe_objects(Images.N0f16.(img_2f))
+    CSV.write(joinpath(outpath, "$(prefix)_C2_objects.csv"), df_c2)
+
+    rawcontacts, rawmkcontacts, filteredcontacts = nothing, nothing, nothing
+    GC.gc()
+    erodedcontacts = gerode(gradientcontacts)
+    GQ = Images.N0f16.(gradientcontacts .* erodedcontacts)
+    Images.save(joinpath(outpath,"$(prefix)_pre_split_eroded.tif"), GQ)
+
+    ## If 2D stop here
+    if dimension == 2
+        @info "Dimension = 2 : Feature computation & filtering not implemented for dim != 3"
+        _df = reportvolumes2D(GQ)
+        CSV.write(joinpath(outpath, "$(prefix)_$(w)_2D_eroded_surfaces_nonsplit.csv"), _df)
+        @info "Dimension = 2 : Advanced filtering/postprocessing not implemented for 2D."
+        return
+    end
+
+    _df, skeleton = reportvolumes(GQ, sigmap; mito=mito)
+    if isnothing(_df)
+        @debug "No components to process, skipping ..."
+    else
+        CSV.write(joinpath(outpath, "$(prefix)_$(w)_3_eroded_volumes_nonsplit.csv"), _df)
+        Images.save(joinpath(outpath, "$(prefix)_$(w)_skeleton_contacts.tif"), skeleton)
+    end
+    @info "Saving config"
+    JLD2.jldsave(joinpath(outpath, "metadata.jld2"), true; metadata=parsed_args)
+    @info "Because the glass is already broken, it is more enjoyed -- Ajahn Chah"
+end
+
+
+"""
+	combines(xs)
+	Returns a combination of the elements of xs
+"""
+function combines(xs)
+    rs = []
+	ris = []
+    N = length(xs)
+    for (i, x) in enumerate(xs)
+        if i == N
+            continue
+        end
+        for (j, y) in enumerate(xs[i+1:end])
+            push!(rs, [x, y])
+			push!(ris, [i,j])
+        end
+    end
+    return rs
+end
+
+
+"""
+	endings(fs)
+	For a vector of filenames, return a vector of filename postfixes (integer). E.g. ["01.tif"] --> [1]
+"""
+function endings(fs)
+    endings = []
+    for f in fs
+        f_split = splitpath(f)[end]
+        f_name = splitext(f_split)[1]
+        @info f_name
+        if length(f_name) < 2
+            @error "Unlikely filename $(f_name)"
+            throw(ArgumentError("Unlikely filename $(f_name)"))
+        end
+        intend = match(r"[0-9]+$", f_name)
+        if isnothing(intend)
+            throw(ArgumentError("Filename does not end with integer, can't make combos"))
+        end
+        ind = tryparse(Int, intend.match)
+        push!(endings, ind)
+    end
+    return endings
+end
+
+
 function bm(xs)
     ys = copy(xs)
     ys[ys .> 0] .= 1
@@ -1226,6 +1440,45 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
     df[!, :centroid_object_z] .= ctrs[:, 3]
 	# TODO compute EMST of centroids 
     return df
+end
+
+"""
+    get_defaults()
+    Default arguments for contact detection.
+"""
+function get_defaults()
+    default_args = Dict()
+    default_args["inpath"] = ""
+    default_args["normalize"]= false
+    default_args["cube-vesicle-size-ln"]=9
+    default_args["cube-vesicle-sample-size"]=5
+    default_args["cube-vesicle-intensity-mean"]=.2
+    default_args["filtermode"]="arithmetic"
+    default_args["prc"]=1.0
+    default_args["denominator"]=1.0
+    default_args["weighted"]=false
+    default_args["sphericity"]=1.0
+    default_args["nooutput"]=false
+    default_args["dry-run"]=false
+    default_args["noutput"]=false
+    default_args["save-numerical-data"]=false
+    default_args["inregex"]="*[1,2].tif"
+    default_args["outpath"] = ""
+    default_args["mode"] = "non-decon"
+    default_args["deconvolved"] = true
+    default_args["sigmas"] = "1-1-1"
+    default_args["lpsigmas"] = "1-1-1"
+    default_args["windowsize"] = 1
+    default_args["radius"] = false
+    default_args["zscore"] = 3
+    default_args["volumethreshold"] = 0
+    default_args["volumethresholdchannel"] = 1
+    default_args["dimension"]=3
+    default_args["minzslice"]=1
+    default_args["alpha"]=0.05
+    default_args["beta"]=0.05
+    default_args["skipstats"]=false
+    return default_args
 end
 
 """

@@ -1,16 +1,3 @@
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# Copyright 2021-2022, Ben Cardoen
 using SubPrecisionContactDetection
 using Images, Colors, DataFrames, CSV, Statistics, LinearAlgebra
 import Glob
@@ -87,7 +74,7 @@ function parse_commandline()
         "--save-numerical-data"
             help = "Save results not just in tiff/csv, but also in compressed binary .jld format"
             action = :store_true
-        "--inregex", "-r"
+        "--channels", "-c"
             help = "regex matching exactly 2 tiff files in inpath"
             arg_type = String
             default = "*[1,2].tif"
@@ -159,7 +146,7 @@ function parse_commandline()
 end
 
 
-function run_script()
+function runc()
     date_format = "yyyy-mm-dd HH:MM:SS"
     timestamp_logger(logger) = TransformerLogger(logger) do log
       merge(log, (; message = "$(Dates.format(now(), date_format)) $(basename(log.file)):$(log.line): $(log.message)"))
@@ -170,8 +157,22 @@ function run_script()
     for (arg,val) in parsed_args
         @info "  $arg  =>  $val"
     end
-    two_channel_contacts(parsed_args)
+    # Check the glob of input and how many files it finds 
+    inpath = parse_args["inpath"]
+    files = Glob.glob(parse_args["channels"], inpath)
+    if length(files) < 2 || length(files) > 8
+        @error "Files is < 2 or > 8, please check your channel specification."
+        return
+    end
+    ends = endings(files)
+    cs, cis = combines(ends)
+    for ((xi, yi), (x, y)) in zip(cis, cs)
+        @info "Starting combination $x - $y"
+        op = joinpath(parse_args["outpath"], "$(x)-$(y)")
+        pa = copy(parsed_args)
+        pa["outpath"] = op
+        tiffiles = [files[xi], files[yi]]
+        two_channel_contacts(pa, tiffiles)
+    end
 end
 
-
-run_script()

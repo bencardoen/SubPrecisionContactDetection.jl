@@ -94,6 +94,54 @@ using Distributions
         end
 	end
 
+    @testset "comb" begin
+        t = mktempdir()
+		Images.save(joinpath(t, "a01.tif"), rand(200, 200))
+        Images.save(joinpath(t, "b02.tif"), rand(200, 200))
+        Images.save(joinpath(t, "c03.tif"), rand(200, 200))
+        fs = Glob.glob("*.tif", t)
+        @test length(fs) == 3
+        es = endings(fs)
+        @test es[1] == 1
+        @test es[2] == 2
+        @test es[3] == 3
+        cs = combines(es)
+        @test cs[1] == [1,2]
+        @test cs[2] == [1,3]
+        @test cs[3] == [2,3]
+		rm(t, recursive=true) 
+    end
+
+    @testset "def" begin
+        defs = get_defaults()
+        @test length(defs) == 30
+    end
+
+    @testset "2channelrefactor" begin
+        # defs = get_defaults()
+        t = mktempdir()
+        c1 = Images.N0f16.(zeros(100, 100, 100))
+        c1[50:60, 50:60, 50:60] .= 1
+        c2 = Images.N0f16.(zeros(100, 100, 100))
+        c2[58:70, 58:70, 58:70] .= 1
+        sigma = 1.0
+        c1f = Images.imfilter(c1, Kernel.gaussian((sigma,sigma,sigma)))
+        c2f = Images.imfilter(c2, Kernel.gaussian((sigma,sigma,sigma)))
+        clamp01!(c1f)
+        clamp01!(c2f)
+        Images.save(joinpath(t, "1.tif"), c1f)
+        Images.save(joinpath(t, "2.tif"), c2f)
+        defs = get_defaults()
+        defs["zscore"] = 0.5
+        defs["inpath"] = t
+        q = mktempdir()
+        defs["outpath"] = q
+        two_channel_contacts(defs)
+        @test length(Glob.glob("*.tif", q)) == 6
+        rm(t, recursive=true)
+        rm(q, recursive=true)
+    end
+
 	@testset "iq" begin
 
 		A = zeros(100, 100)
