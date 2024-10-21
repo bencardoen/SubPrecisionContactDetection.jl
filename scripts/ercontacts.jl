@@ -170,8 +170,7 @@ function run_script()
     for (arg,val) in parsed_args
         @info "  $arg  =>  $val"
     end
-    # pass remainder to refactored function
-    twochannelcontacts(parsed_args)
+    two_channel_contacts(parsed_args)
 end
 
 # function twochannelcontacts(parsed_args, tiffiles=nothing)

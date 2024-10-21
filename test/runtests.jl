@@ -117,6 +117,12 @@ using Distributions
         @test length(defs) == 29
     end
 
+    @testset "2channelrefactor" begin
+        defs = get_defaults()
+        two_channel_contacts(defs)
+        @warn "Extend tests"
+    end
+
 	@testset "iq" begin
 
 		A = zeros(100, 100)

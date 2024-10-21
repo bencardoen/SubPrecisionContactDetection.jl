@@ -40,7 +40,7 @@ import SPECHT
 using ImageContrastAdjustment
 
 export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin,
-computeintensitycorrelation, recursive_glob, twochannelcontacts,
+computeintensitycorrelation, recursive_glob,
 summarize_spots, findchannel, sp, get_defaults,
 compute_edges, reportimagequality, dtd_to_field, c3, shape_component, filter_mcsdetect, 
 process_contact_stack3d, sp2d,
@@ -53,7 +53,7 @@ spear, denoise, volume_to_radius, radius_to_volume, qnorm, compute_min_r_for_sam
 computesphericity, filterintensity, gerode, to3RGB, getskeleton, dropleq, randomcolorarray, getrandomcolor, minnz, normcontacts, getci,
 gradientmagnitude, indexofdispersion, expandstack, reducestack, compute_sample_size_for_min_corr, gradientmagnitude3d,
 reducedim, expanddim, parsesigmas, edge_from_border,
-normalize_channel, filtermito, walk_cube, clipr, normalize_linear, combines, endings
+normalize_channel, filtermito, walk_cube, clipr, normalize_linear, combines, endings, two_channel_contacts
 
 
 ### Define for the entire module how components are computed --> diag means touching any pixel
@@ -1167,7 +1167,12 @@ function filter_mcsdetect(dir, start=1, step=0.1, stop=3, channels="*[0-2].tif",
 end
 
 
-function twochannelcontacts(parsed_args, tiffiles=nothing)
+"""
+	two_channel_contacts(args::Dict(String=>value), tiffiles=nothing)
+	The main 2-channel contact function that combines preprocessing and postprocessing.
+	See get_defaults for default arguments.
+"""
+function two_channel_contacts(parsed_args, tiffiles=nothing)
     dimension = parsed_args["dimension"]
     if dimension != 3
         if dimension != 2
@@ -1297,9 +1302,9 @@ function twochannelcontacts(parsed_args, tiffiles=nothing)
     Images.save(joinpath(outpath,"$(prefix)_pre_split_gradient.tif"), Images.N0f16.(gradientcontacts))
     @info "Saving features of objects in channels"
     df_c1 = describe_objects(Images.N0f16.(img_1f))
-    CSV.write(joirpath(outpath, "$(prefix)_C1_objects.csv"), df_c1)
+    CSV.write(joinpath(outpath, "$(prefix)_C1_objects.csv"), df_c1)
     df_c2 = describe_objects(Images.N0f16.(img_2f))
-    CSV.write(joirpath(outpath, "$(prefix)_C2_objects.csv"), df_c2)
+    CSV.write(joinpath(outpath, "$(prefix)_C2_objects.csv"), df_c2)
 
     rawcontacts, rawmkcontacts, filteredcontacts = nothing, nothing, nothing
     GC.gc()
@@ -1481,7 +1486,7 @@ function get_defaults()
     default_args["denominator"]=1.0
     default_args["weighted"]=false
     default_args["sphericity"]=1.0
-    default_args["noutput"]=false
+    default_args["nooutput"]=false
     default_args["dry-run"]=false
     default_args["noutput"]=false
     default_args["save-numerical-data"]=false
@@ -1491,7 +1496,7 @@ function get_defaults()
     default_args["deconvolved"] = true
     default_args["sigmas"] = "1-1-1"
     default_args["lpsigmas"] = "1-1-1"
-    default_args["window"] = 1
+    default_args["windowsize"] = 1
     default_args["radius"] = false
     default_args["zscore"] = 3
     default_args["volumethreshold"] = 0
