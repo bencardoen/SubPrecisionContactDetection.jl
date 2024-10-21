@@ -37,6 +37,7 @@ function run_script()
         @info "  $arg  =>  $val"
     end
     # TODO setup multichannel mode
+    inpath = parsed_args["inpath"]
     op = parsed_args["outpath"]
     for replicate in readdir(inpath; join=true)
 	    r = basename(replicate)
