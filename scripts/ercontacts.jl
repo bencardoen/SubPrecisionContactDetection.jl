@@ -26,7 +26,6 @@ import JLD2
 using LoggingExtras, Dates
 
 
-
 function parse_commandline()
     s = ArgParseSettings()
 
