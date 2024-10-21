@@ -1328,36 +1328,6 @@ function two_channel_contacts(parsed_args, tiffiles=nothing)
         CSV.write(joinpath(outpath, "$(prefix)_$(w)_3_eroded_volumes_nonsplit.csv"), _df)
         Images.save(joinpath(outpath, "$(prefix)_$(w)_skeleton_contacts.tif"), skeleton)
     end
-    #
-    if parsed_args["radius"]
-            @info "Using radius $volth"
-            volth = radius_to_volume(volth)
-            @info "is volume $volth"
-    end
-
-    @info "Filtering with volume threshold $volth"
-    @assert vtch == 1
-    GC.gc()
-    lower, higher, lowercontacts, highercontacts = filter_channels(img_1f, GQ, volth, weighted=parsed_args["weighted"], intensityfilter=false, sphericity_threshold=parsed_args["sphericity"])
-
-    _ls = ["vesicle", "non-vesicle"]
-    mt = [lower, higher]
-    con = [lowercontacts, highercontacts]
-    for (il, _l) in enumerate(_ls)
-        contacts = Images.N0f16.(con[il] .* GQ)
-        ch = Images.N0f16.(mt[il] .* img_1f)
-        @info "Saving filtered channel $(il) / 2"
-        Images.save(joinpath(outpath,"$(prefix)_filtered_channel_1_$(_l).tif"), ch)
-        @info "Saving filtered contacts $(il) / 2"
-        Images.save(joinpath(outpath,"$(prefix)_$(_ls[il])_contacts.tif"), contacts)
-        @info "Saving statistics $(il) / 2"
-        _df, _  = reportvolumes(contacts, sigmap; mito=mito)
-        if isnothing(_df)
-            @debug "No components to process, skipping ..."
-        else
-            CSV.write(joinpath(outpath, "$(prefix)_$(_ls[il])_contacts.csv"), _df)
-        end
-    end
     @info "Saving config"
     JLD2.jldsave(joinpath(outpath, "metadata.jld2"), true; metadata=parsed_args)
     @info "Because the glass is already broken, it is more enjoyed -- Ajahn Chah"
