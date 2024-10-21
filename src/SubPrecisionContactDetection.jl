@@ -53,7 +53,7 @@ spear, denoise, volume_to_radius, radius_to_volume, qnorm, compute_min_r_for_sam
 computesphericity, filterintensity, gerode, to3RGB, getskeleton, dropleq, randomcolorarray, getrandomcolor, minnz, normcontacts, getci,
 gradientmagnitude, indexofdispersion, expandstack, reducestack, compute_sample_size_for_min_corr, gradientmagnitude3d,
 reducedim, expanddim, parsesigmas, edge_from_border,
-normalize_channel, filtermito, walk_cube, clipr, normalize_linear
+normalize_channel, filtermito, walk_cube, clipr, normalize_linear, combines, endings
 
 
 ### Define for the entire module how components are computed --> diag means touching any pixel
@@ -1165,6 +1165,51 @@ function filter_mcsdetect(dir, start=1, step=0.1, stop=3, channels="*[0-2].tif",
         CSV.write(joinpath(savepath...,"stats_$(start)_$(step)_$(stop)_$(fne).csv"), vcat(dfs...))
     end
 end
+
+
+"""
+	combines(xs)
+	Returns a combination of the elements of xs
+"""
+function combines(xs)
+    rs = []
+    N = length(xs)
+    for (i, x) in enumerate(xs)
+        if i == N
+            continue
+        end
+        for (j, y) in enumerate(xs[i+1:end])
+            push!(rs, [x, y])
+        end
+    end
+    return rs
+end
+
+
+"""
+	endings(fs)
+	For a vector of filenames, return a vector of filename postfixes (integer). E.g. ["01.tif"] --> [1]
+"""
+function endings(fs)
+    endings = []
+    for f in fs
+        f_split = splitpath(f)[end]
+        f_name = splitext(f_split)[1]
+        @info f_name
+        if length(f_name) < 2
+            @error "Unlikely filename $(f_name)"
+            throw(ArgumentError("Unlikely filename $(f_name)"))
+        end
+        intend = match(r"[0-9]+$", f_name)
+        if isnothing(intend)
+            throw(ArgumentError("Filename does not end with integer, can't make combos"))
+        end
+        ind = tryparse(Int, intend.match)
+        push!(endings, ind)
+    end
+    return endings
+end
+
 
 function bm(xs)
     ys = copy(xs)

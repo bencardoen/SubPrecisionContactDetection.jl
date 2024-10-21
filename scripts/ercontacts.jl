@@ -158,7 +158,8 @@ function parse_commandline()
     return parse_args(s)
 end
 
-function runc()
+
+function run_script()
     date_format = "yyyy-mm-dd HH:MM:SS"
     timestamp_logger(logger) = TransformerLogger(logger) do log
       merge(log, (; message = "$(Dates.format(now(), date_format)) $(basename(log.file)):$(log.line): $(log.message)"))
@@ -169,14 +170,27 @@ function runc()
     for (arg,val) in parsed_args
         @info "  $arg  =>  $val"
     end
+    # pass remainder to refactored function
+    twochannelcontacts(parsed_args)
+end
+
+function twochannelcontacts(parsed_args, tiffiles=nothing)
+    # date_format = "yyyy-mm-dd HH:MM:SS"
+    # timestamp_logger(logger) = TransformerLogger(logger) do log
+    #   merge(log, (; message = "$(Dates.format(now(), date_format)) $(basename(log.file)):$(log.line): $(log.message)"))
+    # end
+    # ConsoleLogger(stdout, Logging.Info) |> timestamp_logger |> global_logger
+    # parsed_args = parse_commandline()
+    # @info "Parsed arguments:"
+    # for (arg,val) in parsed_args
+        # @info "  $arg  =>  $val"
+    # end
     dimension = parsed_args["dimension"]
     if dimension != 3
         if dimension != 2
             error("Invalid dimenions $dimension , should be 2, 3")
         end
         @warn "Using XY axis only, input expected to be 2-dimensional"
-        # Load files, assert dim == 2, then add w stacks copies on top/below
-        # At compute, extract only middle size
     end
     inpath = parsed_args["inpath"]
     mode = parsed_args["filtermode"]
@@ -242,7 +256,12 @@ function runc()
     end
     stride = w
     @assert(stride >= 1)
-    tiffiles = Glob.glob(parsed_args["inregex"], inpath)
+    # Allow to be overridden by caller so multicontacts does the right thing
+    if isnothing(tiffiles)
+        tiffiles = Glob.glob(parsed_args["inregex"], inpath)
+    else
+        @info "Caller passed in exact files $tiffles"
+    end
     @info "Found $(length(tiffiles)) in $inpath"
     @assert(length(tiffiles) == 2)
     @assert(tiffiles[1] < tiffiles[2])
@@ -256,14 +275,8 @@ function runc()
     end
     @info "Loading images"
     _im1, _im2 = Images.load(tiffiles[1]), Images.load(tiffiles[2])
-    # if dimension == 2
-    #     @warn "Using XY only"
-    #     _im1 = expandstack(_im1, w)
-    #     _im2 = expandstack(_im2, w)
-    # end
     im1 = splitchannel(_im1)
     im2 = splitchannel(_im2)
-    ### If mode == both, first preprocess raw, return a mask, mult mask with loaded non-decon
     raw = nothing
     rawregex = "*[1,2]_raw.tif"
     if parsed_args["mode"] == "both"
@@ -362,4 +375,4 @@ function runc()
     @info "Because the glass is already broken, it is more enjoyed -- Ajahn Chah"
 end
 
-runc()
+run_script()

@@ -94,6 +94,24 @@ using Distributions
         end
 	end
 
+    @testset "comb" begin
+        t = mktempdir()
+		Images.save(joinpath(t, "a01.tif"), rand(200, 200))
+        Images.save(joinpath(t, "b02.tif"), rand(200, 200))
+        Images.save(joinpath(t, "c03.tif"), rand(200, 200))
+        fs = Glob.glob("*.tif", t)
+        @test length(fs) == 3
+        es = endings(fs)
+        @test es[1] == 1
+        @test es[2] == 2
+        @test es[3] == 3
+        cs = combines(es)
+        @test cs[1] == [1,2]
+        @test cs[2] == [1,3]
+        @test cs[3] == [2,3]
+		rm(t, recursive=true) 
+    end
+
 	@testset "iq" begin
 
 		A = zeros(100, 100)
