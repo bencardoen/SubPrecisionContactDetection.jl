@@ -301,9 +301,9 @@ function runc()
     Images.save(joinpath(outpath,"$(prefix)_pre_split_gradient.tif"), Images.N0f16.(gradientcontacts))
     @info "Saving features of objects in channels"
     df_c1 = describe_objects(Images.N0f16.(img_1f))
-    CSV.write(joirpath(outpath, "$(prefix)_C1_objects.csv"), df_c1)
+    CSV.write(joinpath(outpath, "$(prefix)_C1_objects.csv"), df_c1)
     df_c2 = describe_objects(Images.N0f16.(img_2f))
-    CSV.write(joirpath(outpath, "$(prefix)_C2_objects.csv"), df_c2)
+    CSV.write(joinpath(outpath, "$(prefix)_C2_objects.csv"), df_c2)
 
     rawcontacts, rawmkcontacts, filteredcontacts = nothing, nothing, nothing
     GC.gc()
