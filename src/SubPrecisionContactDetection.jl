@@ -1186,7 +1186,7 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
 	@info "Processing $N components"
 	if N == 0
 		@warn "NO COMPONENTS TO PROCESS"
-		return nothing, nothing
+		return nothing
 	end
     for ic in 1:N
         vals = img[indices[ic]]
