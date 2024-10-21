@@ -40,7 +40,7 @@ import SPECHT
 using ImageContrastAdjustment
 
 export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin,
-computeintensitycorrelation, recursive_glob,
+computeintensitycorrelation, recursive_glob, twochannelcontacts,
 summarize_spots, findchannel, sp,
 compute_edges, reportimagequality, dtd_to_field, c3, shape_component, filter_mcsdetect, 
 process_contact_stack3d, sp2d,
@@ -1164,6 +1164,208 @@ function filter_mcsdetect(dir, start=1, step=0.1, stop=3, channels="*[0-2].tif",
         end
         CSV.write(joinpath(savepath...,"stats_$(start)_$(step)_$(stop)_$(fne).csv"), vcat(dfs...))
     end
+end
+
+
+function twochannelcontacts(parsed_args, tiffiles=nothing)
+    # date_format = "yyyy-mm-dd HH:MM:SS"
+    # timestamp_logger(logger) = TransformerLogger(logger) do log
+    #   merge(log, (; message = "$(Dates.format(now(), date_format)) $(basename(log.file)):$(log.line): $(log.message)"))
+    # end
+    # ConsoleLogger(stdout, Logging.Info) |> timestamp_logger |> global_logger
+    # parsed_args = parse_commandline()
+    # @info "Parsed arguments:"
+    # for (arg,val) in parsed_args
+        # @info "  $arg  =>  $val"
+    # end
+    dimension = parsed_args["dimension"]
+    if dimension != 3
+        if dimension != 2
+            error("Invalid dimenions $dimension , should be 2, 3")
+        end
+        @warn "Using XY axis only, input expected to be 2-dimensional"
+    end
+    inpath = parsed_args["inpath"]
+    mode = parsed_args["filtermode"]
+    allowed = ["autotune", "geometric", "arithmetic", "curvature"]
+    z = parsed_args["zscore"]
+    prc = parsed_args["prc"]
+    denom = parsed_args["denominator"]
+    if !(mode in allowed)
+        @error "$(mode) not a valid choice"
+        exit(-1)
+    else
+        if mode != "autotune"
+            if mode != "curvature"
+                if z < 0.01
+                @error "Invalid z score $(z)"
+                exit(-1)
+                end
+                @info "Using $(mode) with z = $(z)"
+            else
+                if denom <= 0
+                    @error "Invalid d value <= 0 $(z)"
+                    exit(-1)
+                end
+                @info "Using $(mode) with denominator = $(denom)"
+            end
+        else
+            if prc <= 0
+                @error "Invalid prc $(prc)"
+                exit(-1)
+            end
+            @info "Using autotune with PRC $(prc)"
+        end
+    end
+    sigmas = [nothing, nothing, nothing]
+    deconvolved = parsed_args["deconvolved"]
+    if !deconvolved
+        sigmas = parsesigmas(parsed_args["sigmas"])
+    end
+    lpsigmas = parsesigmas(parsed_args["lpsigmas"])
+    outpath = parsed_args["outpath"]
+    if ! isdir(outpath)
+        @warn "$(outpath) does not exists, creating"
+        mkpath(outpath)
+    end
+    w = parsed_args["windowsize"]
+    volth = parsed_args["volumethreshold"]
+    @info "Using volume threshold of $volth"
+    if volth < 0
+        @error "Negative volume threshold? $volth"
+        return
+    end
+    if (w < 1)
+        @error "Invalid window size $w should be >=1"
+        exit(-1)
+    end
+    if (w > 3)
+        @warn "Window of $w is equivalent to $((w*2+1)^3) -- expect cubic increase in runtime !!!"
+    end
+    vtch = parsed_args["volumethresholdchannel"]
+    if  vtch > 3 || vtch < 0
+        @error "Invalid parameter $(vtch)"
+        return
+    end
+    stride = w
+    @assert(stride >= 1)
+    # Allow to be overridden by caller so multicontacts does the right thing
+    if isnothing(tiffiles)
+        tiffiles = Glob.glob(parsed_args["inregex"], inpath)
+    else
+        @info "Caller passed in exact files $tiffles"
+    end
+    @info "Found $(length(tiffiles)) in $inpath"
+    @assert(length(tiffiles) == 2)
+    @assert(tiffiles[1] < tiffiles[2])
+    path_components = splitpath(tiffiles[1])
+    cell_dir, filename, treatment_dir  = path_components[end-1], path_components[end], path_components[end-2]
+    prefix = "$(treatment_dir)_$(cell_dir)_$(splitext(filename)[1])"
+    @info "Using $(prefix) to save files..."
+    if parsed_args["dry-run"] == true
+        @info "Dry run complete, quitting"
+        return
+    end
+    @info "Loading images"
+    _im1, _im2 = Images.load(tiffiles[1]), Images.load(tiffiles[2])
+    im1 = splitchannel(_im1)
+    im2 = splitchannel(_im2)
+    raw = nothing
+    rawregex = "*[1,2]_raw.tif"
+    if parsed_args["mode"] == "both"
+        @assert false
+        @error("Revise support for combined mode")
+        @warn "Mix"
+        rtiffiles = Glob.glob(rawregex, inpath)
+        @assert(length(rtiffiles) == 2)
+        @assert(rtiffiles[1] < rtiffiles[2])
+        r1 = splitchannel(Images.load(rtiffiles[1]))
+        r2 = splitchannel(Images.load(rtiffiles[2]))
+        raw = [r1, r2]
+    end
+    normalize = parsed_args["normalize"]
+    @info "Processing 1 = $(size(im1)) $(eltype(im1)) 2 = $(size(im2)) $(eltype(im2))"
+    if dimension == 2
+        rawcontacts, rawmkcontacts, filteredcontacts, gradientcontacts, img_1f, img_2f, sigmap = compute_contacts_2d(im1, im2, k=z, w=stride, deconvolved=deconvolved,
+        sigmas=sigmas, geometric=(mode == "geometric"), autotune=(mode == "autotune"), prc=prc, curvature=(mode == "curvature"), denominator=denom,
+        alpha=parsed_args["alpha"], beta=parsed_args["beta"], raw=raw, lpsigmas=lpsigmas, normalize=normalize)
+    else
+        rawcontacts, rawmkcontacts, filteredcontacts, gradientcontacts, img_1f, img_2f, sigmap = compute_contacts_3d(im1, im2, k=z, w=stride, deconvolved=deconvolved,
+        sigmas=sigmas, geometric=(mode == "geometric"), autotune=(mode == "autotune"), prc=prc, curvature=(mode == "curvature"), denominator=denom,
+        alpha=parsed_args["alpha"], beta=parsed_args["beta"], raw=raw, lpsigmas=lpsigmas, normalize=normalize)
+    end
+    if parsed_args["nooutput"] == true
+        @info "Skipping output"
+        return
+    end
+    @info "Saving images"
+    mito = Images.N0f16.(img_1f)
+    Images.save(joinpath(outpath,"$(prefix)_confidence_map.tif"), Images.N0f16.(sigmap))
+    Images.save(joinpath(outpath,"$(prefix)_channel_1.tif"), mito)
+    Images.save(joinpath(outpath,"$(prefix)_channel_2.tif"), Images.N0f16.(img_2f))
+    Images.save(joinpath(outpath,"$(prefix)_pre_split_raw.tif"), Images.N0f16.(rawcontacts))
+    Images.save(joinpath(outpath,"$(prefix)_pre_split_gradient.tif"), Images.N0f16.(gradientcontacts))
+    @info "Saving features of objects in channels"
+    df_c1 = describe_objects(Images.N0f16.(img_1f))
+    CSV.write(joirpath(outpath, "$(prefix)_C1_objects.csv"), df_c1)
+    df_c2 = describe_objects(Images.N0f16.(img_2f))
+    CSV.write(joirpath(outpath, "$(prefix)_C2_objects.csv"), df_c2)
+
+    rawcontacts, rawmkcontacts, filteredcontacts = nothing, nothing, nothing
+    GC.gc()
+    erodedcontacts = gerode(gradientcontacts)
+    GQ = Images.N0f16.(gradientcontacts .* erodedcontacts)
+    Images.save(joinpath(outpath,"$(prefix)_pre_split_eroded.tif"), GQ)
+
+    ## If 2D stop here
+    if dimension == 2
+        @info "Dimension = 2 : Feature computation & filtering not implemented for dim != 3"
+        _df = reportvolumes2D(GQ)
+        CSV.write(joinpath(outpath, "$(prefix)_$(w)_2D_eroded_surfaces_nonsplit.csv"), _df)
+        @info "Dimension = 2 : Advanced filtering/postprocessing not implemented for 2D."
+        return
+    end
+
+    _df, skeleton = reportvolumes(GQ, sigmap; mito=mito)
+    if isnothing(_df)
+        @debug "No components to process, skipping ..."
+    else
+        CSV.write(joinpath(outpath, "$(prefix)_$(w)_3_eroded_volumes_nonsplit.csv"), _df)
+        Images.save(joinpath(outpath, "$(prefix)_$(w)_skeleton_contacts.tif"), skeleton)
+    end
+    #
+    if parsed_args["radius"]
+            @info "Using radius $volth"
+            volth = radius_to_volume(volth)
+            @info "is volume $volth"
+    end
+
+    @info "Filtering with volume threshold $volth"
+    @assert vtch == 1
+    GC.gc()
+    lower, higher, lowercontacts, highercontacts = filter_channels(img_1f, GQ, volth, weighted=parsed_args["weighted"], intensityfilter=false, sphericity_threshold=parsed_args["sphericity"])
+
+    _ls = ["vesicle", "non-vesicle"]
+    mt = [lower, higher]
+    con = [lowercontacts, highercontacts]
+    for (il, _l) in enumerate(_ls)
+        contacts = Images.N0f16.(con[il] .* GQ)
+        ch = Images.N0f16.(mt[il] .* img_1f)
+        @info "Saving filtered channel $(il) / 2"
+        Images.save(joinpath(outpath,"$(prefix)_filtered_channel_1_$(_l).tif"), ch)
+        @info "Saving filtered contacts $(il) / 2"
+        Images.save(joinpath(outpath,"$(prefix)_$(_ls[il])_contacts.tif"), contacts)
+        @info "Saving statistics $(il) / 2"
+        _df, _  = reportvolumes(contacts, sigmap; mito=mito)
+        if isnothing(_df)
+            @debug "No components to process, skipping ..."
+        else
+            CSV.write(joinpath(outpath, "$(prefix)_$(_ls[il])_contacts.csv"), _df)
+        end
+    end
+    @info "Saving config"
+    JLD2.jldsave(joinpath(outpath, "metadata.jld2"), true; metadata=parsed_args)
+    @info "Because the glass is already broken, it is more enjoyed -- Ajahn Chah"
 end
 
 
