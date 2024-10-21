@@ -112,6 +112,11 @@ using Distributions
 		rm(t, recursive=true) 
     end
 
+    @testset "def" begin
+        defs = get_defaults()
+        @test length(defs) == 29
+    end
+
 	@testset "iq" begin
 
 		A = zeros(100, 100)

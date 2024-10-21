@@ -41,7 +41,7 @@ using ImageContrastAdjustment
 
 export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin,
 computeintensitycorrelation, recursive_glob, twochannelcontacts,
-summarize_spots, findchannel, sp,
+summarize_spots, findchannel, sp, get_defaults,
 compute_edges, reportimagequality, dtd_to_field, c3, shape_component, filter_mcsdetect, 
 process_contact_stack3d, sp2d,
 makespheres, loadimages, sp3d, reportvolumes, reportvolumes2D, process_contact_stack, filter_k, offset, mcc, clampt, ratefilter, computesurfaces,
@@ -1473,6 +1473,45 @@ function describe_objects(img::AbstractArray{T, 3}) where {T<:Any}
     df[!, :centroid_object_z] .= ctrs[:, 3]
 	# TODO compute EMST of centroids 
     return df
+end
+
+"""
+    get_defaults()
+    Default arguments for contact detection.
+"""
+function get_defaults()
+    default_args = Dict()
+    default_args["inpath"] = ""
+    default_args["normalize"]= false
+    default_args["cube-vesicle-size-ln"]=9
+    default_args["cube-vesicle-sample-size"]=5
+    default_args["cube-vesicle-intensity-mean"]=.2
+    default_args["filtermode"]="arithmetic"
+    default_args["prc"]=1.0
+    default_args["denominator"]=1.0
+    default_args["weighted"]=false
+    default_args["sphericity"]=1.0
+    default_args["noutput"]=false
+    default_args["dry-run"]=false
+    default_args["noutput"]=false
+    default_args["save-numerical-data"]=false
+    default_args["inregex"]="*[1,2].tif"
+    default_args["outpath"] = ""
+    default_args["mode"] = "non-decon"
+    default_args["deconvolved"] = true
+    default_args["sigmas"] = "1-1-1"
+    default_args["lpsigmas"] = "1-1-1"
+    default_args["window"] = 1
+    default_args["radius"] = false
+    default_args["zscore"] = 3
+    default_args["volumethreshold"] = 0
+    default_args["volumethresholdchannel"] = 1
+    default_args["dimension"]=3
+    default_args["minzslice"]=1
+    default_args["alpha"]=0.05
+    default_args["beta"]=0.05
+    default_args["skipstats"]=false
+    return default_args
 end
 
 """
