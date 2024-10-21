@@ -1340,6 +1340,7 @@ end
 """
 function combines(xs)
     rs = []
+	ris = []
     N = length(xs)
     for (i, x) in enumerate(xs)
         if i == N
@@ -1347,6 +1348,7 @@ function combines(xs)
         end
         for (j, y) in enumerate(xs[i+1:end])
             push!(rs, [x, y])
+			push!(ris, [i,j])
         end
     end
     return rs

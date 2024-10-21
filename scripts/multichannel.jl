@@ -165,11 +165,14 @@ function runc()
         return
     end
     ends = endings(files)
-    cos = combines(ends)
-    for (x, y) in cos
-        # outpath/"xy"/
+    cs, cis = combines(ends)
+    for ((xi, yi), (x, y)) in zip(cis, cs)
+        @info "Starting combination $x - $y"
+        op = joinpath(parse_args["outpath"], "$(x)-$(y)")
+        pa = copy(parsed_args)
+        pa["outpath"] = op
+        tiffiles = [files[xi], files[yi]]
+        two_channel_contacts(pa, tiffiles)
     end
-    
-    # Call runc() function
 end
 
