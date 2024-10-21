@@ -36,7 +36,6 @@ function run_script()
     for (arg,val) in parsed_args
         @info "  $arg  =>  $val"
     end
-    # TODO setup multichannel mode
     inpath = parsed_args["inpath"]
     op = parsed_args["outpath"]
     for replicate in readdir(inpath; join=true)
@@ -61,5 +60,25 @@ function run_script()
 	end
 end
 
+
+function test_multichannel(inpath, regex)
+    fs = recursive_glob(inpath, regex)
+    prefix_dict = Dict()
+    for f in fs
+        d = dirname(f)
+        if d in keys(prefix_dict)
+            push!(prefix_dict[d]
+        else
+            prefix_dict[d] = [f]
+        end
+    end
+    k = keys(prefix_dict) |> collect
+    files = k[1]
+    if length(files) < 2
+        @error "Unexpected nr of files, for multichannel you should have at a minimum 2, got $(files)"
+    end
+    ends = endings(files)
+    cs, cis = combines(ends)
+end
 
 run_script()
