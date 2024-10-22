@@ -18,7 +18,7 @@ using Distributions
 using LinearAlgebra
 import HypothesisTests
 import Images
-import ArgParse
+using ArgParse
 import ERGO
 # import ImageView # Crashes headlesss mode
 using Statistics
