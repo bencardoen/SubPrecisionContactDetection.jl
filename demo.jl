@@ -7,8 +7,8 @@
         @info "Key $key is set to $(parameters[key])"
     end
     ​
-    inpath = "C:\yourdata"
-    outpath = "C:\youroutput"
+    inpath = "C:\\yourdata"
+    outpath = "C:\\youroutput"
     # Define your values
     alphas = [0.05, 0.01, 0.1]
     ​
