@@ -60,7 +60,6 @@ function run_script()
 	end
 end
 
-
 function test_multichannel(inpath, regex)
     fs = recursive_glob(inpath, regex)
     prefix_dict = Dict()
@@ -79,6 +78,7 @@ function test_multichannel(inpath, regex)
     end
     ends = endings(files)
     cs, cis = combines(ends)
+    return cs, cis
 end
 
 run_script()
