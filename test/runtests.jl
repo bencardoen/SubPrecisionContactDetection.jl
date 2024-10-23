@@ -105,7 +105,7 @@ using Distributions
         @test es[1] == 1
         @test es[2] == 2
         @test es[3] == 3
-        cs = combines(es)
+        cs, cis = combines(es)
         @test cs[1] == [1,2]
         @test cs[2] == [1,3]
         @test cs[3] == [2,3]

@@ -26,9 +26,58 @@ import JLD2
 
 using LoggingExtras, Dates
 
-inpath="/home/bcardoen/cedar_data/test/"
+inpath="/home/bcardoen/cedar_data/test/MS_2024_09_19_TOM20_KDEL_PLIN_HUH7_OLEIC"
 readdir(inpath)
-inregex="*[0,1,2].tif"
+regex="*[0,1,2].tif"
+
+cs, cis = test_multichannel(inpath, inregex)
+
+function test_multichannel(path, regex)
+    fs = recursive_glob(regex, path)
+    prefix_dict = Dict()
+    for f in fs
+        d = dirname(f)
+        if d in keys(prefix_dict)
+            push!(prefix_dict[d], f)
+        else
+            prefix_dict[d] = [f]
+        end
+    end
+    k = keys(prefix_dict) |> collect
+    path = k[1]
+    files = prefix_dict[path]
+    # @info files
+    if length(files) < 2
+        @error "Unexpected nr of files, for multichannel you should have at a minimum 2, got $(files)"
+    end
+    @info files
+    ends = endings(files)
+    @info ends
+    cs, cis = _combines(ends)
+    @info cs
+    @info cis
+    return cs, cis
+end
+
+function _combines(xs)
+    rs = []
+	ris = []
+    N = length(xs)
+    for (i, x) in enumerate(xs)
+        if i == N
+            continue
+        end
+        for (j, y) in enumerate(xs[i+1:end])
+            push!(rs, [x, y])
+			push!(ris, [i,j])
+        end
+    end
+    @info rs
+    @info ris
+    return rs, ris
+end
+
+
 
 # function run_script()
 #     date_format = "yyyy-mm-dd HH:MM:SS"

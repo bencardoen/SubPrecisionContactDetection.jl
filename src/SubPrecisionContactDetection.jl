@@ -1338,7 +1338,11 @@ end
 
 """
 	combines(xs)
-	Returns a combination of the elements of xs
+	Returns a combination of the elements of xs and their indices
+    Exmaple: 
+    ```julia
+    combs, inds = combines(["a", "b", "c"])
+    ````
 """
 function combines(xs)
     rs = []
@@ -1353,7 +1357,7 @@ function combines(xs)
 			push!(ris, [i,j])
         end
     end
-    return rs
+    return rs, ris
 end
 
 
