@@ -1403,7 +1403,7 @@ function describe_objects(img::AbstractArray{T, 3}, shape=false) where {T<:Any}
 		@warn "NO COMPONENTS TO PROCESS"
 		return nothing
 	end
-    for ic in 1:N
+    @showprogress for ic in 1:N
         vals = img[indices[ic]]
 		n = length(vals)
          # m, Q1, mx, med, Q3, M, std(ys), kurt = dimg(vals)
