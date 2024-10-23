@@ -4,7 +4,7 @@
 
 ## Start the session
 using Pkg; Pkg.activate(".");
-
+using Statistics;
 ## Load the packages we need
 using SubPrecisionContactDetection, Images, DataFrames
 
@@ -46,6 +46,26 @@ a = zeros(10, 10, 10);
 # Make sure it's [0-1]
 clamp01!(a);
 Images.save("1.tif", Images.N0f16.(a));
+
+### Filtering an image
+i2 = copy(img)
+μ = mean(i2);
+i2[i2 .< μ] .= 0;
+
+threshold = otsu_threshold(i2);
+i2[i2 .< threshold] .= 0;
+
+### Split into components
+ccs = Images.label_components(i2);
+N = maximum(ccs)
+@info "Have $N components"
+# Find the length of the 5th component
+N5 = Images.component_lengths(ccs)[6]  # 1 = background
+
+# Set the 5th component to 0
+
+i2[Images.component_indices(ccs)[6]].=0  
+
 
 ### Computing object descriptors (features)
 dataframe = describe_objects(img);
