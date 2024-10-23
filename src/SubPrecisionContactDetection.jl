@@ -1345,19 +1345,13 @@ end
     ````
 """
 function combines(xs)
-    rs = []
-	ris = []
     N = length(xs)
-    for (i, x) in enumerate(xs)
-        if i == N
-            continue
-        end
-        for (j, y) in enumerate(xs[i+1:end])
-            push!(rs, [x, y])
-			push!(ris, [i,j])
-        end
+    inds = Combinatorics.combinations(1:N, 2)|> collect
+    rs = []
+    for ind in inds
+        push!(rs, xs[ind])
     end
-    return rs, ris
+    return rs, inds
 end
 
 
