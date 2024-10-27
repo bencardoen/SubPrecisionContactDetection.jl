@@ -1547,11 +1547,12 @@ function endings(fs)
     for f in fs
         f_split = splitpath(f)[end]
         f_name = splitext(f_split)[1]
-        @info f_name
+        @debug "File name $(f_name)"
         if length(f_name) < 2
             @error "Unlikely filename $(f_name)"
             throw(ArgumentError("Unlikely filename $(f_name)"))
         end
+        @debug "Detecting integer ending ...."
         intend = match(r"[0-9]+$", f_name)
         if isnothing(intend)
             throw(ArgumentError("Filename does not end with integer, can't make combos"))
@@ -1567,12 +1568,21 @@ function endings(fs)
 end
 
 
+"""
+    bm(xs)
+    Return a binary (copy) mask of the array
+"""
 function bm(xs)
     ys = copy(xs)
     ys[ys .> 0] .= 1
     return ys
 end
 
+"""
+    describe_objects(img::AbstractArray{T, 3}, shape=false) where {T<:Any}
+
+    For a 3D array, describe objects and basic features
+"""
 function describe_objects(img::AbstractArray{T, 3}, shape=false) where {T<:Any}
     b = copy(img)
     b[b .> 0] .= 1
