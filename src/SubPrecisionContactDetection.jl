@@ -1480,8 +1480,9 @@ end
 
 """
     recursive_glob(pattern, directory)
-    Returns all matches files defined by `pattern` in directory, recursively
-    Aimed at finding files, not directories. If your pattern matches directories, unexpected results can follow.
+    
+Returns all matches files defined by `pattern` in directory, recursively
+Aimed at finding files, not directories. If your pattern matches directories, unexpected results can follow.
 """
 function recursive_glob(pattern, dir)
 	# Does not recurse
