@@ -109,6 +109,8 @@ using Distributions
         @test cs[1] == [1,2]
         @test cs[2] == [1,3]
         @test cs[3] == [2,3]
+        x, xis = combines([1,2,3])
+        x == xis
 		rm(t, recursive=true) 
     end
 

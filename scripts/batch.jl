@@ -58,6 +58,7 @@ function test_multichannel(path, regex)
     @info cis
     return cs, cis
 end
+
 using Combinatorics
 function _combines(xs)
     N = length(xs)
@@ -71,7 +72,6 @@ end
 
 xs = ["a", "b", "c"]
 xis = _combines(xs)
-xs[xis[1]]
 
 # function run_script()
 #     date_format = "yyyy-mm-dd HH:MM:SS"
