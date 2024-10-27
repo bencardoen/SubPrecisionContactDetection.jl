@@ -40,7 +40,7 @@ import ImageMorphology
 import SPECHT
 using ImageContrastAdjustment
 
-export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin,
+export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin, buildregex,
 computeintensitycorrelation, recursive_glob,
 summarize_spots, findchannel, sp, get_defaults,
 compute_edges, reportimagequality, dtd_to_field, c3, shape_component, filter_mcsdetect, 
@@ -1486,6 +1486,57 @@ function parse_commandline_ercontacts()
     return parse_args(s)
 end
 
+function buildregex(path::AbstractString, regex::AbstractString)
+    @debug "Building regex combinations for $(regex) in $(path)"
+    cs, _ = test_multichannel(path, regex)
+    ps = Vector{String}()
+    rs = Vector{String}()
+    @info "Have $(length(cs)) combos : $(cs)"
+    for csx in cs
+        out = "$(csx[1])--$(csx[2])"
+        r = "*[$(csx[1]),$(csx[2])].tif"
+        push!(rs, r)
+        push!(ps, out)
+    end
+    @debug "Created path postfixes $(ps)  and regexes $(rs)"
+    return ps, rs
+end
+
+function test_multichannel(path, regex)
+    fs = recursive_glob(regex, path)
+    prefix_dict = Dict()
+    for f in fs
+        d = dirname(f)
+        if d in keys(prefix_dict)
+            push!(prefix_dict[d], f)
+        else
+            prefix_dict[d] = [f]
+        end
+    end
+    ## Check that the prefix dict has the same files for each key
+    ks = keys(prefix_dict) |> collect
+    vn = [length(prefix_dict[k]) for k in ks]
+    if !check_equal(vn)
+        @error "Unequal number of matches!!!"
+        @error [prefix_dict[k] for k in ks]
+        throw(ArgumentError("Expecting same amount of files for each subdirectory, aborting."))
+    end
+    files = prefix_dict[ks[1]]
+    ends = endings(files)
+    @debug "File endings $(ends)"
+    cs, cis = combines(ends)
+    @debug "Found combos $(cs)"
+    return cs, cis
+end
+
+function check_equal(xs)
+    if length(xs) <= 2
+        return true
+    end
+    return all(xs[1] .== xs)
+end
+
+
 
 """
 	endings(fs)
@@ -1506,7 +1557,11 @@ function endings(fs)
             throw(ArgumentError("Filename does not end with integer, can't make combos"))
         end
         ind = tryparse(Int, intend.match)
-        push!(endings, ind)
+        if !isnothing(ind)
+            push!(endings, ind)
+        else
+            throw(ArgumentError("Invalid channel name $(f_name)"))
+        end
     end
     return endings
 end

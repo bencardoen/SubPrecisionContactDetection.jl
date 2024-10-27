@@ -110,7 +110,27 @@ using Distributions
         @test cs[2] == [1,3]
         @test cs[3] == [2,3]
         x, xis = combines([1,2,3])
-        x == xis
+        @test x == xis
+		rm(t, recursive=true) 
+    end
+
+    @testset "mulitchannel" begin
+        t = mktempdir()
+        subd = joinpath(t, "t2")
+        mkpath(subd)
+        Images.save(joinpath(subd, "a01.tif"), rand(200, 200))
+        Images.save(joinpath(subd, "b02.tif"), rand(200, 200))
+        Images.save(joinpath(subd, "c03.tif"), rand(200, 200))
+        rx = "*[1,2].tif"
+        paths, regexes = buildregex(subd, rx)
+        paths == ["1--2"]
+        regexes == ["*[1,2].tif"]
+        rx = "*[1,2,3].tif"
+        paths, regexes = buildregex(subd, rx)
+        @test length(paths) == 3
+        @test length(regexes) == 3
+        @test paths == ["1--2", "1--3", "2--3"]
+        @test regexes == ["*[1,2].tif", "*[1,3].tif", "*[2,3].tif"]
 		rm(t, recursive=true) 
     end
 

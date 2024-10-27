@@ -27,51 +27,70 @@ import JLD2
 using LoggingExtras, Dates
 
 inpath="/home/bcardoen/cedar_data/test/MS_2024_09_19_TOM20_KDEL_PLIN_HUH7_OLEIC"
-readdir(inpath)
-regex="*[0,1,2].tif"
+# readdir(inpath)
+regex="*[0,1].tif"
+prefixes, regexes = buildregex(inpath, regex)
 
-cs, cis = test_multichannel(inpath, inregex)
+t = mktempdir()
+subd = joinpath(t, "t2")
+mkpath(subd)
+Images.save(joinpath(subd, "a01.tif"), rand(200, 200))
+Images.save(joinpath(subd, "b02.tif"), rand(200, 200))
+Images.save(joinpath(subd, "c03.tif"), rand(200, 200))
+rx = "*[1,2].tif"
+paths, regexes = buildregex(subd, rx)
+paths == ["1--2"]
+regexes == ["*[1,2].tif"]
 
-function test_multichannel(path, regex)
-    fs = recursive_glob(regex, path)
-    prefix_dict = Dict()
-    for f in fs
-        d = dirname(f)
-        if d in keys(prefix_dict)
-            push!(prefix_dict[d], f)
-        else
-            prefix_dict[d] = [f]
-        end
-    end
-    k = keys(prefix_dict) |> collect
-    path = k[1]
-    files = prefix_dict[path]
-    # @info files
-    if length(files) < 2
-        @error "Unexpected nr of files, for multichannel you should have at a minimum 2, got $(files)"
-    end
-    @info files
-    ends = endings(files)
-    @info ends
-    cs, cis = _combines(ends)
-    @info cs
-    @info cis
-    return cs, cis
-end
+# function buildregex(path::AbstractString, regex::AbstractString)
+#     @debug "Building regex combinations for $(regex) in $(path)"
+#     cs, _ = test_multichannel(path, regex)
+#     ps = Vector{String}()
+#     rs = Vector{String}()
+#     @info "Have $(length(cs)) combos : $(cs)"
+#     for csx in cs
+#         out = "$(csx[1])--$(csx[2])"
+#         r = "*[$(csx[1]),$(csx[2])].tif"
+#         push!(rs, r)
+#         push!(ps, out)
+#     end
+#     @debug "Created path postfixes $(ps)  and regexes $(rs)"
+#     return ps, rs
+# end
 
-using Combinatorics
-function _combines(xs)
-    N = length(xs)
-    inds = combinations(1:N, 2)|> collect
-    rs = []
-    for ind in inds
-        push!(rs, xs[ind])
-    end
-    return rs, inds
-end
+# function test_multichannel(path, regex)
+#     fs = recursive_glob(regex, path)
+#     prefix_dict = Dict()
+#     for f in fs
+#         d = dirname(f)
+#         if d in keys(prefix_dict)
+#             push!(prefix_dict[d], f)
+#         else
+#             prefix_dict[d] = [f]
+#         end
+#     end
+#     ## Check that the prefix dict has the same files for each key
+#     ks = keys(prefix_dict) |> collect
+#     vn = [length(prefix_dict[k]) for k in ks]
+#     if !check_equal(vn)
+#         @error "Unequal number of matches!!!"
+#         @error [prefix_dict[k] for k in ks]
+#         throw(ArgumentError("Expecting same amount of files for each subdirectory, aborting."))
+#     end
+#     files = prefix_dict[ks[1]]
+#     ends = endings(files)
+#     @debug "File endings $(ends)"
+#     cs, cis = combines(ends)
+#     @debug "Found combos $(cs)"
+#     return cs, cis
+# end
 
-xs = ["a", "b", "c"]
-xis = _combines(xs)
+# function check_equal(xs)
+#     if length(xs) <= 2
+#         return true
+#     end
+#     return all(xs[1] .== xs)
+# end
 
 # function run_script()
 #     date_format = "yyyy-mm-dd HH:MM:SS"
