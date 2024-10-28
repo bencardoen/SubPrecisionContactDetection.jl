@@ -1,5 +1,2 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-ERGO = "273a6d5c-81ba-41a9-bdcb-eb98fb5b048d"
-SPECHT = "9bf52c6b-c98d-48f8-80c6-8dab0ddc382a"
-SubPrecisionContactDetection = "b7eec76b-455c-4bcc-baa1-3a229dd6d4a0"
