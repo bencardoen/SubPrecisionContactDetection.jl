@@ -1,17 +1,64 @@
 # Parameter selection and tuning.
 This section describes the usage of parameters for the scripts and the algorithm.
 
-## Index
-```@index
+```@contents
+Pages = ["parameters.md"]
+Depth = 5
 ```
 
 ## Checking default values
+You can easily check the default values and the parameter names by querying the code.
 ```julia
 params = get_defaults()
 for k in keys(params)
     @info "$k ==> $(params[k])"
 end
 ```
+
+This would give:
+
+```julia
+[ Info: lpsigmas → 1-1-1
+[ Info: inregex → *[1,2].tif
+[ Info: minzslice → 1
+[ Info: mode → non-decon
+[ Info: zscore → 3
+[ Info: outpath → 
+[ Info: radius → false
+[ Info: sphericity → 1.0
+[ Info: volumethreshold → 0
+[ Info: cube-vesicle-intensity-mean → 0.2
+[ Info: nooutput → false
+[ Info: normalize → false
+[ Info: alpha → 0.05
+[ Info: prc → 1.0
+[ Info: cube-vesicle-sample-size → 5
+[ Info: denominator → 1.0
+[ Info: dimension → 3
+[ Info: weighted → false
+[ Info: beta → 0.05
+[ Info: volumethresholdchannel → 1
+[ Info: noutput → false
+[ Info: save-numerical-data → false
+[ Info: windowsize → 1
+[ Info: skipstats → false
+[ Info: sigmas → 1-1-1
+[ Info: inpath → 
+[ Info: filtermode → arithmetic
+[ Info: cube-vesicle-size-ln → 9
+[ Info: dry-run → false
+[ Info: deconvolved → true
+```
+
+Critical ones are :
+- inpath: Directory with your data
+- outpath: Where output should be written
+- inregex: "\*[1,2].tif" Looks for files ending with 1 or 2 (extension tif). If you want to use 4 channels out of 8, and only odd ones, you could write "\*[0,2,4,6].tif". The pipeline will automatically combine them for you. ``\frac{4!}{(2)!}=6`` combinations would be generated, in order, e.g. "0--2", "0--4", etc.
+- dimension : 2 or 3
+- mode : non-decon, decon, or both. Do not use non-deconvolved data, stick to 'decon'
+- alpha/beta: Significance and power used in probabilistic filtering
+- windowsize: w in k-D means a window of ``(1 + 2 \times w)^k`` voxels. 
+- zscore: see below
 
 ### Parameter selection
 MCS-Detect has multiple parameters that will determine the precision and recall of the predicted contacts. 
