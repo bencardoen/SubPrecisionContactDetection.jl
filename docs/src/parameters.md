@@ -50,6 +50,7 @@ This would give:
 [ Info: deconvolved → true
 ```
 
+## Key parameters
 Critical ones are :
 - inpath: Directory with your data
 - outpath: Where output should be written
@@ -60,20 +61,20 @@ Critical ones are :
 - windowsize: w in k-D means a window of ``(1 + 2 \times w)^k`` voxels. 
 - zscore: see below
 
-### Parameter selection
+## Parameter selection advice
 MCS-Detect has multiple parameters that will determine the precision and recall of the predicted contacts. 
 While a full discussion is available in the paper, here we will give a brief explanation and guidance as to how to set them.
 
-#### Z-filter (background removal)
+### Z-filter (background removal)
 
-##### Concept
+#### Concept
 Because 3D STED has anisotropic resolution in Z (worse in Z than in X/Y), it is possible to see intensity `bleedthrough` or `shadowing` across Z. 
 For example, say you have a mitochondrial vesicle at Z-slice 5. 
 Bleedthrough can lead to intensity mimicking a faint object at Z-slice 8.
 The Z-filter removes this by filtering the intensity distribution, per channel.
 If you set Z=1, all intensity **below** $\mu + 1 * \sigma$ is set to zero.
 
-##### Guidance
+#### Guidance
 A z-value is that is too high will cause false negatives because you're removing intensity from the organelles, not the background.
 A too low value will included possible contacts between organelles and phantom intensity, e.g. false positives.
 A value of z=3 is used for the paper, derived from the size of the cell and the anisotropy. 
@@ -81,14 +82,14 @@ Recommended usage is to test Z-values on a single representative cell, and plot 
 Instructions on how to do this and accompanying scripts can be found [here](https://github.com/NanoscopyAI/tutorial_mcs_detect?tab=readme-ov-file#mcs-detect-background-filtering-only--segmentation).
 
 
-#### Window size (w)
+### Window size (w)
 
-##### Concept
+#### Concept
 Correlation requires a comparison between two vectors of data, in 2- or 3D images this means a window size. 
 If you set w=2 the window will be (2*2+1)^D for D dimensions.
 So 5x5 in 2D, 5x5x5 in 3D. w=1 would be 3x3, or 3x3x3 and so forth.
 
-##### Guidance
+#### Guidance
 A too large value will consume more memory, and will miss finer patterns. 
 A too small value will fail to capture large patterns. 
 So what, then is 'too' small or large?
@@ -102,9 +103,9 @@ W=2 would mean 250nm lateral and 375nm axial, which is likely too large, it woul
 **Important** The window size determines the statistical power of the correlation. A 3x3 window in 2D has limited statistical power. See below.
 
 
-#### Alpha and Beta, or confidence, significance, and power.
+### Alpha and Beta, or confidence, significance, and power.
 
-##### Concept
+#### Concept
 A correlation is a statistical estimator, and comes with a confidence value ('p-value'). 
 Alpha control what acceptable levels of confidence are allowed, whereas beta controls statistical power. 
 A recap from statistics:
@@ -146,29 +147,31 @@ and
 window = compute_sample_size_for_min_corr(0.2, 0.05, 0.05)
 ```
 
-##### Guidance
+#### Guidance
 - If you keep the window the same, and go to 2D, set alpha and beta from to have the same recall.
 - If precision is too low, reduce alpha and beta (e.g. 0.05 to 0.1, or 0.25).
 - If recall is too high (artifacts), increase alpha and beta (0.05 to 0.01 or 0.001)
 
-#### Vesicle filtering
-##### Concept
+### Vesicle filtering
+#### Concept
 The postprocessing scripts use size (logarithm) and mean intensity of vesicles to filter them out. 
 This can only be empirically estimated. 
 
-##### Guidance
+#### Guidance
 Plot the intensity and object sizes of the mitochondria channel, and look for a separation between large and bright objects, versus small and faint.
 Off the shelf clustering methods can be of help.
 Alternatively, segment the image before processing. 
 **NOTE** Contact detection does not differentiate between mitochondria and vesicles, the interaction may be functionally different, but the contacts are no less real.
 
 
-#### Sampling
-##### Concept
+### Sampling
+
+#### Concept
 Because contacts are large and infrequent, or small and frequent, the statistical analysis can be unstable. 
 More precisely, the distribution is long tailed containing extreme values, and those extreme values are often the ones of interest (e.g. ribomerc).
 To offset this, the coverage computation and local density (nr of contacts/window) uses a window, defaulting to 5x5x5 (which corresponds to w=2). 
-##### Guidance
+
+#### Guidance
 The smaller you set this, the more you split objects apart. 
 Ideally you set this window to be no smaller than the largest expected object.
 Sampling windows do not overlap, and mitochondria that are only partially visible in a window (few voxels), are discarded.
