@@ -1,6 +1,8 @@
 # Tutorial
 The below assumes you have the source code installed as per the installation instructions.
 
+The [Parameter selection and tuning.](@ref) section will explain what parameters there are, and guide you through the parameter selection.
+
 ## Processing a single cell (3D STED) with two channels
 ```
 julia --project=. scripts/ercontacts.jl -i <data> -o <output>

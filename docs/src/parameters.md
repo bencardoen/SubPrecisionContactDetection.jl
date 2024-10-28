@@ -118,10 +118,10 @@ W=2 would mean 250nm lateral and 375nm axial, which is likely too large, it woul
 
 #### Concept
 A correlation is a statistical estimator, and comes with a confidence value ('p-value'). 
-Alpha control what acceptable levels of confidence are allowed, whereas beta controls statistical power. 
+``\alpha`` controls what acceptable levels of confidence are allowed, whereas ``\beta`` controls statistical power. 
 A recap from statistics:
-- Significance (alpha): The probability that an observed difference is not due to random effects
-- Power (beta): The probability that you can observe a given difference (of a given magnitude)
+- Significance (alpha): The probability that an observed difference is not due to random effects.
+- Power (beta): The probability that you can observe a given difference (of a given magnitude).
 
 What does this mean in practice?
 We can compute what is **minimal** observable correlation you can detect, given alpha and beta.
