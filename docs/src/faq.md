@@ -1,3 +1,5 @@
+
+<a name="faq"></a>
 ### Troubleshooting & FAQ
 
 If you have any issues, please create an [issue](https://github.com/bencardoen/SubPrecisionContactDetection.jl/issues/new/choose).
@@ -11,11 +13,11 @@ Make sure to include:
 #### Can I change the singularity image ?
 Yes, if you clone the repository, and are using Linux, you need to do 2 things
 - edit [singularity_recipes/recipe.def](singularity_recipes/recipe.def)
-- execute [buildimage.sh](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/buildimage.sh) # Needs sudo
+- execute [buildimage](buildimage.sh) # Needs sudo
 ```bash
 ./buildimage.sh
 ```
-This will rebuild the image, first checking out the latest version of the code, building it, then optimizing it.
+This will rebuild the image, first checking out the latest version of the code.
 
 #### System requirements
 Expected RAM usage for images of sizes 500x500x20 ~ 5GB RAM, 2000x2000x70: ~ 50GB RAM, and so on.
