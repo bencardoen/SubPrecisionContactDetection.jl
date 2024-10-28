@@ -10,7 +10,7 @@ Make sure to include:
 
 #### Can I change the singularity image ?
 Yes, if you clone the repository, and are using Linux, you need to do 2 things
-- edit [singularity_recipes/recipe.def](singularity_recipes/recipe.def)
+- edit [singularity_recipes/recipe.def](https://github.com/bencardoen/SubPrecisionContactDetection.jl/singularity_recipes/recipe.def)
 - execute [buildimage.sh](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/buildimage.sh) # Needs sudo
 ```bash
 ./buildimage.sh
