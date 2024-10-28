@@ -254,16 +254,15 @@ A detailed walkthrough can be found [here](https://github.com/bencardoen/SubPrec
 ### Cite
 If you find this project useful, please cite
 ```bibtex
-@article {Cardoen2022.06.23.497346,
-	author = {Cardoen, Ben and Gao, Guang and Vandevoorde, Kurt R. and Alan, Parsa and Liu, William and Vogl, A. Wayne and Hamarneh, Ghassan and Nabi, Ivan R.},
-	title = {Automatic sub-precision membrane contact site detection identifies convoluted tubular riboMERCs},
-	elocation-id = {2022.06.23.497346},
-	year = {2022},
-	doi = {10.1101/2022.06.23.497346},
-	publisher = {Cold Spring Harbor Laboratory},
-	URL = {https://www.biorxiv.org/content/early/2022/06/26/2022.06.23.497346},
-	eprint = {https://www.biorxiv.org/content/early/2022/06/26/2022.06.23.497346.full.pdf},
-	journal = {bioRxiv}
+@article{cardoen2023membrane,
+  title={Membrane contact site detection (MCS-DETECT) reveals dual control of rough mitochondria--ER contacts},
+  author={Cardoen, Ben and Vandevoorde, Kurt R and Gao, Guang and Ortiz-Silva, Milene and Alan, Parsa and Liu, William and Tiliakou, Ellie and Vogl, A Wayne and Hamarneh, Ghassan and Nabi, Ivan R},
+  journal={Journal of Cell Biology},
+  volume={223},
+  number={1},
+  pages={e202206109},
+  year={2023},
+  publisher={Rockefeller University Press}
 }
 ```
 

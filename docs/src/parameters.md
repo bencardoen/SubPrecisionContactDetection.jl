@@ -1,5 +1,9 @@
 This section describes the usage of parameters for the scripts and the algorithm.
 
+## Index
+```@index
+```
+
 ## Checking default values
 ```julia
 params = get_defaults()
