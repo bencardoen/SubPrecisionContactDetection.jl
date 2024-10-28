@@ -20,3 +20,11 @@ Once you have this, you can use either a terminal or an IDE (e.g. Visual Studio 
 ## Singularity/Apptainer
 We provide a preconfigured container image with all dependencies [here](https://cloud.sylabs.io/library/bcvcsert/subprecisioncontactdetection/mcsdetect).
 
+
+## Dependencies
+All dependencies are automatically installed, however, you may run into issues if you have a non-standard Python installation. 
+See the [build](https://github.com/bencardoen/SubPrecisionContactDetection.jl/build/build.jl) script for details, but when in doubt, set the environment variable PYTHON to either your Python installation or the empty string and rebuild
+```bash
+export PYTHON=""
+julia --project=. -e 'using Pkg; Pkg.build'
+```

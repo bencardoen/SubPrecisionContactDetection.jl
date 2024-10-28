@@ -55,7 +55,7 @@ Critical ones are :
 - inpath: Directory with your data
 - outpath: Where output should be written
 - inregex: "\*[1,2].tif" Looks for files ending with 1 or 2 (extension tif). If you want to use 4 channels out of 8, and only odd ones, you could write "\*[0,2,4,6].tif". The pipeline will automatically combine them for you. ``\frac{4!}{(2)!}=6`` combinations would be generated, in order, e.g. "0--2", "0--4", etc.
-- dimension : 2 or 3
+- dimension : 2D or 3D.
 - mode : non-decon, decon, or both. Do not use non-deconvolved data, stick to 'decon'
 - alpha/beta: Significance and power used in probabilistic filtering
 - windowsize: w in k-D means a window of ``(1 + 2 \times w)^k`` voxels. 
@@ -64,6 +64,17 @@ Critical ones are :
 ## Parameter selection advice
 MCS-Detect has multiple parameters that will determine the precision and recall of the predicted contacts. 
 While a full discussion is available in the paper, here we will give a brief explanation and guidance as to how to set them.
+
+### 2D or 3D
+
+##### Concept
+The differential correlation can work in 2 or 3 dimensions.
+If you have 3D data, run it in 3D mode, otherwise you lose the z-dimensional information.
+However, if you have 2D, realise that the windowsize is now a factor smaller. w=1 gives you 3x3x3 in 3D, 3x3 in 2D. This affect the statistical power and confidence. 
+
+#### Guidance
+- 3D data in 3D mode
+- 2D data: increase window size (see below) or lower alpha/beta values
 
 ### Z-filter (background removal)
 
