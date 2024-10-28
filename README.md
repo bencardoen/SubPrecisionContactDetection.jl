@@ -16,9 +16,7 @@ An example rendering of the postprocessed contact zones (white) between endoplas
 - Configurable: Can process deconvolved or raw images, with optional extra denoising
 - Rich: provides interpretable features for each detected contact
 - Confidence map for each voxel (each voxel has a p-value)
-10. [Segmentation](#seg)
 
-	
 
 ### Cite
 If you find this project useful, please cite
