@@ -1,0 +1,61 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Cardoen"
+  given-names: "Ben"
+- family-names: "Vandevoorde"
+  given-names: "Kurt"
+- family-names: "Gao"
+  given-names: "Guang"
+- family-names: "Ortiz-Silva"
+  given-names: "Milene"
+- family-names: "Alan"
+  given-names: "Parsa"
+- family-names: "Liu"
+  given-names: "William"
+- family-names: "Tiliakou"
+  given-names: "Ellie"
+- family-names: "Vogl"
+  given-names: "A Wayne"
+- family-names: "Hamarneh"
+  given-names: "Ghassan"
+- family-names: "Nabi"
+  given-names: "Ivan Robert"
+
+title: "Membrane contact site detection (MCS-DETECT) reveals dual control of rough mitochondria-ER contacts"
+version: 1.0.0
+doi: 10.1083/jcb.202206109
+date-released: 2024-01-01
+url: "https://github.com/github-linguist/linguist"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Cardoen"
+    given-names: "Ben"
+  - family-names: "Vandevoorde"
+    given-names: "Kurt"
+  - family-names: "Gao"
+    given-names: "Guang"
+  - family-names: "Ortiz-Silva"
+    given-names: "Milene"
+  - family-names: "Alan"
+    given-names: "Parsa"
+  - family-names: "Liu"
+    given-names: "William"
+  - family-names: "Tiliakou"
+    given-names: "Ellie"
+  - family-names: "Vogl"
+    given-names: "A Wayne"
+  - family-names: "Hamarneh"
+    given-names: "Ghassan"
+  - family-names: "Nabi"
+    given-names: "Ivan Robert"
+  doi: "10.1083/jcb.202206109"
+  journal: "Journal Of Cell Biology"
+  month: 1
+  start: 1 # First page number
+  end: 10 # Last page number
+  title: "Membrane contact site detection (MCS-DETECT) reveals dual control of rough mitochondria-ER contacts"
+  issue: 1
+  volume: 1
+  year: 2024
