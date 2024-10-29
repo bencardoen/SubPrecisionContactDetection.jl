@@ -1332,7 +1332,7 @@ function two_channel_contacts(parsed_args, tiffiles=nothing)
     end
     @info "Saving config"
     JLD2.jldsave(joinpath(outpath, "metadata.jld2"), true; metadata=parsed_args)
-    save_meta(joinpath(outpath, "parameters.json"))
+    save_meta(joinpath(outpath, "parameters.json"), parsed_args)
     @info "Because the glass is already broken, it is more enjoyed -- Ajahn Chah"
 end
 
