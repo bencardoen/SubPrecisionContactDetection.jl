@@ -16,7 +16,6 @@ It is run as part of the pipeline, but you can invoke it separately.
 
 !!! note "This is Optional"
     This is entirely optional, but useful if you want to optimize this filter independently.
-```
 
 Suppose we want to filter all tif files ending with "1.tif" or "2.tif" , for z=1 to 1.1 in 0.25 steps, and then compute the object properties.
 ```julia
@@ -43,6 +42,7 @@ For all the files, it will generate a CSV with columns, where each row is an obj
 - `z` : the z value used
 - `eig1-3`: PCA eigenvalues, the can be used for shape descriptors.
 - `eig1-3normalized`: eigenvalues rescaled to 1.
+
 
 !!! warning "Shape features"
     The ``\lambda`` values are disabled by default due given that for very large objects they can stall the pipeline (1e6 voxels).
@@ -80,3 +80,5 @@ This will print summary output and save a file `coverage_aggregated.csv`. The co
 
 They report the coverage of contacts on mitochondria (minus MDVs), and the number of contacts per sliding window of 5x5x5 voxels.
     
+!!! warning "Singularity/Apptainer usage"
+    See the [tutorial](https://github.com/NanoscopyAI/tutorial_mcs_detect) on how the run these with a container image. The code is the same, you just need to define some extra variables. 
