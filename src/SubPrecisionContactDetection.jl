@@ -1612,7 +1612,7 @@ function describe_objects(img::AbstractArray{T, 3}, shape=false) where {T<:Any}
 	## Changed 3-2 connectivity
 	get_components_diag = mask -> Images.label_components(mask, length(size(mask))==2 ? trues(3,3) : trues(3,3,3))
     coms = get_components_diag(b)
-    # lengths = Images.component_lengths(coms)[2:end]
+    lengths = Images.component_lengths(coms)[2:end]
     indices = Images.component_indices(coms)[2:end]
     boxes = Images.component_boxes(coms)[2:end]
     N = maximum(coms)
@@ -1622,24 +1622,32 @@ function describe_objects(img::AbstractArray{T, 3}, shape=false) where {T<:Any}
 		@warn "NO COMPONENTS TO PROCESS"
 		return nothing
 	end
-    @showprogress for ic in 1:N
+    p = Progress(N)
+    Threads.@threads for ic in 1:N
         vals = img[indices[ic]]
 		n = length(vals)
          # m, Q1, mx, med, Q3, M, std(ys), kurt = dimg(vals)
 		w[ic, 2] = sum(vals)
-		w[ic, 1] = n
+        l = lengths[ic]
+		w[ic, 1] = l
 		w[ic,3:10] .= _dimg(vals)
 		w[ic, 11:13] .= getextent(boxes[ic])
         if shape
-		    l1, l2, l3 = shape_component(coms, img, ic)	
-		    w[ic, 14:16] .= l1, l2, l3
-            if l1 > 0
-                w[ic, 17:19] .= l1/l1, l2/l1, l3/l1
-                @debug w[ic, 17:19]
+            if l <= 1e7
+                l1, l2, l3 = shape_component(coms, img, ic)	
+                w[ic, 14:16] .= l1, l2, l3
+                if l1 > 0
+                    w[ic, 17:19] .= l1/l1, l2/l1, l3/l1
+                    # @debug w[ic, 17:19]
+                end
+            else
+                @warn "Skipping object > 1e7 voxels"
             end
         end
+        next!(p)
 		# if l1 == 0, l2, l3 are zero, the array is zero init, so they're already zero
 	end
+    finish!(p)
 	columns = [:size, :weighted, :minimum, :Q1, :mean, :median, :Q3, :maximum, :std, :kurtosis, :xyspan, :zspan, :zmidpoint, :eig1, :eig2, :eig3, :eig1norm, :eig2norm, :eig3norm]
     df = DataFrames.DataFrame()
     for (i,c) in enumerate(columns)
@@ -1653,8 +1661,7 @@ function describe_objects(img::AbstractArray{T, 3}, shape=false) where {T<:Any}
     df[!, :centroid_channel_z] .= ctr[3]
     df[!, :centroid_object_x] .= ctrs[:, 1]
     df[!, :centroid_object_y] .= ctrs[:, 2]
-    df[!, :centroid_object_z] .= ctrs[:, 3]
-	# TODO compute EMST of centroids 
+    df[!, :centroid_object_z] .= ctrs[:, 3] 
     return df
 end
 
