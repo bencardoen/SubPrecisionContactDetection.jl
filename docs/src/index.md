@@ -4,7 +4,7 @@ Welcome to the documentation for this package.
 Please see the sidebar for relevant sections.
 
 This package offers variable distance contact detection between two images (2/3D) when segmentation is not sufficiently accurate. 
-For example, in superresolution microscopy of complex organelles, the contacts are ``20-80nm`` but the precision of the microscope (3D STED) is 100-150nm and no supervised segmentation is thus not feasible.
+For example, in superresolution microscopy of complex organelles, the contacts are ``20-80``nm but the precision of the microscope (3D STED) is 100-150nm and no supervised segmentation is thus not feasible.
 
 The main algorithm uses probabilistic correlation of intensity and differential intensity to estimate where contact zones can exist.
 
