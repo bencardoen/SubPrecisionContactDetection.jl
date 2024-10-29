@@ -28,3 +28,6 @@ See the [build](https://github.com/bencardoen/SubPrecisionContactDetection.jl/bu
 export PYTHON=""
 julia --project=. -e 'using Pkg; Pkg.build'
 ```
+
+!!! note "Attention"
+    For the remainder of this document we assume all commands are run inside the cloned directory, e.g. `SubPrecisionContactDetection.jl`.
