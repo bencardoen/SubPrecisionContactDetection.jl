@@ -89,7 +89,7 @@ function run_script()
                     pa["inpath"]=cell
                     pa["outpath"]=opx
                     try
-        			    # two_channel_contacts(pa)
+        			    two_channel_contacts(pa)
                         throw(ArgumentError("test"))
                     catch e
                         @error("Failed executing due to $(e)")
@@ -99,26 +99,5 @@ function run_script()
         end
     end
 end
-
-# function test_multichannel(inpath, regex)
-#     fs = recursive_glob(inpath, regex)
-#     prefix_dict = Dict()
-#     for f in fs
-#         d = dirname(f)
-#         if d in keys(prefix_dict)
-#             push!(prefix_dict[d]
-#         else
-#             prefix_dict[d] = [f]
-#         end
-#     end
-#     k = keys(prefix_dict) |> collect
-#     files = k[1]
-#     if length(files) < 2
-#         @error "Unexpected nr of files, for multichannel you should have at a minimum 2, got $(files)"
-#     end
-#     ends = endings(files)
-#     cs, cis = combines(ends)
-#     return cs, cis
-# end
 
 run_script()
