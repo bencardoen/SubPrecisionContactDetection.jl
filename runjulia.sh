@@ -14,8 +14,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # Copyright 2021-2022, Ben Cardoen
 
-export LOCALPKG=/opt/DataCurator.jl
-export JLMJV=1.8
+export LOCALPKG=/opt/SubPrecisionContactDetection.jl
+export JLMJV=1.10
 export JLV=$JLMJV.5
 export PATH=/opt/julia/julia-$JLV/bin:$PATH
 export JULIA_DEPOT_PATH=/opt/juliadepot

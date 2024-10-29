@@ -2,3 +2,4 @@
 .cov
 log*.txt
 slurm*.out
+docs/build/
