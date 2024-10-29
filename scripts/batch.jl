@@ -80,7 +80,10 @@ function run_script()
                     snr = basename(cell)
                     # pa = copy(parsed_args)
                     op = pa["outpath"]
-                    opx = joinpath(op, r, ct, snr)
+                    # opx = joinpath(op, r, ct, snr)
+                    alpha = pa["alpha"]
+                    opx = joinpath(op, r, ct, snr, alpha)
+                    @info "Output will be saved in $(opx)"
                     if isdir(opx)
                         @warn "WARNING: Output directory exists --> PLEASE CHECK if this intended."
                     end
@@ -90,7 +93,6 @@ function run_script()
                     pa["outpath"]=opx
                     try
         			    two_channel_contacts(pa)
-                        throw(ArgumentError("test"))
                     catch e
                         @error("Failed executing due to $(e)")
                     end
