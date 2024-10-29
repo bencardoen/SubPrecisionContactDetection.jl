@@ -114,7 +114,6 @@ function run()
 					c2 = Glob.glob("*channel_2.tif", alphaval)[1]
 					cts = Glob.glob("*pre_split_*.tif", alphaval)
 					@info "Replicate $r Cell $ct Serie $snr alpha=$ai"
-					#@assert(false)
 					tiffs[(ct, snr, r)] = Dict("mito" => c1, "er" => c2, "contacts" =>cts)
 				end
 	        end
