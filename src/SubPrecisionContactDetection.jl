@@ -40,7 +40,7 @@ import ImageMorphology
 import SPECHT
 using ImageContrastAdjustment
 
-export toct, getbox, edge_stack, binarize, spcor, magnitudegradient3d, computecontacts, normalizemaxmin, buildregex,
+export toct, getbox, edge_stack, binarize, spcor, read_meta, save_meta, magnitudegradient3d, computecontacts, normalizemaxmin, buildregex,
 computeintensitycorrelation, recursive_glob,
 summarize_spots, findchannel, sp, get_defaults,
 compute_edges, reportimagequality, dtd_to_field, c3, shape_component, filter_mcsdetect, 
@@ -1332,9 +1332,32 @@ function two_channel_contacts(parsed_args, tiffiles=nothing)
     end
     @info "Saving config"
     JLD2.jldsave(joinpath(outpath, "metadata.jld2"), true; metadata=parsed_args)
+    save_meta(joinpath(outpath, "parameters.json"))
     @info "Because the glass is already broken, it is more enjoyed -- Ajahn Chah"
 end
 
+"""
+    save_meta(meta, fname)
+
+Save metadata (dict) into fname (json)
+"""
+function save_meta(meta, fname)
+    open(fname, "w") do io
+        JSON.print(io, meta)
+    end
+end
+
+"""
+    read_meta(fname)
+
+Read metadata (dict) from fname (json)
+"""
+function read_meta(fname)
+    args_from_file = open(fname, "r") do io
+        JSON.parse(io)
+    end
+    return args_from_file
+end
 
 """
 	combines(xs)

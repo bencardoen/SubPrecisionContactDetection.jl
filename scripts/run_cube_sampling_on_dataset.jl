@@ -12,7 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # Copyright 2021-2022, Ben Cardoen
 using ArgParse, SPECHT, SubPrecisionContactDetection, Images, CSV, Statistics, DataFrames, Glob,  ERGO
-
 ### CLI tool to run the sampled statistics on the contacts.
 
 function selectct(cts, selector)
@@ -98,10 +97,18 @@ function run()
 	            snr = basename(cell)
 				for alphaval in readdir(cell; join=true)
 					_alpha = basename(alphaval)
-					
 					ai = tryparse(Float64, _alpha)
 					if ai != alpha
 						@warn "Skpping $ai"
+					end
+					js = Glob.glob("parameters.json")
+					if length(js) == 1
+						@info "Found parameter file, extracting..."
+						meta = read_meta(js)
+						@info "Alpha stored = $(meta["alpha"])"
+						if meta["alpha"] != alpha
+							@warn "Stored alpha does not match!!!"
+						end
 					end
 					c1 = Glob.glob("*channel_1.tif", alphaval)[1]
 					c2 = Glob.glob("*channel_2.tif", alphaval)[1]

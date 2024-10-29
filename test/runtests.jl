@@ -134,6 +134,13 @@ using Distributions
 		rm(t, recursive=true) 
     end
 
+    @testset "meta" begin    
+        args = get_defaults()
+        save_meta(args, "test.json")
+        fargs = read_meta("test.json")
+        @test args == fargs
+    end
+
     @testset "def" begin
         defs = get_defaults()
         @test length(defs) == 30
