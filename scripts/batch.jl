@@ -23,6 +23,7 @@ using ImageFiltering
 using Distributions
 using Base.Threads
 import JLD2
+using ProgressMeter
 
 using LoggingExtras, Dates
 
@@ -66,17 +67,17 @@ function run_script()
     paths, regexes = buildregex(inpath, rx)
     @info paths
     @info regexes
-    for (p, r) in zip(paths, regexes)
+    @showprogress for (p, r) in zip(paths, regexes)
         pa = copy(parsed_args)
         @info p, r
         pa["inregex"] = r
         pa["outpath"] = mkpath(joinpath(op, "p"))
         
-        for replicate in readdir(inpath; join=true)
+        @showprogress  for replicate in readdir(inpath; join=true)
             r = basename(replicate)
-            for celltype in readdir(replicate; join=true)
+            @showprogress  for celltype in readdir(replicate; join=true)
                 ct = basename(celltype)
-                for cell in readdir(celltype; join=true)
+                @showprogress  for cell in readdir(celltype; join=true)
                     snr = basename(cell)
                     # pa = copy(parsed_args)
                     op = pa["outpath"]
