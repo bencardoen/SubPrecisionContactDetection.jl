@@ -38,7 +38,7 @@ The code will check your data, and if those files are there, you will get output
 
 
 ## Interactive usage
-In VSCode, navigate to [demo.jl](interactivedemos/demo.jl)
+In VSCode, navigate to [demo.jl](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/interactivedemos/demo.jl)
 
 If you have Julia and its plugin installed, you can now evaluate code line by line.
 
