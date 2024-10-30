@@ -3,3 +3,6 @@
 log*.txt
 slurm*.out
 docs/build/
+deps/*.log
+.vscode
+*.log

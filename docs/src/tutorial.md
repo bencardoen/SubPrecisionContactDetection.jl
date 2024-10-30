@@ -35,3 +35,22 @@ The code will check your data, and if those files are there, you will get output
 1--3/
 2--3/
 ```
+
+
+## Interactive usage
+In VSCode, navigate to [demo.jl](interactivedemos/demo.jl)
+
+If you have Julia and its plugin installed, you can now evaluate code line by line.
+
+For example:
+
+![example](./assets/interactive.png)
+
+
+## Julia API
+While you can call the scripts from the command line, you can also do so from within Julia:
+
+```julia
+using SubPrecisionInteractionDetection
+twochannel_contats(get_defaults());
+```
