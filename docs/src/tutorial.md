@@ -36,6 +36,8 @@ The code will check your data, and if those files are there, you will get output
 2--3/
 ```
 
+See [PostProcessing](https://bencardoen.github.io/SubPrecisionContactDetection.jl/dev/postprocessing/) on instruction on how to curate, aggregate and postprocess the outcome.
+
 
 ## Interactive usage
 In VSCode, navigate to [demo.jl](https://github.com/bencardoen/SubPrecisionContactDetection.jl/blob/main/interactivedemos/demo.jl)
