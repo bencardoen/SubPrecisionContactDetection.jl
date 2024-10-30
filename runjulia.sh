@@ -15,8 +15,8 @@
 # Copyright 2021-2022, Ben Cardoen
 
 export LOCALPKG=/opt/SubPrecisionContactDetection.jl
-export JLMJV=1.10
-export JLV=$JLMJV.5
+export JLMJV=1.9
+export JLV=$JLMJV.4
 export PATH=/opt/julia/julia-$JLV/bin:$PATH
 export JULIA_DEPOT_PATH=/opt/juliadepot
 

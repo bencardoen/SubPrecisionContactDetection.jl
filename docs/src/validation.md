@@ -16,10 +16,16 @@ You can then optimize the detection's [parameters](https://bencardoen.github.io/
 If you know what biological interaction you wish to observe and under what modality, you can simulate this and test if the detection can detect the simulated interaction, and to what extent. 
 
 ### Stability
-Stability of a function ``f`` is defined as ``f(x + \epsilon) - f(x) \leq \delta`` for ``\epsilon, \delta \geq 0, s = \vert \epsilon -\delta \vert`. If s is small for all values, then you have a stable function. 
+Stability of a function ``f`` is defined as 
+``\vert f(x + \epsilon) - f(x) \vert \leq \delta`` for ``\epsilon, \delta \geq 0, s = \vert \epsilon -\delta \vert``. 
+
+If ``s`` is small for all values, then you have a stable function. 
 For example, stability can be with respect to parameters or noise.
 Stability matters for validation because you do not want to publish results that only exist for ``\alpha=0.003`` and w=2, and no other values.
 Ideally on representative (median) cells, you do a parameter sweep to show a consistent difference or a consistent recall/precision with respect to ground truth.
+
+!!! note "Stability"
+    We made the simplification of using addition here, that is rarely true, but the principle holds. In addition, you do not want the stability to be small, but predictable. For example, as ``\epsilon`` increases, how does ``\delta`` increase? If there is a limiting function (linear, quadratic, ...), then that too is consistent. If this random, that is the true worst case.
 
 ### Phantoms
 You can test the detection on phantoms, e.g. physical or biological induced changes (e.g. SPLICS), where you alter the biology in such a way that forces organelles or proteins to interact.
