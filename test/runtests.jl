@@ -136,7 +136,7 @@ using Distributions
 
     @testset "meta" begin    
         args = get_defaults()
-        save_meta(args, "test.json")
+        save_meta("test.json", args)
         fargs = read_meta("test.json")
         @test args == fargs
     end

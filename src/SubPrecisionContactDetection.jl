@@ -1341,7 +1341,7 @@ end
 
 Save metadata (dict) into fname (json)
 """
-function save_meta(meta, fname)
+function save_meta(fname, meta)
     open(fname, "w") do io
         JSON.print(io, meta)
     end
