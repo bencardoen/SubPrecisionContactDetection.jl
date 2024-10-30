@@ -2,7 +2,7 @@
 
 julia_version = "1.9.4"
 manifest_format = "2.0"
-project_hash = "b69c29bedcd0f8e324330ae9d9c4f12a1eeef32b"
+project_hash = "25a3ecb90b9bb5e6f68b3155513b11d63052152f"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -297,6 +297,12 @@ version = "4.1.1"
 git-tree-sha1 = "1a3f97f907e6dd8983b744d2642651bb162a3f7a"
 uuid = "dc8bdbbb-1ca9-579f-8c36-e416f6a65cce"
 version = "1.0.2"
+
+[[deps.CxxWrap]]
+deps = ["Libdl", "MacroTools", "libcxxwrap_julia_jll"]
+git-tree-sha1 = "bf6b3005bf7435544f7cac0f0ec13e1fef67b190"
+uuid = "1f15a43c-97ca-5a2a-ae31-89f07a497df4"
+version = "0.13.4"
 
 [[deps.DataAPI]]
 git-tree-sha1 = "abe83f3a2f1b857aac70ef8b269080af17764bbe"
@@ -1144,6 +1150,18 @@ deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
 version = "0.3.21+4"
 
+[[deps.OpenCV]]
+deps = ["CxxWrap", "OpenCV_jll"]
+git-tree-sha1 = "11b0730f3a1a76e4975bf9d8a2d10fc2c9e65f46"
+uuid = "f878e3a2-a245-4720-8660-60795d644f2a"
+version = "4.5.3"
+
+[[deps.OpenCV_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Pkg", "Qt5Base_jll", "libcxxwrap_julia_jll"]
+git-tree-sha1 = "d49a23a9bda6bbd8dc6008013220c55129b254c1"
+uuid = "33b9d88c-85f9-5d73-bd91-4e2b95a9aa0b"
+version = "4.6.0+2"
+
 [[deps.OpenEXR]]
 deps = ["Colors", "FileIO", "OpenEXR_jll"]
 git-tree-sha1 = "327f53360fdb54df7ecd01e96ef1983536d1e633"
@@ -1984,6 +2002,12 @@ version = "0.15.2+0"
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
 version = "5.8.0+0"
+
+[[deps.libcxxwrap_julia_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "922c664611fa46d1a644f224de7318ddc0fab53c"
+uuid = "3eaa8342-bff7-56a5-9981-c04077f7cee7"
+version = "0.9.7+3"
 
 [[deps.libdecor_jll]]
 deps = ["Artifacts", "Dbus_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "Pango_jll", "Wayland_jll", "xkbcommon_jll"]

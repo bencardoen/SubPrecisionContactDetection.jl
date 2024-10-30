@@ -17,7 +17,7 @@ If you know what biological interaction you wish to observe and under what modal
 
 ### Stability
 Stability of a function ``f`` is defined as 
-``\vert f(x + \epsilon) - f(x) \vert \leq \delta`` for ``\epsilon, \delta \geq 0, s = \vert \epsilon -\delta \vert``. 
+``\vert f(x + \epsilon) - f(x) \vert     \leq \delta`` for ``\epsilon, \delta \geq 0, s = \vert \epsilon -\delta \vert``. 
 
 If ``s`` is small for all values, then you have a stable function. 
 For example, stability can be with respect to parameters or noise.

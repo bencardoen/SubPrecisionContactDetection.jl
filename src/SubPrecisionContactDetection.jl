@@ -13,6 +13,7 @@
 # Copyright 2020-2022, Ben Cardoen
 module SubPrecisionContactDetection
 import Pkg
+using PrecompileTools: @setup_workload, @compile_workload    # this is a small dependency
 import PyCall
 using Distributions
 using LinearAlgebra
@@ -62,6 +63,21 @@ get_components_diag = mask -> Images.label_components(mask, length(size(mask))==
 get_components_ndiag = mask -> Images.label_components(mask)
 get_components = get_components_diag
 
+
+# @setup_workload begin
+#     # Putting some things in `@setup_workload` instead of `@compile_workload` can reduce the size of the
+#     # precompile file and potentially make loading faster.
+#     # list = [OtherType("hello"), OtherType("world!")]
+#     @compile_workload begin
+#         # all calls in this block will be precompiled, regardless of whether
+#         # they belong to your package or not (on Julia 1.8 and higher)
+#         df = get_defaults()
+#         two_channel_contacts(df)
+#         t = tempdir()
+#         Images.save(joinpath(t, "test.tif"), zeros(10, 10, 10))
+#         Images.load(joinpath(t, "test.tif"))
+#     end
+# end
 
 function normalize_linear(img)
     T = eltype(img)
@@ -2550,6 +2566,29 @@ function masktoindices(A)
 		return masktoindices3(A)
 	end
 	@assert(false)
+end
+
+
+@setup_workload begin
+    # Putting some things in `@setup_workload` instead of `@compile_workload` can reduce the size of the
+    # precompile file and potentially make loading faster.
+    # list = [OtherType("hello"), OtherType("world!")]
+    @compile_workload begin
+        # all calls in this block will be precompiled, regardless of whether
+        # they belong to your package or not (on Julia 1.8 and higher)
+        df = get_defaults()
+        @info "Test"
+        @warn "Test"
+        try
+            two_channel_contacts(df)
+        catch e
+            @debug "Ignoring expected failure $e"
+        end
+        t = tempdir()
+        ccs = Images.label_components(zeros(10, 10, 10));
+        Images.save(joinpath(t, "test.tif"), zeros(10, 10, 10))
+        Images.load(joinpath(t, "test.tif"))
+    end
 end
 
 end # module

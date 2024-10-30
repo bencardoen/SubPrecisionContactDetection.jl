@@ -17,6 +17,18 @@ This downloads the source code in a subfolder, builds it with all dependencies a
 
 Once you have this, you can use either a terminal or an IDE (e.g. Visual Studio Code) to work with the source code to process new datasets.
 
+### Updating
+If you want to get the latest version, using git do:
+```bash
+git pull origin main
+```
+Then make sure everything still works
+```
+julia --project=. -e 'using Pkg; Pkg.build();Pkg.test();`
+```
+
+This assumes you did not switch brances or modified the code. 
+
 ## Singularity/Apptainer
 We provide a preconfigured container image with all dependencies [here](https://cloud.sylabs.io/library/bcvcsert/subprecisioncontactdetection/mcsdetect).
 
