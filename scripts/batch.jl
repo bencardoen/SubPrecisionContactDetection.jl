@@ -27,32 +27,6 @@ using ProgressMeter
 
 using LoggingExtras, Dates
 
-# inpath="/home/bcardoen/cedar_data/test/MS_2024_09_19_TOM20_KDEL_PLIN_HUH7_OLEIC"
-# readdir(inpath)
-# regex="*[0,1].tif"
-# prefixes, regexes = buildregex(inpath, regex)
-
-# fs = recursive_glob(regex, inpath)
-# i1 = Images.load(fs[1])
-
-# t = mktempdir()
-# subd = joinpath(t, "t2")
-# mkpath(subd)
-# Images.save(joinpath(subd, "a01.tif"), rand(200, 200))
-# Images.save(joinpath(subd, "b02.tif"), rand(200, 200))
-# Images.save(joinpath(subd, "c03.tif"), rand(200, 200))
-# rx = "*[1,2].tif"
-# paths, regexes = buildregex(subd, rx)
-# paths == ["1--2"]
-# regexes == ["*[1,2].tif"]
-
-# inpath="/home/bcardoen/cedar_data/test/MS_2024_09_19_TOM20_KDEL_PLIN_HUH7_OLEIC"
-# readdir(inpath)
-# regex="*[0,1,2].tif"
-# prefixes, regexes = buildregex(inpath, regex)
-
-
-
 function run_script()
     date_format = "yyyy-mm-dd HH:MM:SS"
     timestamp_logger(logger) = TransformerLogger(logger) do log
@@ -65,38 +39,32 @@ function run_script()
         @info "  $arg  =>  $val"
     end
     inpath = parsed_args["inpath"]
-    op = parsed_args["outpath"]
-    rx = parsed_args["inregex"]
-    paths, regexes = buildregex(inpath, rx)
-    @info paths
-    @info regexes
-    @showprogress for (p, r) in zip(paths, regexes)
-        pa = copy(parsed_args)
-        @info p, r
-        pa["inregex"] = r
-        pa["outpath"] = mkpath(joinpath(op, "$p"))
-        
+    rootpath = parsed_args["outpath"]
+    rootregex = parsed_args["inregex"]
+    paths, regexes = buildregex(inpath, rootregex)
+    @showprogress for (pat, reg) in zip(paths, regexes)
         @showprogress  for replicate in readdir(inpath; join=true)
             r = basename(replicate)
             @showprogress  for celltype in readdir(replicate; join=true)
                 ct = basename(celltype)
                 @showprogress  for cell in readdir(celltype; join=true)
+                    # Configure output
                     snr = basename(cell)
-                    # pa = copy(parsed_args)
-                    op = pa["outpath"]
-                    # opx = joinpath(op, r, ct, snr)
-                    alpha = pa["alpha"]
-                    opx = joinpath(op, r, ct, snr, "$(alpha)")
+                    pax = copy(parsed_args)
+                    alpha = pax["alpha"]
+                    opx = joinpath(rootpath, pat, r, ct, snr, "$(alpha)")
                     @info "Output will be saved in $(opx)"
                     if isdir(opx)
                         @warn "WARNING: Output directory exists --> PLEASE CHECK if this intended."
                     end
                     @info "Creating output path $(opx)"
                     mkpath(opx)
-                    pa["inpath"]=cell
-                    pa["outpath"]=opx
+                    # Update the arguments
+                    pax["inpath"]=cell
+                    pax["outpath"]=opx
+                    pax["inregex"] = reg
                     try
-        			    two_channel_contacts(pa)
+        			    two_channel_contacts(pax)
                     catch e
                         @error("Failed executing due to $(e)")
                     end
