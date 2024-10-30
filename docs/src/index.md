@@ -1,6 +1,7 @@
 # SubPrecisionContactDetection.jl Documentation
 
 Welcome to the documentation for this package.
+This holds the implementation for [MCS-DETECT, published in JCB](https://doi.org/10.1083/jcb.202206109).
 Please see the sidebar for relevant sections.
 
 This package offers variable distance contact detection between two images (2/3D) when segmentation is not sufficiently accurate. 

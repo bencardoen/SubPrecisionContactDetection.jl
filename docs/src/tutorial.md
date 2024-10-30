@@ -48,6 +48,14 @@ For example:
 
 ![example](./assets/interactive.png)
 
+This would work like this:
+
+```julia
+using Pkg; Pkg.activate("."); # <CTRL+ENTER>
+using SubPrecisionContactDetection; # <CTRL+ENTER>
+@info "Test"; #CTRL+ENTER
+defs = get_defaults(); #CTRL+ENTER
+```
 
 ## Julia API
 While you can call the scripts from the command line, you can also do so from within Julia:
