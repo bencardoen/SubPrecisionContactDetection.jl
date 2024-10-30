@@ -32,6 +32,9 @@ using LoggingExtras, Dates
 # regex="*[0,1].tif"
 # prefixes, regexes = buildregex(inpath, regex)
 
+# fs = recursive_glob(regex, inpath)
+# i1 = Images.load(fs[1])
+
 # t = mktempdir()
 # subd = joinpath(t, "t2")
 # mkpath(subd)
@@ -71,7 +74,7 @@ function run_script()
         pa = copy(parsed_args)
         @info p, r
         pa["inregex"] = r
-        pa["outpath"] = mkpath(joinpath(op, "p"))
+        pa["outpath"] = mkpath(joinpath(op, "$p"))
         
         @showprogress  for replicate in readdir(inpath; join=true)
             r = basename(replicate)
@@ -83,7 +86,7 @@ function run_script()
                     op = pa["outpath"]
                     # opx = joinpath(op, r, ct, snr)
                     alpha = pa["alpha"]
-                    opx = joinpath(op, r, ct, snr, alpha)
+                    opx = joinpath(op, r, ct, snr, "$(alpha)")
                     @info "Output will be saved in $(opx)"
                     if isdir(opx)
                         @warn "WARNING: Output directory exists --> PLEASE CHECK if this intended."
