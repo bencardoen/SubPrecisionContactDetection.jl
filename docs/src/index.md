@@ -22,6 +22,14 @@ The applications are not limited to superresolution microscopy, but please see t
 
 The below 3D rendering shows the software predicting ER-Mitochondria contacts in 3D STED (credit DOI 10.1083/jcb.202206109).
 
+You can view summarized functionality and improvements on the [Releases](https://github.com/bencardoen/SubPrecisionContactDetection.jl/releases/) page. 
+Note that we follow the [Apery constant](https://en.wikipedia.org/wiki/Ap%C3%A9ry%27s_constant) for versioning:
+```julia
+v1=0.8.0
+v2=0.8.3
+v3=0.8.31
+...
+```
 ![example.png](./assets/example.png)
 
 Mitochondria are in red, ER in green translucent, the contact zones in white.
