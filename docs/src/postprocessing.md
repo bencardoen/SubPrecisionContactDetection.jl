@@ -12,7 +12,7 @@ In the remaining of this document, let us assume `DIR` is the directory where th
 
 ## Bleedthrough filter
 The background filter removes ghost effects (bleedthrough).
-It is run as part of the pipeline, but you can invoke it separately.
+It is run **as part of the pipeline**, but you can invoke it separately. 
 
 !!! note "This is Optional"
     This is entirely optional, but useful if you want to optimize this filter independently.
@@ -48,7 +48,7 @@ For all the files, it will generate a CSV with columns, where each row is an obj
     The ``\lambda`` values are disabled by default due given that for very large objects they can stall the pipeline (1e6 voxels).
 
 ## CSV Curation
-You can run our Python script to aggregate and curate the processed CSV files.
+You can run our Python scripts to aggregate and curate the processed CSV files.
 
 ```python
 python3 scripts/csvcuration.py --inputdirectory <where you saved the output> --outputdirectory <where you want the new CSV files saved>
@@ -68,6 +68,11 @@ contacts_unfiltered.csv             # All contacts, no filtering
 ```
 
 ## Sampling contacts
+
+
+!!! warning "Coverage computation"
+    The below scripts will computer local coverage of the contacts, from a perspective of contacts to the **first** channel. So if you run on 01.tif and 02.tif, it will compute coverage on the organelle in 01.tif. A patch for a more generalized approach is underway. 
+
 In [scripts/run_cube_sampling_on_dataset.jl](https://github.com/bencardoen/SubPrecisionContactDetection.jl/scripts/run_cube_sampling_on_dataset.jl) you'll find a script that samples contacts with a sliding window, to avoid long tail statistics dominating the conclusion of any analysis. The paper goes into more depth why this is beneficial.
 
 ```julia
