@@ -55,6 +55,10 @@ python3 scripts/csvcuration.py --inputdirectory <where you saved the output> --o
 ```
 By default this will look for output produced with ``\alpha`` 0.05, you can override this as needed with `--alpha 0.01` for example.
 
+Parameters
+- --lnsize: vesicle filter size for mitochondria, default set to 9, override to zero if you want no filtering
+- --mitoint: vesicle filter intensity for mitochondria, default set 0.2, override to zero if you want no filtering
+
 This will produce:
 
 ```
