@@ -70,6 +70,11 @@ In [scripts/run_cube_sampling_on_dataset.jl](https://github.com/bencardoen/SubPr
 julia --project=. scripts/run_cube_sampling_on_dataset.jl  --inpath DIR --outpath  <where to save your output>
 ```
 
+This script takes extra parameters as needed:
+- "--cube-vesicle-size-ln": The size of objects to ignore (anything <= will be ignored in the first channel). Default 9. Set to 0 if first channel is not mitochondria.
+- "--cube-vesicle-sample-size": The sliding window size in voxels (cube), default 5, used to sample the data. 
+- "--cube-vesicle-intensity-mean" : The intensity of objects that should be ignored in the first channel (< than this will be dropped. Default 0.2.) Set to zero if the first channel is not mitochondria
+
 A convenience script is provided to further aggregate the output of this stage.
 
 ```python
