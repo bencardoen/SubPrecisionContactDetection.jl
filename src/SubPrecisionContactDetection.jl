@@ -1703,7 +1703,7 @@ function get_defaults()
     default_args["save-numerical-data"]=false
     default_args["inregex"]="*[1,2].tif"
     default_args["outpath"] = ""
-    default_args["mode"] = "non-decon"
+    default_args["mode"] = "decon"
     default_args["deconvolved"] = true
     default_args["sigmas"] = "1-1-1"
     default_args["lpsigmas"] = "1-1-1"

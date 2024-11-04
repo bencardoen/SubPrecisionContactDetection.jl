@@ -84,6 +84,7 @@ A convenience script is provided to further aggregate the output of this stage.
 ```python
 python3 scripts/coverage.py  --inputdirectory DIR --outputdirectory <where to save your ouput>
 ```
+You may need to switch `python3` with `python`, depending on your installation.
 
 This will print summary output and save a file `coverage_aggregated.csv`. The columns Coverage % mito by contacts, mean per cell and ncontacts mean are the columns you'll be most interested in.
 
