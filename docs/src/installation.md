@@ -15,7 +15,7 @@ julia --project=. -e `using Pkg; Pkg.build(); Pkg.test()`
 ```
 This downloads the source code in a subfolder, builds it with all dependencies and tests it.
 
-Once you have this, you can use either a terminal or an IDE (e.g. Visual Studio Code) to work with the source code to process new datasets.
+Once you have this, you can use either a terminal or an IDE (e.g. [Visual Studio Code](https://code.visualstudio.com/)) to work with the source code to process new datasets. We recommend [VSCode + the Julia Plugin](https://code.visualstudio.com/docs/languages/julia) for easy of use. 
 
 ### Updating
 If you want to get the latest version, using git do:
@@ -38,8 +38,15 @@ All dependencies are automatically installed, however, you may run into issues i
 See the [build](https://github.com/bencardoen/SubPrecisionContactDetection.jl/build/build.jl) script for details, but when in doubt, set the environment variable PYTHON to either your Python installation or the empty string and rebuild
 ```bash
 export PYTHON=""
-julia --project=. -e 'using Pkg; Pkg.build'
+julia --project=. -e 'using Pkg; Pkg.build()'
 ```
 
 !!! note "Attention"
     For the remainder of this document we assume all commands are run inside the cloned directory, e.g. `SubPrecisionContactDetection.jl`.
+
+
+## Python dependencies
+The postprocessing script uses dependencies that can be installed by issuing this command:
+```bash
+pip install kneed scikit-image scipy pandas argparse scikit-learn
+```
