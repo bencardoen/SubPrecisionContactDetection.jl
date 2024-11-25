@@ -73,6 +73,10 @@ contacts_unfiltered.csv             # All contacts, no filtering
 !!! warning "Coverage computation"
     The below scripts will computer local coverage of the contacts, from a perspective of contacts to the **first** channel. So if you run on 01.tif and 02.tif, it will compute coverage on the organelle in 01.tif. A patch for a more generalized approach is underway. 
 
+
+!!! info "Coverage estimation"
+    Coverage is computed by reducing the contact volume, which spans the region between ER and mitochondria in 3D, to a 3D skeleton, then projecting this onto the mitochondria. This is an approximation in the absence of an exact segmentation. The source code details the exact computation. Naturally the user can extract the masks and compute different contact metrics.
+
 In [scripts/run_cube_sampling_on_dataset.jl](https://github.com/bencardoen/SubPrecisionContactDetection.jl/scripts/run_cube_sampling_on_dataset.jl) you'll find a script that samples contacts with a sliding window, to avoid long tail statistics dominating the conclusion of any analysis. The paper goes into more depth why this is beneficial.
 
 ```julia
