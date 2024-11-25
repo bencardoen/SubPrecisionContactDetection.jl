@@ -1,7 +1,7 @@
 name = "SubPrecisionContactDetection"
 uuid = "b7eec76b-455c-4bcc-baa1-3a229dd6d4a0"
 authors = ["Ben Cardoen <26388277+bencardoen@users.noreply.github.com> and contributors"]
-version = "0.8.3"
+version = "0.8.3.1"
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"

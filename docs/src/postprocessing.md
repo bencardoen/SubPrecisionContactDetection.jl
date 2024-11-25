@@ -75,7 +75,7 @@ contacts_unfiltered.csv             # All contacts, no filtering
 
 
 !!! info "Coverage estimation"
-    Coverage is computed by reducing the contact volume, which spans the region between ER and mitochondria in 3D, to a 3D skeleton, then projecting this onto the mitochondria. This is an approximation in the absence of an exact segmentation. The source code details the exact computation. Naturally the user can extract the masks and compute different contact metrics.
+    Coverage is computed by reducing the contact volume, which spans the region between ER and mitochondria in 3D, to a 3D skeleton, then projecting this onto the mitochondria. This is an approximation in the absence of an exact segmentation. The source code details the exact computation. Naturally the user can extract the masks and compute different contact metrics. Several features are computed by the below scripts to help you with this.
 
 In [scripts/run_cube_sampling_on_dataset.jl](https://github.com/bencardoen/SubPrecisionContactDetection.jl/scripts/run_cube_sampling_on_dataset.jl) you'll find a script that samples contacts with a sliding window, to avoid long tail statistics dominating the conclusion of any analysis. The paper goes into more depth why this is beneficial.
 
